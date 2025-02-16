@@ -4,12 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [loading, setLoading] = useState(false)
-
-
-  if (!loading) {
-    
-  }
+  const [loading, setLoading] = useState(false);
 
   return (
     <>
