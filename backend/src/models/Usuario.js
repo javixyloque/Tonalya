@@ -16,6 +16,7 @@ const UsuarioSchema = new mongoose.Schema({
     }
 });
 
+// VARIABLE => CREAR MODELO DE USUARIO
 const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
 

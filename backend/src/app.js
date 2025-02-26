@@ -16,11 +16,8 @@ import Usuario from "./models/Usuario.js";
 
 // PUERTO => EXPRESS
 const PORT = process.env.PORT || 5000;
-const MONGO_URI =  `http://localhost:5000`;
 
 
-// const profeBD = mongoose.model("Profesor", ProfesorSchema);
-// const usuarioBD = mongoose.model('Usuario', UsuarioSchema);
 
 
 const app = express();
@@ -30,37 +27,44 @@ app.use(cors());
 
 async function main() { 
 
-// Conectar a MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/Tonalya', {})
-.then(() => {
-    console.log('Conectado a MongoDB');
-}).catch(err => {
-    console.error('Error de conexión', err);
-});
-
-
-
-
-
-app.get('/', (req, res) => {
-    res.send('API de Tonalya');
-})
-
-// PROFESOR => POST 
-    // Crear un nuevo profesor
-    // POST /profesor
-    app.get('/profesor', async (req, res) => {
-        try{
-            const profesores =  await Profesor.find({});
-            res.json(profesores);
-        } catch(error) {
-            res.status(500).json({ error: 'Ocurrió un error' });
-
-        }
+// MONGOOSE => CONECTAR A MONGODB
+    mongoose.connect('mongodb://127.0.0.1:27017/Tonalya', {})
+    .then(() => {
+        console.log('Conectado a MongoDB');
+    }).catch(err => {
+        console.error('Error de conexión', err);
     });
 
 
-    // Crear un nuevo profesor
+
+
+    // ROOT => EJEMPLO DE RUTA
+    app.get('/', (req, res) => {
+        res.send('API de Tonalya');
+    })
+
+
+    
+
+    // PROFESOR => GET
+    // Obtener los profesores
+    app.get('/profesor', async (req, res) => {
+    try{
+        const profesores =  await Profesor.find({});
+        res.json(profesores);
+    } catch(error) {
+            res.status(500).json({ error: 'Ocurrió un error' });
+            
+        }
+    });
+    
+    
+    
+    
+    
+    // PROFESOR => POST 
+        // Crear un nuevo profesor
+        // POST /profesor
     app.post('/profesor', async (req, res) => {
         // Validar los datos
         if (!req.body.nombre ||!req.body.apellido ||!req.body.edad) {
@@ -98,6 +102,7 @@ app.get('/', (req, res) => {
     
 
 
+    // USUARIO => ADMIN
     const admin = await Usuario.findOne({ name: 'admin' });
     
     if (!admin) {
