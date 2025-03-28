@@ -6,13 +6,12 @@ const ProfesorSchema = new mongoose.Schema({
     edad: Number,
     especialidad: String,
     imagen: Buffer,
-    usuario: {
+    user: {
         username: String,
         password: String,
         email: String,
         telefono: String
     }
-
 })
 
 const Profesor = mongoose.model('Profesor', ProfesorSchema);
