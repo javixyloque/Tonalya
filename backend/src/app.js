@@ -80,11 +80,11 @@ async function main() {
             edad: req.body.edad,
             especialidad: req.body.especialidad,
             imagen: imagenBuffer,
-            usuario: {
-                username: req.body.usuario.username,
-                password: req.body.usuario.password,
-                email: req.body.usuario.email,
-                telefono: req.body.usuario.telefono
+            user: {
+                username: req.body.user.username,
+                password: req.body.user.password,
+                email: req.body.user.email,
+                telefono: req.body.user.telefono
             }
         });
         try {
@@ -111,7 +111,7 @@ async function main() {
             apellidos:'del sistema',
             edad: 0,
             especialidad: 'Administrador',
-            usuario: {
+            user: {
                 username: 'admin',
                 password: '645581Alv.',
                 email: 'admin@example.com',
