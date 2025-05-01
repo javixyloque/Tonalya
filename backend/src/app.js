@@ -10,7 +10,7 @@ import bodyParser from "body-parser";
 import 'dotenv/config';
 import mongoose from "mongoose";
 import cors from "cors";
-import Profesor from "./models/Profesor.js";
+import Clase from "./models/Clase.js";
 import Usuario from "./models/Usuario.js";
 
 
@@ -50,7 +50,7 @@ async function main() {
     // Obtener los profesores
     app.get('/profesor', async (req, res) => {
     try{
-        const profesores =  await Profesor.find({});
+        const profesores =  await Usuario.find({});
         res.json(profesores);
     } catch(error) {
             res.status(500).json({ error: 'Ocurrió un error' });
@@ -74,7 +74,7 @@ async function main() {
         const imagenBuffer = req.body.imagen ? Buffer.from(req.body.imagen, 'base64') : undefined;
 
         
-        const nuevoProfesor = new Profesor({
+        const nuevoUsuario = new Usuario({
             nombre: req.body.nombre,
             apellido: req.body.apellido,
             edad: req.body.edad,
@@ -88,8 +88,8 @@ async function main() {
             }
         });
         try {
-            const guardado = await nuevoProfesor.save();
-            res.json({ mensaje: 'Profesor creado exitosamente', profesor: guardado });
+            const guardado = await nuevoUsuario.save();
+            res.json({ mensaje: 'Usuario creado exitosamente', usuario: guardado });
 
         } catch(error) {
             res.status(500).json({ mensaje: 'Error al crear el profesor' });
@@ -103,9 +103,10 @@ async function main() {
 
 
     // USUARIO => ADMIN
-    const admin = await Usuario.findOne({ name: 'admin' });
+    const admin = await Usuario.findOne({ nombre: 'admin' });
     
     if (!admin) {
+
         const adminUser = new Usuario({
             nombre: 'admin',
             apellidos:'del sistema',

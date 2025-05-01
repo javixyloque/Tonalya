@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const ProfesorSchema = new mongoose.Schema({
     nombre: String,
-    apellido: String,
+    apellidos: String,
     edad: Number,
     especialidad: String,
     imagen: Buffer,
@@ -12,9 +12,8 @@ const ProfesorSchema = new mongoose.Schema({
         email: String,
         telefono: String
     }
-})
+});
 
 const Profesor = mongoose.model('Profesor', ProfesorSchema);
-
 
 export default Profesor;
