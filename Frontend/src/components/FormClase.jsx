@@ -8,13 +8,13 @@ function FormClase() {
         const [telefono, setTelefono] = useState('');
         const [password, setPassword] = useState('');
         const [imagen, setImagen] = useState('');
-        const [loading, setLoading] = useState(true);
+        // const [loading, setLoading] = useState(true);
         const [profesores, setProfesores] = useState([]);
         useEffect ( ()  => {
 
             async function fetchProfesores () {
                 try {
-                    const profesores = await fetch('localhost:5000/profesor', {
+                    const profesores = await fetch('http://localhost:5000/profesor', {
                         method: 'GET',
                         headers: {
                         'Content-Type': 'application/json',
@@ -26,27 +26,23 @@ function FormClase() {
                         console.error('Error al cargar los profesores');
                     }
                     const arrayProfesores = await profesores.json();
-                    setLoading(false);
+                    // setLoading(false);
                     setProfesores(arrayProfesores);
                     return arrayProfesores
                 } catch (error) {
                     console.error('Error de red:', error);
                 }
-                
+
 
             }
 
             fetchProfesores();
-            
+
         }, [])
-        
-        useEffect(() => {
-            if (loading) {
-                return
-            }
-        }, [loading])
-        
-        
+
+
+
+
 
         const enviarFormulario = async (event) => {
             event.preventDefault();
@@ -69,7 +65,7 @@ function FormClase() {
             }
         };
 
-       
+
             return (
                 <>
                 <h1>Eres nuevo? Comencemos</h1>
@@ -79,10 +75,10 @@ function FormClase() {
                     <input type="text" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Telefono" />
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
                     <input type="file" value={imagen} onChange={(e) => setImagen(e.target.value)} placeholder="Imagen" />
-                    
+
                     <button type="submit">Registrarse</button>
                 </form>
-                
+
                 <ul>
                     {profesores.map(profesor => <li key={profesor.id}>
                         <h3>{profesor.nombre}</h3>
@@ -94,9 +90,6 @@ function FormClase() {
                 </ul>
                 </>
             );
-
-        
-
-    }
+}
 
 export default FormClase;

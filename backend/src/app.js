@@ -6,13 +6,14 @@
 // CORS => SOLICITUDES DESDE EL CLIENTE
 
 import express from "express";
-import bodyParser from "body-parser";
 import 'dotenv/config';
 import mongoose from "mongoose";
 import cors from "cors";
 import Clase from "./models/Clase.js";
-import Usuario from "./models/Usuario.js";
-
+import Profesor from "./models/Profesor.js";
+import Alumno from "./models/Alumno.js";
+import Admin from "./models/Admin.js";
+import Instrumento from "./models/Instrumento.js";
 
 // PUERTO => EXPRESS
 const PORT = process.env.PORT || 5000;
@@ -50,14 +51,25 @@ async function main() {
     // Obtener los profesores
     app.get('/profesor', async (req, res) => {
     try{
-        const profesores =  await Usuario.find({});
+        const profesores =  await Profesor.find({});
         res.json(profesores);
     } catch(error) {
             res.status(500).json({ error: 'Ocurrió un error' });
             
         }
     });
+
+    app.get('/instrumentos', async(req,res) => {
+        try{
+            const instrumentos =  await Instrumento.find({});
+            res.json(instrumentos);
+        } catch(error) {
+                res.status(500).json({ error: 'Ocurrio un error' });
+                
+            }
+        });
     
+
     
     
     
@@ -101,23 +113,24 @@ async function main() {
     })
     
 
+    app.get('/admin', async (req, res) => {
+        try{
+            const admins =  await Admin.find({});
+            res.json(admins);
+        } catch(error) {
+                res.status(500).json({ error: 'Ocurrido un error' });
+                }
+    })
+
 
     // USUARIO => ADMIN
-    const admin = await Usuario.findOne({ nombre: 'admin' });
+    const admin = await Admin.findOne({ nombre: 'admin' });
     
     if (!admin) {
 
-        const adminUser = new Usuario({
-            nombre: 'admin',
-            apellidos:'del sistema',
-            edad: 0,
-            especialidad: 'Administrador',
-            user: {
-                username: 'admin',
-                password: '645581Alv.',
-                email: 'admin@example.com',
-                telefono: '3463364099',
-            },
+        const adminUser = new Admin ({
+            email: 'admin',
+            password: '645581'
         });
         try {
             await adminUser.save();
