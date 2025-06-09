@@ -3,7 +3,7 @@ import mongooseBcrypt from "mongoose-bcrypt";
 
 
 const alumnoSchema = new mongoose.Schema({
-    username: { 
+    nombre: { 
         type: String, 
         required: true 
     },
