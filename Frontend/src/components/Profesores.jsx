@@ -1,0 +1,45 @@
+import { useState, useEffect } from 'react';
+
+const Profesores = () => {
+    const [profesores, setProfesores] = useState([]);
+    useEffect(() => {
+        async function fetchProfesores() {
+            try {
+                const response = await fetch('http://localhost:5000/profesor', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    console.log('Profesores cargados correctamente');
+                } else {
+                    console.error('Error al cargar los profesores');
+                }
+                const arrayProfesores = await response.json();
+                // setLoading(false);
+                setProfesores(arrayProfesores);
+                return arrayProfesores;
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        };
+        fetchProfesores();
+    }, []);
+
+    return (
+        <>
+            <h1>Profesores</h1>
+            <ul>
+                {profesores.map((profesor) => (
+                    <li key={profesor._id}>
+                        {profesor.nombre} {profesor.email}
+                    </li>
+                ))}
+            </ul>
+        </>
+    );
+
+}
+
+export default Profesores;

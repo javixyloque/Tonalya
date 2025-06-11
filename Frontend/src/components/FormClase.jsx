@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import {useState} from "react";
 // import {SyncLoader} from "react-spinners"
 
-function FormClase() {
+const FormClase = () =>{
         const [nombre, setNombre] = useState('');
         const [email, setEmail] = useState('');
         const [telefono, setTelefono] = useState('');
