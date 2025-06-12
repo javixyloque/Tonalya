@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import mongooseBcrypt from "mongoose-bcrypt";
 
-const ProfesorSchema = new mongoose.Schema({
+const profesorSchema = new mongoose.Schema({
     nombre:{
         type: String,
         required: true
@@ -12,11 +13,16 @@ const ProfesorSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        bcrypt: true
     },
     telefono: {
         type: String,
         required: true
+    },
+    imagen:{
+        type: Buffer,
+        required: false
     },
     clases: [
         {
@@ -26,7 +32,8 @@ const ProfesorSchema = new mongoose.Schema({
     ]
 
 });
+profesorSchema.plugin(mongooseBcrypt);
 
-const Profesor = mongoose.model('Profesor', ProfesorSchema);
+const Profesor = mongoose.model('Profesor', profesorSchema);
 
 export default Profesor;

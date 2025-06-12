@@ -4,6 +4,7 @@
 // BODY-PARSER => PARSEAR LOS DATOS ENVIADOS EN FORMATO JSON
 // MONGOOSE => CONECTAR CON MONGODB Y OPERAR
 // CORS => SOLICITUDES DESDE EL CLIENTE
+// MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA
 
 import express from "express";
 import 'dotenv/config';
@@ -14,6 +15,7 @@ import Profesor from "./models/Profesor.js";
 import Alumno from "./models/Alumno.js";
 import Admin from "./models/Admin.js";
 import Instrumento from "./models/Instrumento.js";
+import multer from "multer";
 
 // PUERTO => EXPRESS
 const PORT = process.env.PORT || 5000;
@@ -22,11 +24,19 @@ const PORT = process.env.PORT || 5000;
 
 
 const app = express();
+const upload = multer({ dest: 'subidas/' })
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors( {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 async function main() { 
+    //CORS => SOLICITUDES DESDE EL CLIENTE
+    
+
 
 // MONGOOSE => CONECTAR A MONGODB
     mongoose.connect('mongodb://127.0.0.1:27017/Tonalya', {})
@@ -77,30 +87,26 @@ async function main() {
     // PROFESOR => POST 
         // Crear un nuevo profesor
         // POST /profesor
-    app.post('/profesor', async (req, res) => {
+    app.post('/profesor', upload.single("imagen"), async (req, res) => {
         // Validar los datos
-        if (!req.body.nombre ||!req.body.apellido ||!req.body.edad) {
+        if (!req.body.nombre ||!req.body.email || !req.body.password ||!req.body.telefono) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
-        // COGER IMAGEN => UNDEFINED SI NO ESTABLECIDA
-        const imagenBuffer = req.body.imagen ? Buffer.from(req.body.imagen, 'base64') : undefined;
+        // COGER IMAGEN => null SI NO ESTABLECIDA
+        const imagenBuffer = req.file ? Buffer.from(req.file.buffer) : null;
 
         
-        const nuevoUsuario = new Usuario({
+        const nuevoProfesor = new Profesor({
             nombre: req.body.nombre,
-            apellido: req.body.apellido,
-            edad: req.body.edad,
-            especialidad: req.body.especialidad,
+            email: req.body.email,
+            password: req.body.password,
+            telefono: req.body.telefono,
             imagen: imagenBuffer,
-            user: {
-                username: req.body.user.username,
-                password: req.body.user.password,
-                email: req.body.user.email,
-                telefono: req.body.user.telefono
-            }
+            clases: []
+            
         });
         try {
-            const guardado = await nuevoUsuario.save();
+            const guardado = await nuevoProfesor.save();
             res.json({ mensaje: 'Usuario creado exitosamente', usuario: guardado });
 
         } catch(error) {
@@ -127,7 +133,6 @@ async function main() {
     const admin = await Admin.findOne({ nombre: 'admin' });
     
     if (!admin) {
-
         const adminUser = new Admin ({
             email: 'admin',
             password: '645581'
