@@ -3,8 +3,10 @@
 // EXPRESS => RUTEAR Y HTTP
 // BODY-PARSER => PARSEAR LOS DATOS ENVIADOS EN FORMATO JSON
 // MONGOOSE => CONECTAR CON MONGODB Y OPERAR
+// MONGOOSE-BCRYPT => ENCRIPTAR CONTRASEÑAS
 // CORS => SOLICITUDES DESDE EL CLIENTE
 // MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA
+// UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
 
 import express from "express";
 import 'dotenv/config';
@@ -15,27 +17,29 @@ import Profesor from "./models/Profesor.js";
 import Alumno from "./models/Alumno.js";
 import Admin from "./models/Admin.js";
 import Instrumento from "./models/Instrumento.js";
-import multer from "multer";
+import  "./biblioteca.js";
+
 
 // PUERTO => EXPRESS
 const PORT = process.env.PORT || 5000;
+// ALMACENAMIENTO DE MULTER => PASARSELO COMO PARAMETRO A MULTER
+
 
 
 
 
 const app = express();
-const upload = multer({ dest: 'subidas/' })
 // Middleware
 app.use(express.json());
-app.use(cors( {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
 
 async function main() { 
-    //CORS => SOLICITUDES DESDE EL CLIENTE
+    //CORS => SOLICITUDES DESDE EL CLIENTE, LIMITAMOS LAS OPCIONES A LO QUE VAMOS A UTILIZAR
     
+    app.use(cors( {
+        origin: 'http://localhost:5173',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }));
 
 
 // MONGOOSE => CONECTAR A MONGODB
@@ -74,7 +78,7 @@ async function main() {
             const instrumentos =  await Instrumento.find({});
             res.json(instrumentos);
         } catch(error) {
-                res.status(500).json({ error: 'Ocurrio un error' });
+                res.status(500).json({ error: 'Ocurrio un error', tipo: error.message });
                 
             }
         });
@@ -87,13 +91,13 @@ async function main() {
     // PROFESOR => POST 
         // Crear un nuevo profesor
         // POST /profesor
-    app.post('/profesor', upload.single("imagen"), async (req, res) => {
+    app.post('/profesor',  async (req, res) => {
         // Validar los datos
-        if (!req.body.nombre ||!req.body.email || !req.body.password ||!req.body.telefono) {
+        if (!req.body.nombre ||!req.body.email || !req.body.password || !req.body.telefono) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
         // COGER IMAGEN => null SI NO ESTABLECIDA
-        const imagenBuffer = req.file ? Buffer.from(req.file.buffer) : null;
+        
 
         
         const nuevoProfesor = new Profesor({
@@ -101,7 +105,7 @@ async function main() {
             email: req.body.email,
             password: req.body.password,
             telefono: req.body.telefono,
-            imagen: imagenBuffer,
+            imagen: req.body.imagen,
             clases: []
             
         });
@@ -113,10 +117,19 @@ async function main() {
             res.status(500).json({ mensaje: 'Error al crear el profesor' });
         }
         
-        
-
-    
     })
+
+    app.delete('/profesor/:id', async (req, res) => {
+        try {
+            const profesor = await Profesor.findByIdAndDelete(req.params.id);
+            if (!profesor) {
+                return res.status(404).json({ mensaje: 'Profesor no encontrado' });
+            }
+            res.json({ mensaje: 'Profesor eliminado exitosamente' });
+        } catch (error) {
+            res.status(500).json({ mensaje: 'Error al eliminar el profesor' });
+        }
+    });
     
 
     app.get('/admin', async (req, res) => {

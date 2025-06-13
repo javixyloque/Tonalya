@@ -20,9 +20,9 @@ const profesorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    imagen:{
-        type: Buffer,
-        required: false
+    imagen: {
+        type: String,
+        required: true,
     },
     clases: [
         {
@@ -32,7 +32,7 @@ const profesorSchema = new mongoose.Schema({
     ]
 
 });
-profesorSchema.plugin(mongooseBcrypt);
+profesorSchema.plugin(mongooseBcrypt)
 
 const Profesor = mongoose.model('Profesor', profesorSchema);
 
