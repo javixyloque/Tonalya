@@ -33,7 +33,11 @@ const Profesores = () => {
             <ul>
                 {profesores.map((profesor) => (
                     <li key={profesor._id}>
-                        {profesor.nombre} {profesor.email}
+                        {profesor.nombre} {profesor.email} &nbsp; 
+                        
+                            <img src={profesor.imagen} alt="Imagen del Profesor" style={{ maxWidth: '100px'}} />
+
+                        
                     </li>
                 ))}
             </ul>
