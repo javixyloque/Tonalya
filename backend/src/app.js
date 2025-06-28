@@ -132,14 +132,14 @@ async function main() {
     });
     
 
-    app.get('/admin', async (req, res) => {
-        try{
-            const admins =  await Admin.find({});
-            res.json(admins);
-        } catch(error) {
-                res.status(500).json({ error: 'Ocurrido un error' });
-                }
-    })
+    // app.get('/admin', async (req, res) => {
+    //     try{
+    //         const admins =  await Admin.find({});
+    //         res.json(admins);
+    //     } catch(error) {
+    //             res.status(500).json({ error: 'Ocurrido un error' });
+    //             }
+    // })
 
 
     // USUARIO => ADMIN

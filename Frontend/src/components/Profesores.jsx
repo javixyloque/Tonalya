@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import {Link} from 'react-router-dom';
+// import { Link } from 'react-router-d
 
 const Profesores = () => {
     const [profesores, setProfesores] = useState([]);
@@ -29,6 +31,7 @@ const Profesores = () => {
 
     return (
         <>
+            <Link  to="/" >Volver a Inicio</Link> 
             <h1>Profesores</h1>
             <ul>
                 {profesores.map((profesor) => (
