@@ -9,7 +9,7 @@ const  Home = ()=> {
         <div className="home">
             <h1>Bienvenido a la página de inicio</h1>
             <p>¡Bienvenido al sitio web de Tonalya!</p>
-            <Link to="/formclase" className="btn btn-primary">Formulario Clases</Link>
+            <Link to="/formprofesor" className="btn btn-primary">Formulario Clases</Link>
             <br />
             <Link to="/profesores" className="btn btn-secondary">Profesores</Link>
             <br />
