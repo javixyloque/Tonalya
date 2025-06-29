@@ -1,23 +1,56 @@
 import mongoose from "mongoose";
+import mongooseBcrypt from "mongoose-bcrypt";
 
-// Usuario CLIENTE DE LA PÁGINA
-const UsuarioSchema = new mongoose.Schema({
-    nombre: String,
-    apellidos: String,
-    edad: Number,
-    especialidad: String,
-    imagen: Buffer,
-    tipoUsuario: String,
-    user: {
-        username: String,
-        password: String,
-        email: String,
-        telefono: String
+
+const usuarioSchema = new mongoose.Schema({
+    nombre: { 
+        type: String, 
+        required: true 
+    },
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
+    telefono: {
+        type: String,
+        required: true
+    },
+    password: { 
+        type: String, 
+        required: true,
+        bcrypt: true
+    },
+    tipo: {
+        type: String,
+        enum: ['ALUMNO','PADRE', 'ADULTO'],
+        default: 'ADULTO'
     }
+    ,
+    instrumentos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'Instrumento'
+        }
+    ],
+    clases : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Clase'
+        }
+    ],
+
+    // DE MOMENTO IGNORAR
+    imagen: {
+        type:Buffer,
+        required: false
+    }
+
 });
 
-// VARIABLE => CREAR MODELO DE Usuario
-const Usuario = mongoose.model('Usuario', UsuarioSchema);
+// ENCRIPTAR CONTRASEÑAS
+usuarioSchema.plugin(mongooseBcrypt);
 
-
+// EXPORTAR ALUMNO
+const Usuario = mongoose.model('Alumno', usuarioSchema);
 export default Usuario;

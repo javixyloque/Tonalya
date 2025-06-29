@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const instrumentoSchema = new mongoose.Schema({
     nombre: String,
-    tipo: String,
     familia: String
 });
 
