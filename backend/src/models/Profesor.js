@@ -22,8 +22,14 @@ const profesorSchema = new mongoose.Schema({
     },
     imagen: {
         type: String,
-        required: true,
+        required: false
     },
+    instrumentos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'Instrumento'
+        }
+    ],
     clases: [
         {
             type: mongoose.Schema.Types.ObjectId,

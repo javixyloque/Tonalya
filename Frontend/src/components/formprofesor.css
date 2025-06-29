@@ -1,0 +1,77 @@
+h1 {
+    margin: 2.5rem;
+    color: #ECEFCA;
+}
+
+form {
+    display:flex;
+    flex-direction:column;
+    align-items: normal;
+    justify-content: space-around;
+    min-width: 30rem;
+    
+}
+em {
+    font-size: 80%;
+
+}
+label {
+    color: #ECEFCA;
+    font-size: 1.3rem;
+    font-weight: thin;
+    margin: 1rem;
+    text-align: left;
+}
+select {
+    padding: 0.7rem;
+    font-size: 1.1rem;
+    margin-bottom: 4rem;
+    background-color: #547792;
+    color: #ECEFCA;
+    border-radius: 4px;
+    border:solid 2px #94B4C1;
+}
+input {
+    padding: 0.7rem;
+    font-size: 1.1rem;
+    margin-bottom: 4rem;
+    background-color: #547792;
+    color: #ECEFCA;
+    border-radius: 4px;
+    border:solid 2px #94B4C1;
+}
+button{
+    padding: 0.5rem;
+    border-radius: 3px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 4rem;
+    border:solid 2px #94B4C1;
+    background-color: #547792;
+    color: #ECEFCA;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 40rem;
+    box-shadow: 2px 2px 2px #94B4C1;
+    margin: auto;
+}
+button:hover{
+    background-color: #94B4C1;
+    color: #547792;     
+    box-shadow: none;
+    translate: 2px 2px;
+    transition: all 0.2s ease-in-out;
+
+    
+}
+button:active{
+    background-color: #547792;
+    color: #ECEFCA;     
+    transition: all 0.2s ease-in-out;
+    transform: scale(0.98);
+}
+input::placeholder {
+color:#ECEFCA;
+}

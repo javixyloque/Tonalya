@@ -14,3 +14,5 @@ export function codificarImagen64(imagen) {
         reader.readAsDataURL(imagen);
     });
 }
+
+
