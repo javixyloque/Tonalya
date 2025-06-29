@@ -88,8 +88,6 @@ async function main() {
             res.status(500).json({error: "Ocurrió un error"});
         }
     })
-   
-    
     
     
     
