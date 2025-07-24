@@ -7,7 +7,7 @@ const ClaseSchema = new mongoose.Schema({
     precio: Number,
     imagen: Buffer, 
     fecha: Date,
-    finalizada: Boolean,
+    asistencia: Boolean,
     pagoRealizado: Boolean,
     profesor: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' }

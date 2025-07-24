@@ -132,6 +132,7 @@ async function main() {
             if (!instrumento) {
                 return res.status(404).json({ mensaje: 'Instrumento no encontrado' });
             }
+            // PROFESOR._DOC -> ACCEDE AL PROFESOR DE MONGOOSE Y AÑADE UNO AL ARRAY INSTRUMENTOS
             const nuevoProfesor = new Profesor({ ...profesor._doc, instrumentos: [...profesor.instrumentos, instrumento] });
             const guardado = await nuevoProfesor.save();
             res.json({ mensaje: 'Instrumento agregado exitosamente', instrumento: guardado });

@@ -29,7 +29,8 @@ const InstrumentosProfesor = () => {
     const actualizarEstado = async(evento) => {
         // Aquí puedes actualizar el estado del componente para mostrar los cambios en la interfaz de usuario
         evento.preventDefault();
-
+        const nombre = evento.target.value;
+        // const 
         
     };
     return (
