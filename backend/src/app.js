@@ -60,6 +60,11 @@ async function main() {
 
 
     
+    app.get ('/usuario/:nombre', async (req, res) => {
+        const nombre = req.params.nombre;
+        const usuario = await Usuario.findByNombre({});
+        return usuario.json();
+    })
 
     // PROFESOR => GET
     // Obtener los profesores
