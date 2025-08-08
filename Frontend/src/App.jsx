@@ -1,4 +1,4 @@
-import './App.css'
+// import './App.css'
 // import { useState, useEffect } from 'react';
 import { Routes, BrowserRouter, Route } from 'react-router-dom';
 import FormProfesor from './components/FormProfesor.jsx';
@@ -26,6 +26,7 @@ const App = () => {
                 <Route path="/instrumentos-profesor" element={<InstrumentosProfesor />} />
             </Routes>
         </BrowserRouter>
+        <script type="module"> import react-bootstrap from https://cdn.jsdelivr.net/npm/react-bootstrap@2.10.10/+esm </script>
         </>
     );
     

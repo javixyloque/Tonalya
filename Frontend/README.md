@@ -8,3 +8,4 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 - [Bootstrap 5.3.7] (https://getbootstrap.com/docs/5.3/getting-started/download/)
+- [React 19.0] (https://react.dev/)
