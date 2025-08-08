@@ -61,9 +61,34 @@ async function main() {
 
     
     app.get ('/usuario/:nombre', async (req, res) => {
-        const nombre = req.params.nombre;
-        const usuario = await Usuario.findByNombre({});
-        return usuario.json();
+        try {
+            const nombre = req.params.nombre;
+            const usuario = await Usuario.findOne({ "nombre": nombre });
+            res.json (usuario);
+
+        } catch (ex) {
+            console.error("Error: ", ex);
+        }
+    })
+
+    // INICIO SESION PROFESOR
+    app.post ('/profesor/:email', async (req, res) => {
+        try {
+            const password = req.params.password;
+            const profesor = await Profesor.findOne({ "email": email });
+            if (!profesor) {
+                return -1;
+            }
+            // FUNCION PARA COMPARAR CONTRASEÑA (NECESARIO POR HASHING)
+            if (Profesor.comprobarPassword(password)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } catch (ex) {
+            console.error("Error: ", ex);
+            return 0;
+        }
     })
 
     // PROFESOR => GET
@@ -137,7 +162,7 @@ async function main() {
             if (!instrumento) {
                 return res.status(404).json({ mensaje: 'Instrumento no encontrado' });
             }
-            // PROFESOR._DOC -> ACCEDE AL PROFESOR DE MONGOOSE Y AÑADE UNO AL ARRAY INSTRUMENTOS
+            // PROFESOR._DOC -> ACCEDE AL OBJETO (LO MAPEA) Y AÑADE UNO AL ARRAY INSTRUMENTOS
             const nuevoProfesor = new Profesor({ ...profesor._doc, instrumentos: [...profesor.instrumentos, instrumento] });
             const guardado = await nuevoProfesor.save();
             res.json({ mensaje: 'Instrumento agregado exitosamente', instrumento: guardado });
