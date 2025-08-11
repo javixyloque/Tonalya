@@ -11,8 +11,8 @@ const  Home = () => {
         
         <Container>
             <Row>
-               <Col md={6}>
-                <h1>Bienvenido a la página de inicio</h1>
+               <Col sm={12} >
+                    <h1>Bienvenido a la página de inicio</h1>
                </Col>
             </Row>
             <Row>
@@ -20,11 +20,31 @@ const  Home = () => {
             </Row>
 
             <Row>
-                <Col>
-                    <Card style={{ width: '18rem', backgroundColor: '#94B4C1' }}>
+                <Col sm={12} md={6} lg={4} className='mb-3'>
+                    <Card style={{ backgroundColor: '#94B4C1' }}>
+                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2014/09/03/22/06/guitar-435094_1280.jpg" alt='Imagen Guitarra' className='img-thumbnail' style={{ width: '100%', height: "auto" }} />
+                        <Card.Body>
+                            <h5>Empieza a aprender con nosotros!</h5>
+                            <Button variant="secondary" href="/">REGISTRARSE</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}  className='mb-3'>
+                    <Card style={{backgroundColor: '#94B4C1' }}>
+                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2021/03/12/21/25/keys-6090560_1280.jpg" alt="Imagen Acordeón" className='img-thumbnail' style={{ width: '100%', height: "auto" }} />
                         <Card.Body>
                             <h5>Date a conocer como profesor</h5>
-                            <Button variant="secondary" href="/formprofesor">REGISTRARSE</Button>
+                            <Button style={{display: "inline-block"}} variant="secondary" href="/formprofesor" >EMPEZAR A DAR CLASE</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col sm={12} md={12} lg={4}  className='mb-3'>
+                    <Card style={{  backgroundColor: '#94B4C1' }}>
+                        <Card.Body>
+                            <h5>Date a conocer como profesor</h5>
+                            <Button variant="secondary" href="/formprofesor">EMPEZAR A DAR CLASE</Button>
                         </Card.Body>
                     </Card>
                 </Col>
