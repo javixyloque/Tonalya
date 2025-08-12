@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import {Button, Card, Container, Row, Col} from 'react-bootstrap'
 // import './Home.css';
-
+import TopBanner from './components/templates/TopBanner';
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
 const  Home = () => {
     return (
         <>
-        
+        <TopBanner/>
         <Container>
             <Row>
                <Col sm={12} >

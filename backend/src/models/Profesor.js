@@ -22,7 +22,7 @@ const profesorSchema = new mongoose.Schema({
     },
     imagen: {
         type: String,
-        required: false
+        required: false,
     },
     instrumentos: [
         {
@@ -38,7 +38,8 @@ const profesorSchema = new mongoose.Schema({
     ]
 
 });
-profesorSchema.plugin(mongooseBcrypt)
+
+profesorSchema.plugin(mongooseBcrypt);
 profesorSchema.methods.comprobarPassword = async function (password) {
     return await bcrypt.compare(this.password, password);
 };

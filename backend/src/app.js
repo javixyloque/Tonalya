@@ -129,10 +129,7 @@ async function main() {
         if (!req.body.nombre || !req.body.email || !req.body.password || !req.body.telefono) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
-        
-        
-
-        
+    
         const nuevoProfesor = new Profesor({
             nombre: req.body.nombre,
             email: req.body.email,

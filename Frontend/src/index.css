@@ -14,7 +14,7 @@ text-rendering: optimizeLegibility;
 }
 #root {
 
-background-color: #213448;
+background-color: #ECEFCA;
 }
 
 * {
@@ -31,5 +31,9 @@ ul {
     margin:auto;
 }
 
+.container {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+}
 
 
