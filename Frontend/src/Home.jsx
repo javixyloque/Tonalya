@@ -22,17 +22,19 @@ const  Home = () => {
             <Row>
                 <Col sm={12} md={6} lg={4} className='mb-3'>
                     <Card style={{ backgroundColor: '#94B4C1' }}>
-                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2014/09/03/22/06/guitar-435094_1280.jpg" alt='Imagen Guitarra' className='img-thumbnail' style={{ width: '100%', height: "auto" }} />
+                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2014/09/03/22/06/guitar-435094_1280.jpg" alt='Imagen Guitarra'  style={{ width: '100%', height: "auto" }} />
                         <Card.Body>
                             <h5>Empieza a aprender con nosotros!</h5>
-                            <Button variant="secondary" href="/">REGISTRARSE</Button>
+                            <div style={{display: "flex", justifyContent: "center"}}>
+                                <Button variant="outline-secondary" href="/">REGISTRARSE</Button>
+                            </div>
                         </Card.Body>
                     </Card>
                 </Col>
 
                 <Col sm={12} md={6} lg={4}  className='mb-3'>
                     <Card style={{backgroundColor: '#94B4C1' }}>
-                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2021/03/12/21/25/keys-6090560_1280.jpg" alt="Imagen Acordeón" className='img-thumbnail' style={{ width: '100%', height: "auto" }} />
+                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2021/03/12/21/25/keys-6090560_1280.jpg" alt="Imagen Acordeón"  style={{ width: '100%', height: "auto" }} />
                         <Card.Body>
                             <h5>Date a conocer como profesor</h5>
                             <Button style={{display: "inline-block"}} variant="secondary" href="/formprofesor" >EMPEZAR A DAR CLASE</Button>
