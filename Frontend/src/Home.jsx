@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 import {Button, Card, Container, Row, Col} from 'react-bootstrap'
 // import './Home.css';
-import TopBanner from './components/templates/TopBanner';
+import Header from './components/templates/Header';
+import Logo from"./resources/images/tonalya_logo.png";
+
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
 const  Home = () => {
     return (
         <>
-        <TopBanner/>
+        <Header/>
         <Container>
             <Row>
                <Col sm={12} >
@@ -17,6 +19,7 @@ const  Home = () => {
             </Row>
             <Row>
                 <p>Bienvenido al sitio web de Tonalya</p>
+                <img src={Logo} alt="Logo"></img>
             </Row>
 
             <Row>

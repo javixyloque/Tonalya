@@ -9,3 +9,6 @@ Currently, two official plugins are available:
 
 - [Bootstrap 5.3.7] (https://getbootstrap.com/docs/5.3/getting-started/download/)
 - [React 19.0] (https://react.dev/)
+
+
+   npm install @react-oauth/google
