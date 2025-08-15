@@ -20,6 +20,7 @@ background-color: #ECEFCA;
 margin: 0;
 padding: 0;
 }
+
 body {
 font-family: 'Ubuntu', sans-serif;
 background-color: #213448;
@@ -33,6 +34,12 @@ ul {
 .container {
     padding-top: 10vh;
     padding-bottom: 10vh;
+    background-color: #94B4C1;
 }
+
+.dropdown-toggle {
+    color:#ECEFCA
+}
+
 
 
