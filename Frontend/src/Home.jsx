@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
-import {Button, Card, Container, Row, Col} from 'react-bootstrap'
+import {Button, Card, Container, Row, Col, Carousel} from 'react-bootstrap'
 // import './Home.css';
 import Header from './components/templates/Header';
-import Logo from"./resources/images/tonalya_logo.png";
-
+// import Logo from"./resources/images/tonalya_logo.png";
+import InstrumentosCarrusel from "./resources/images/carrusel/instrumentos-carrusel.png";
+import ViolinCarrusel from "./resources/images/carrusel/violin-carrusel.jpg"
+import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
@@ -14,12 +16,40 @@ const  Home = () => {
         <Container>
             <Row>
                <Col sm={12} >
-                    <h1>Bienvenido a la página de inicio</h1>
+                    <h1>Bienvenido a TONALYA</h1>
                </Col>
             </Row>
+            
+
             <Row>
-                <p>Bienvenido al sitio web de Tonalya</p>
-                <img src={Logo} alt="Logo"></img>
+                <Col sm={12} md={2}></Col>
+                <Col sm={12} md={8}>
+                    {/* ZINDEX 0 PARA Q NO SE VEAN LAS FLECHAS POR ENCIMA DEL NAVBAR */}
+                    <Carousel data-bs-theme="primary" className="mb-5" style={{zIndex: 0 , backgroundColor: "#213448"}}>
+                        {/* IMAGEN CARRUSEL -> IMG. IMAGE NO FUNCIONA BIEN */}
+                        <Carousel.Item style={{}}>
+                            <img src={CasetteCarrusel} className="img-fluid w-100" alt="Logo" ></img>
+                            <Carousel.Caption>
+                                <h2>¡BIENVENIDO A TONALYA!</h2>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+
+                        <Carousel.Item>
+                            <img src={InstrumentosCarrusel} className="d-block w-100" style={{height: "95%"}} alt="Instrumentos" />
+                            <Carousel.Caption>
+                                <h3>Aprende con nosotros!</h3>
+                                <h4>Intentamos hacer de tu aprendizaje algo más fácil</h4>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+
+                        <Carousel.Item>
+                            <img src={ViolinCarrusel} className="d-block w-100" alt="casette" style={{height: "95%"}}/>
+                        </Carousel.Item>
+
+                    </Carousel>
+                </Col>
+                <Col sm={0} md={2}></Col>
+                
             </Row>
 
             <Row>
@@ -55,7 +85,6 @@ const  Home = () => {
                 </Col>
             </Row>
             
-            <Button variant="secondary" href="/formprofesor">AGREGAR PROFESOR</Button>
             <Link to="/iniciar-sesion" className="btn btn-primary"></Link>
             <Link to="/formprofesor" className="btn btn-primary">Formulario Clases</Link>
             <br />
