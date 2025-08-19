@@ -11,4 +11,10 @@ Currently, two official plugins are available:
 - [React 19.0] (https://react.dev/)
 
 
+   AUTENTIFICACION GOOGLE
    npm install @react-oauth/google
+
+
+
+   FOTOS SIN COPYRIGHT
+   https://pixabay.com/es/

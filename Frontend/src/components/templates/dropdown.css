@@ -1,0 +1,17 @@
+/* CustomDropdown.css */
+.custom-dropdown-toggle {
+  /* Elimina el color de fondo */
+  background-color: transparent !important;
+  /* Elimina el borde */
+  border: none !important;
+  /* Elimina la sombra */
+  box-shadow: none !important;
+  /* Elimina el padding */
+  padding: 0 !important;
+  /* Elimina el margen */
+  margin: 0 !important;
+  /* Elimina el color del texto */
+  color: inherit !important;
+  /* Ajusta el cursor */
+  cursor: pointer;
+}

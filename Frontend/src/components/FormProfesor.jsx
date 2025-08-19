@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { codificarImagen64 } from "../functions/codificar.js";
 import {Container, Row, Col, Button, Form} from "react-bootstrap"
 import "./formprofesor.css";
+import Header from "../components/templates/Header.jsx";
+
 const FormProfesor = () => {
     const navigate = new useNavigate();
     const [validated, setValidated] = useState(false);
@@ -69,17 +71,22 @@ const FormProfesor = () => {
 
             return (
                 <>
+                <Header/>
                 <Container style={{maxWidth: "80vw"}}>
                     <Row className="mb-5" >
                         <Col sm={12}>
-                            <h1>¿Quieres empezar a dar clases?</h1> 
+                            <h1 style={{textAlign: "center"}}>¿Quieres empezar a dar clases?</h1> 
                         </Col>
                         <Col sm={12}>
-                            <h1>Comencemos</h1>
+                            <h1 style={{textAlign: "center"}}>Comencemos</h1>
                         </Col>
                         
                     </Row>
                     <Row>
+                        <Col sm={0} md={4}></Col>
+
+
+                        <Col sm={12} md={4}>
                         <Form noValidate validated={validated} onSubmit={enviarFormulario} method="POST" encType="multipart/form-data">
                             
                             
@@ -93,7 +100,6 @@ const FormProfesor = () => {
                                     placeholder="Nombre"
                                     value={nombre}
                                     onChange={(e) => setNombre(e.target.value)}
-                                    // defaultValue="Mark"
                                 />
                             </Form.Group>
 
@@ -105,7 +111,6 @@ const FormProfesor = () => {
                                     placeholder="Correo electrónico"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    // defaultValue="Mark"
                                 />
                             </Form.Group>
 
@@ -168,6 +173,8 @@ const FormProfesor = () => {
                             
 
                         </Form>
+                        </Col>
+                        <Col sm={0} md={4}></Col>
                     </Row>
                 </Container>
 
