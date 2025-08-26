@@ -9,11 +9,15 @@ import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
+
+// MODAL PARA INICIAR SESION, PAGINA APARTE PARA REGISTRARSE
+
 const  Home = () => {
     return (
         <>
         <Header/>
         <Container>
+            
             <Row>
                <Col sm={12} >
                     <h1>Bienvenido a TONALYA</h1>
@@ -35,7 +39,7 @@ const  Home = () => {
                         </Carousel.Item>
 
                         <Carousel.Item>
-                            <img src={InstrumentosCarrusel} className="d-block w-100" style={{height: "95%"}} alt="Instrumentos" />
+                            <img src={InstrumentosCarrusel} className="d-block w-100" style={{height: "95%", padding: "2%"}} alt="Instrumentos" />
                             <Carousel.Caption>
                                 <h3>Aprende con nosotros!</h3>
                                 <h4>Intentamos hacer de tu aprendizaje algo más fácil</h4>

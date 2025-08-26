@@ -24,6 +24,10 @@ const profesorSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    provincia: {
+        type: String,
+        required: true
+    },
     instrumentos: [
         {
             type: mongoose.Schema.Types.ObjectId,

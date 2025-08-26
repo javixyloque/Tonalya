@@ -1,6 +1,6 @@
 "use strict";
 import Instrumento from "../models/Instrumento.js";
-import "./bdInstrumentos.js";
+import arrInstrumentos from "./bdInstrumentos.js"; 
 
 const insertarInstrumentos = async (req, res) => {
     try{

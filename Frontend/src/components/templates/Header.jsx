@@ -1,13 +1,13 @@
 import {Nav, Navbar, NavDropdown, Image, Dropdown, DropdownButton} from "react-bootstrap"
-import Logo from "../../resources/images/tonalya_logo.png";
+import Tipograma from "../../resources/images/tonalya_tipograma.png";
 import "./dropdown.css"
 const Header = () => {
 
     return (
         <div>
-            <Navbar bg="dark" variant="light" className="py-xs-5 py-md-0 px-3"  expand="lg" style={{backgroundColor: "#213448", position: "fixed", width: "100%", height: "60px", zIndex: 1 }}>
+            <Navbar  variant="light" className="py-xs-5 py-md-0 px-3"  expand="lg" style={{backgroundColor: "#ECEFCA", position: "fixed", width: "100%", height: "60px", zIndex: 1 }}>
             
-                <Navbar.Brand href="/" ><Image height={30} src={Logo} alt="Tonalya" rounded></Image></Navbar.Brand>
+                <Navbar.Brand href="/" ><Image height={30} src={Tipograma} alt="Tonalya" rounded></Image></Navbar.Brand>
                 <Navbar.Toggle aria-controls="navegacion" />
                 <Navbar.Collapse id="navegacion">
                     <Nav className="me-auto">

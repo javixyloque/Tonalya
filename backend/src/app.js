@@ -5,7 +5,7 @@
 // MONGOOSE => CONECTAR CON MONGODB Y OPERAR
 // MONGOOSE-BCRYPT => ENCRIPTAR CONTRASEÑAS
 // CORS => SOLICITUDES DESDE EL CLIENTE
-// MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA
+// MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (SUBIR ARCHIVOS)
 // UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
 
 import express from "express";
@@ -18,12 +18,27 @@ import Usuario from "./models/Usuario.js";
 import Admin from "./models/Admin.js";
 import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js";
+import multer from "multer";
 
 
 // PUERTO => EXPRESS
 const PORT = process.env.PORT || 5000;
-// ALMACENAMIENTO DE MULTER => PASARSELO COMO PARAMETRO A MULTER
 
+// CONFIGURACION DE MULTER
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // DIRECTORIO ARCHIVOS GUARDADOS
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    // NOMBRE ARCHIVO GUARDADO
+    const nombreArchivo = Date.now() + '_'+file.originalname;
+    cb(null, nombreArchivo)
+  }
+})
+
+// INSTAR MULTER
+const upload = multer({storage});
 
 
 
@@ -94,39 +109,21 @@ async function main() {
     // PROFESOR => GET
     // Obtener los profesores
     app.get('/profesor', async (req, res) => {
-    try{
-        const profesores =  await Profesor.find({});
-        res.json(profesores);
+        try{
+            const profesores =  await Profesor.find({});
+            res.json(profesores);
     } catch(error) {
             res.status(500).json({ error: 'Ocurrió un error' });
             
         }
     });
 
-    
-
-    // CREAR LOS INSTRUMENTOS A PARTIR DEL ARRAY DE INSTRUMENTOS
-    app.get('/instrumentos', async (req,res) => {
-        try{
-            const instrumentos = await Instrumento.find({});
-            if (!instrumentos) {
-                await Instrumento.insertMany(arrInstrumentos());
-            }
-            res.json(instrumentos);
-        } catch(error){
-            console.log("Error al obtener los instrumentos", error)
-            res.status(500).json({error: "Ocurrió un error"});
-        }
-    })
-    
-    
-    
     // PROFESOR => POST 
         // Crear un nuevo profesor
         // POST /profesor
-    app.post('/profesor',  async (req, res) => {
+        app.post('/profesor', upload.single('imagen'),  async (req, res) => {
         // Validar los datos
-        if (!req.body.nombre || !req.body.email || !req.body.password || !req.body.telefono) {
+        if (!req.body.nombre || !req.body.email || !req.body.password || !req.body.telefono || req.body.provincia) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
     
@@ -136,13 +133,14 @@ async function main() {
             password: req.body.password,
             telefono: req.body.telefono,
             imagen: req.body.imagen,
+            provincia: req.body.provincia,
             clases: []
             
         });
         try {
             const guardado = await nuevoProfesor.save();
             res.json({ mensaje: 'Usuario creado exitosamente', usuario: guardado });
-
+            
         } catch(error) {
             res.status(500).json({ mensaje: 'Error al crear el profesor', error: error.message });
         }
@@ -154,7 +152,7 @@ async function main() {
             const profesor = await Profesor.findById(req.params.id);
             if (!profesor) {
                 return res.status(404).json({ mensaje: 'Profesor no encontrado' });
-                }
+            }
             const instrumento = await Instrumento.findById(req.body.instrumento);
             if (!instrumento) {
                 return res.status(404).json({ mensaje: 'Instrumento no encontrado' });
@@ -168,7 +166,7 @@ async function main() {
             res.status(500).json({ mensaje: 'Error al agregar el instrumento' });
         }
     });
-
+    
     // BORRAR CUENTA
     app.delete('/profesor/:id', async (req, res) => {
         try {
@@ -181,6 +179,34 @@ async function main() {
             res.status(500).json({ mensaje: 'Error al eliminar el profesor' });
         }
     });
+    
+    // CREAR LOS INSTRUMENTOS A PARTIR DEL ARRAY DE INSTRUMENTOS
+    app.get('/instrumentos', async (req,res) => {
+        try{
+            const instrumentos = await Instrumento.find({});
+            if (!instrumentos) {
+                await Instrumento.insertMany(arrInstrumentos());
+            }
+            res.json(instrumentos);
+        } catch(error){
+            console.log("Error al obtener los instrumentos", error)
+            res.status(500).json({error: "Ocurrió un error"});
+        }
+    })
+
+    
+
+    app.delete('/instrumentos', async (req, res) => {
+        try {
+            await Instrumento.deleteMany({});
+            res.json("Completado")
+        } catch(error) {
+            res.status(500).json("Algo no ha salido bien borrando los instrumentos")
+        }
+    })
+    
+    
+
 
     // AGREGAR ALUMNO MAYOR DE EDAD
     app.post('/alumno', async (req, res) => {

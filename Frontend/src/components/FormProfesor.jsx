@@ -148,7 +148,7 @@ const FormProfesor = () => {
                                 />
                             </Form.Group>
 
-                            <Form.Group className="position-relative mb-3">
+                            <Form.Group className="mb-4">
                                 <Form.Label>Sube tu <strong>imagen de perfil</strong>, para que tus alumnos puedan reconocerte. <em>No te preocupes, podrás editarla o subirla más adelante</em></Form.Label>
                                 <Form.Control
                                 type="file"
@@ -159,6 +159,10 @@ const FormProfesor = () => {
                                 <Form.Control.Feedback type="invalid" tooltip>
                                 Así no está bien colega, pon una foto valida
                                 </Form.Control.Feedback>
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Por último, dinos tu <strong>provincia</strong>, para encontrar alumnos cerca de ti</Form.Label>
                             </Form.Group>
 
                             

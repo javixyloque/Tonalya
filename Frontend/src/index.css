@@ -13,7 +13,7 @@ text-rendering: optimizeLegibility;
 -moz-osx-font-smoothing: grayscale;
 }
 #root {
-background: radial-gradient( #94B4C1, #ECEFCA);
+background: radial-gradient( #ECEFCA, #94B4C1);
 }
 
 * {
@@ -32,8 +32,8 @@ ul {
 }
 
 .container {
-    padding-top: 10vh;
-    padding-bottom: 10vh;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
     background-color: #94B4C1;
 }
 
