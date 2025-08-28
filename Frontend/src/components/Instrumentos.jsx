@@ -37,7 +37,7 @@ const Instrumentos = () => {
                 <div key={instrumento._id}>
                     <h1>{instrumento.nombre}</h1>
                     <p>Familia: {instrumento.familia}</p>
-
+                    <img src={instrumento.imagen} alt={instrumento.nombre} />
                 </div>
             ))}
         </div>

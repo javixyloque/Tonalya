@@ -27,6 +27,10 @@ const usuarioSchema = new mongoose.Schema({
         default: 'ADULTO'
     }
     ,
+    provincia: {
+        type: String,
+        required: false,  
+    },
     instrumentos: [
         {
             type: mongoose.Schema.Types.ObjectId,
