@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import {Button, Card, Container, Row, Col, Carousel} from 'react-bootstrap'
+import {Button, Card, Container, Row, Col, Carousel, Modal} from 'react-bootstrap'
 // import './Home.css';
 import Header from './components/templates/Header';
 // import Logo from"./resources/images/tonalya_logo.png";
 import InstrumentosCarrusel from "./resources/images/carrusel/instrumentos-carrusel.png";
 import ViolinCarrusel from "./resources/images/carrusel/violin-carrusel.jpg"
 import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
+import { useState } from 'react';
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
@@ -13,20 +14,27 @@ import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
 // MODAL PARA INICIAR SESION, PAGINA APARTE PARA REGISTRARSE
 
 const  Home = () => {
+    const [mostrar, setMostrar] = useState(false);
+
+    const mostrarModal = () => setMostrar(true);
+    const ocultarModal = () => setMostrar(false);
+
+    
+
     return (
         <>
         <Header/>
         <Container>
             
             <Row>
-               <Col sm={12} >
+               <Col sm={12} className='mb-5 text-center' style={{color: "#213448", fontSize: "4em"}}>
                     <h1>Bienvenido a TONALYA</h1>
                </Col>
             </Row>
             
 
             <Row>
-                <Col sm={12} md={2}></Col>
+                <Col sm={0} md={2}></Col>
                 <Col sm={12} md={8}>
                     {/* ZINDEX 0 PARA Q NO SE VEAN LAS FLECHAS POR ENCIMA DEL NAVBAR */}
                     <Carousel data-bs-theme="primary" className="mb-5" style={{zIndex: 0 , backgroundColor: "#213448"}}>
@@ -52,8 +60,19 @@ const  Home = () => {
 
                     </Carousel>
                 </Col>
-                <Col sm={0} md={2}></Col>
+                <Col sm={0} md={2} className="mb-5"></Col>
                 
+            </Row>
+
+            <Row>
+                <Col sm={0} md={2}></Col>
+                <Col sm={12} md={8}>
+                    <h5 className='mb-5' style={{color: "#213448"}}>
+                        Tonalya es una plataforma online que te ayuda a contactar con profesores para aprender música en cualquiera de 
+                        sus variedades, cualquier instrumento o incluso lenguaje musical, armonía, análisis... <br /> <br /> 
+                        Simplemente regístrate, busca un profesor cerca de ti y, lo más importante ¡disfruta aprendiendo!  </h5>
+                </Col>      
+                <Col sm={0} md={2}></Col>
             </Row>
 
             <Row>
@@ -89,12 +108,15 @@ const  Home = () => {
                 </Col>
             </Row>
             
-            <Link to="/iniciar-sesion" className="btn btn-primary"></Link>
-            <Link to="/formprofesor" className="btn btn-primary">Formulario Clases</Link>
-            <br />
+           
             <Link to="/profesores" className="btn btn-secondary">Profesores</Link>
             <br />
-            <Link to="/iniciar-sesion" className="btn btn-primary">Iniciar Sesión</Link>
+            <Button className='btn btn-primary' onClick={mostrarModal}> Iniciar Sesión</Button>
+            <Modal show={mostrar} onHide={ocultarModal} style={{}}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Iniciar sesión</Modal.Title>
+                </Modal.Header>
+            </Modal>
         </Container>
         </>
     );
