@@ -6,7 +6,7 @@ import Home from './Home.jsx';
 import Profesores from './components/Profesores.jsx';
 import Instrumentos from './components/Instrumentos.jsx';
 import InstrumentosProfesor from './components/InstrumentosProfesor.jsx';
-import IniciarSesion from './components/IniciarSesion.jsx';
+import Registrarse from './components/templates/Registrarse.jsx';
 
 
 /**
@@ -19,7 +19,7 @@ const App = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/iniciar-sesion" element={<IniciarSesion/>}></Route>
+                <Route path="/registrarse" element={<Registrarse/>}></Route>
                 <Route path="/formprofesor" element={<FormProfesor />} />
                 <Route path="/profesores" element={<Profesores />} /> 
                 <Route path="/instrumentos" element={<Instrumentos />} />

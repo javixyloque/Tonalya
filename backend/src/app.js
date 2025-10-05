@@ -19,6 +19,7 @@ import Admin from "./models/Admin.js";
 import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js";
 import multer from "multer";
+import bcrypt from "bcrypt"
 
 
 // PUERTO => EXPRESS
@@ -89,14 +90,18 @@ async function main() {
     // INICIO SESION PROFESOR
     app.post ('/profesor/:email', async (req, res) => {
         try {
-            const password = req.params.password;
-            const profesor = await Profesor.findOne({ "email": email });
+            const email = req.params.email;
+            const profesor = await Profesor.findOne({ "email" : email });
             if (!profesor) {
                 return -1;
             }
+
+            // COMPROBAR QUE CONTRASEÑA COINCIDE
+            const coincidePassword = await bcrypt.compare(req.params.password, profesor.password);
+
             // FUNCION PARA COMPARAR CONTRASEÑA (NECESARIO POR HASHING)
-            if (Profesor.comprobarPassword(password)) {
-                return 1;
+            if (coincidePassword) {
+               return profesor;
             } else {
                 return 0;
             }
@@ -123,27 +128,30 @@ async function main() {
         // POST /profesor
         app.post('/profesor', upload.single('imagen'),  async (req, res) => {
         // Validar los datos
-        if (!req.body.nombre || !req.body.email || !req.body.password || !req.body.telefono || req.body.provincia) {
-            return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
-        }
+        // if (!req.body.nombre || !req.body.email || !req.body.password || !req.body.telefono || req.body.provincia) {
+        //     return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+        // }
     
-        const nuevoProfesor = new Profesor({
-            nombre: req.body.nombre,
-            email: req.body.email,
-            password: req.body.password,
-            telefono: req.body.telefono,
-            imagen: req.body.imagen,
-            provincia: req.body.provincia,
-            clases: []
-            
-        });
         try {
-            const guardado = await nuevoProfesor.save();
-            res.json({ mensaje: 'Usuario creado exitosamente', usuario: guardado });
-            
-        } catch(error) {
-            res.status(500).json({ mensaje: 'Error al crear el profesor', error: error.message });
+        const email = req.params.email;
+        const profesor = await Profesor.findOne({ "email" : email });
+        if (!profesor) {
+            return -1;
         }
+        
+        // Comprobar que la contraseña coincide
+        const coincidePassword = await bcrypt.compare(req.body.password, profesor.password);
+        
+        // Función para comparar contraseña (necesario por hashing)
+        if (coincidePassword) {
+           return profesor;
+        } else {
+            return 0;
+        }
+    } catch (ex) {
+        console.error("Error: ", ex);
+        return 0;
+    }
         
     })
     // ANADIR INSTRUMENTO/S PROFESOR

@@ -13,8 +13,10 @@ const IniciarSesion = () => {
     const ocultarModal = () => setMostrar(false);
 
     const comprobarLogin = async (event) => {
-        const email = event.target.email.value;
-        const contrasenya = event.target.contrasenya.value;
+        event.preventDefault();
+
+        
+        
         try {
             let respuesta = await fetch (`http://localhost:5000/profesor/${email}`, {
                 method: 'POST', 
@@ -34,13 +36,13 @@ const IniciarSesion = () => {
                 navigate()
             }
         } catch (Exception) {
-            console.error(Exception.getMessage());
+            console.error(Exception);
         }
     }
     return (
         <>
 
-        <Button className='btn btn-primary' onClick={mostrarModal}> Iniciar Sesión</Button>
+        <Button className='btn-success' onClick={mostrarModal}> Iniciar Sesión</Button>
         <Modal centered show={mostrar} onHide={ocultarModal} >
                 <Modal.Header closeButton>
                     <Modal.Title>Iniciar sesión</Modal.Title>
@@ -52,7 +54,6 @@ const IniciarSesion = () => {
                             <Form.Control  
                                 type="email"
                                 placeholder="ejemplo@ejemplo.es"
-                                name
                                 required
                                 autoFocus
                                 value={email}

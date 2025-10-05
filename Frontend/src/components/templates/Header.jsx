@@ -1,13 +1,14 @@
-import {Nav, Navbar, NavDropdown, Image, Dropdown, DropdownButton} from "react-bootstrap"
+import {Nav, Navbar, NavDropdown, Image} from "react-bootstrap"
 import Tipograma from "../../resources/images/tonalya_tipograma.png";
 import "./dropdown.css"
 import IniciarSesion from "./IniciarSesion.jsx"
+import { Link } from "react-router-dom";
 const Header = () => {
 
     return (
-        <div>
+        <>
             {/* style={{backgroundColor: "#ECEFCA", position: "fixed", width: "100%", height: "60px", zIndex: 1 }} */}
-            <Navbar  variant="primary" className="py-xs-5 py-md-0 px-3 fixed-top bg-body-secondary"  expand="lg" style={{zIndex: 1}} >
+            <Navbar  variant="secondary" className="py-xs-5 py-md-0 px-3 fixed-top bg-body-secondary"  expand="lg" style={{zIndex: 1}} >
             
                 <Navbar.Brand href="/" ><Image height={30} src={Tipograma} alt="Tonalya" rounded></Image></Navbar.Brand>
                 <Navbar.Toggle aria-controls="navegacion" />
@@ -26,16 +27,16 @@ const Header = () => {
                                 Separated link
                             </NavDropdown.Item >
                         </NavDropdown>
-                        <IniciarSesion/>
-                        <DropdownButton className="custom-dropdown-toggle" title="Utilidades">
-                            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                        </DropdownButton>
+
+                        <div id="user-ops" className="mx-2 flex-end position-absolute  end-0" >
+                            <IniciarSesion/>
+                            <Link className="btn btn-info mx-2" to="/registrarse">Registrarse</Link>
+                        </div>
+                        
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        </div>
+        </>
     );
 }
 

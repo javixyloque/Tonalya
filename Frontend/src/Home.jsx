@@ -15,22 +15,23 @@ import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
 
 const  Home = () => {
     
+    
 
     return (
         <>
         <Header/>
-        <Container>
+        <Container style={{minHeight: "100vh"}}>
             
             <Row>
-               <Col sm={12} className='mb-5 text-center' style={{color: "#213448", fontSize: "4em"}}>
+               <Col xs={12} className='mb-5 text-center' style={{color: "#213448", fontSize: "4em"}}>
                     <h1>Bienvenido a TONALYA</h1>
                </Col>
             </Row>
             
 
             <Row>
-                <Col sm={0} lg={2}></Col>
-                <Col sm={12} lg={8}>
+                <Col xs={0} lg={2}></Col>
+                <Col xs={12} lg={8}>
                     {/* ZINDEX 0 PARA Q NO SE VEAN LAS FLECHAS POR ENCIMA DEL NAVBAR */}
                     <Carousel data-bs-theme="primary" className="mb-5" style={{zIndex: 0 , backgroundColor: "#213448"}}>
                         {/* IMAGEN CARRUSEL -> IMG. IMAGE NO FUNCIONA BIEN */}
@@ -55,23 +56,23 @@ const  Home = () => {
 
                     </Carousel>
                 </Col>
-                <Col sm={0} lg={2} className="mb-5"></Col>
+                <Col xs={0} lg={2} className="mb-5"></Col>
                 
             </Row>
 
             <Row>
-                <Col sm={0} lg={2}></Col>
-                <Col sm={12} lg={8}>
+                <Col xs={0} lg={2}></Col>
+                <Col xs={12} lg={8}>
                     <h5 className='mb-5' style={{color: "#213448"}}>
                         Tonalya es una plataforma online que te ayuda a contactar con profesores para aprender música en cualquiera de 
                         sus variedades, cualquier instrumento o incluso lenguaje musical, armonía, análisis... <br /> <br /> 
                         Simplemente regístrate, busca un profesor cerca de ti y, lo más importante ¡disfruta aprendiendo!  </h5>
                 </Col>      
-                <Col sm={0} lg={2}></Col>
+                <Col xs={0} lg={2}></Col>
             </Row>
 
             <Row>
-                <Col sm={12} lg={6} xl={4} className='mb-3'>
+                <Col xs={12} lg={6} xl={4} className='mb-3'>
                     <Card style={{ backgroundColor: '#94B4C1' }}>
                         <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2014/09/03/22/06/guitar-435094_1280.jpg" alt='Imagen Guitarra'  style={{ width: '100%', height: "auto" }} />
                         <Card.Body>
@@ -83,7 +84,7 @@ const  Home = () => {
                     </Card>
                 </Col>
 
-                <Col sm={12} lg={6} xl={4}  className='mb-3'>
+                <Col xs={12} lg={6} xl={4}  className='mb-3'>
                     <Card style={{backgroundColor: '#94B4C1' }}>
                         <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2021/03/12/21/25/keys-6090560_1280.jpg" alt="Imagen Acordeón"  style={{ width: '100%', height: "auto" }} />
                         <Card.Body>
@@ -93,7 +94,7 @@ const  Home = () => {
                     </Card>
                 </Col>
 
-                <Col sm={12} lg={12} xl={4}  className='mb-3'>
+                <Col xs={12} lg={12} xl={4}  className='mb-3'>
                     <Card style={{  backgroundColor: '#94B4C1' }}>
                         <Card.Body>
                             <h5>Date a conocer como profesor</h5>

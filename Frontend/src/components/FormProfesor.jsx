@@ -6,6 +6,8 @@ import { codificarImagen64 } from "../functions/codificar.js";
 import {Container, Row, Col, Button, Form} from "react-bootstrap"
 import "./formprofesor.css";
 import Header from "../components/templates/Header.jsx";
+import { arrayProvincias, arrayInstrumentos} from "../functions/variables.js";
+
 
 const FormProfesor = () => {
     const navigate = new useNavigate();
@@ -15,7 +17,12 @@ const FormProfesor = () => {
     const [telefono, setTelefono] = useState('');
     const [contrasenya, setContrasenya] = useState('');
     const [imagen, setImagen]  = useState('');
-        
+    const [provincia, setProvincia] = useState('');
+    const [instrumentoP, setInstrumentoP] = useState('');
+
+
+    const provincias = arrayProvincias();
+    const instrumentos = arrayInstrumentos();
         const enviarFormulario = async (event) => {
             const formulario =  event.currentTarget;
             event.preventDefault();
@@ -40,7 +47,9 @@ const FormProfesor = () => {
                 email: email,
                 telefono: telefono,
                 password: contrasenya,
-                imagen: imagenCodificada 
+                imagen: imagenCodificada,
+                provincia: provincia,
+                instrumentos : instrumentoP
             })
             
 
@@ -74,19 +83,19 @@ const FormProfesor = () => {
                 <Header/>
                 <Container style={{maxWidth: "80vw"}}>
                     <Row className="mb-5" >
-                        <Col sm={12}>
+                        <Col xs={12}>
                             <h1 style={{textAlign: "center"}}>¿Quieres empezar a dar clases?</h1> 
                         </Col>
-                        <Col sm={12}>
+                        <Col xs={12}>
                             <h1 style={{textAlign: "center"}}>Comencemos</h1>
                         </Col>
                         
                     </Row>
                     <Row>
-                        <Col sm={0} md={4}></Col>
+                        <Col xs={0} md={4}></Col>
 
 
-                        <Col sm={12} md={4}>
+                        <Col xs={12} md={4}>
                         <Form noValidate validated={validated} onSubmit={enviarFormulario} method="POST" encType="multipart/form-data">
                             
                             
@@ -136,19 +145,9 @@ const FormProfesor = () => {
                                     // defaultValue="Mark"
                                 />
                             </Form.Group>
-                            <Form.Group as={Col} md={12} className="mb-4" >
-                                <Form.Label>Crea tu <strong>contraseña</strong>, para que no te olvides de tu cuenta <em>(no te preocupes, está a salvo con nosotros)</em></Form.Label>
-                                <Form.Control
-                                    required
-                                    type="password"
-                                    placeholder="******"
-                                    value={contrasenya}
-                                    onChange={(e) => setContrasenya(e.target.value)}
-                                    // defaultValue="Mark"
-                                />
-                            </Form.Group>
+                            
 
-                            <Form.Group className="mb-4">
+                            <Form.Group className="mb-5">
                                 <Form.Label>Sube tu <strong>imagen de perfil</strong>, para que tus alumnos puedan reconocerte. <em>No te preocupes, podrás editarla o subirla más adelante</em></Form.Label>
                                 <Form.Control
                                 type="file"
@@ -163,6 +162,30 @@ const FormProfesor = () => {
 
                             <Form.Group>
                                 <Form.Label>Por último, dinos tu <strong>provincia</strong>, para encontrar alumnos cerca de ti</Form.Label>
+                                <Form.Select onChange={(e) => setProvincia(e.target.value)} aria-label="provincias">
+                                    <option>Selecciona tu provincia </option>
+                                    {provincias.map( (provincia, index)=> {
+                                        return (
+                                            <option key={index} value={provincia}>{provincia}</option>
+                                        );
+                                    })}
+                                    
+                                </Form.Select>
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Por último, dinos tu <strong>provincia</strong>, para encontrar alumnos cerca de ti</Form.Label>
+                                <Form.Select onChange={(e) => setInstrumentoP(e.target.value)} aria-label="provincias">
+                                    <option>Selecciona tu provincia </option>
+                                    {instrumentos.map((familia, index) => {
+                                        <optgroup label={familia} key={index}></optgroup>
+                                        familia.map((instrumento, index) => {
+                                            <option key={index} value={instrumento}>instrumento</option>
+                                        })
+                                    })}
+                                    
+                                    
+                                </Form.Select>
                             </Form.Group>
 
                             
@@ -171,14 +194,14 @@ const FormProfesor = () => {
                             <label htmlFor="imagen" className='mb-2'></label>
                             
                             
-                            <Col sm={12} style={{display: "flex", justifyContent: "center"}}>
+                            <Col xs={12} style={{display: "flex", justifyContent: "center"}}>
                                 <Button variant="outline-dark" type="submit">REGISTRARSE</Button>
                             </Col>
                             
 
                         </Form>
                         </Col>
-                        <Col sm={0} md={4}></Col>
+                        <Col xs={0} md={4}></Col>
                     </Row>
                 </Container>
 
