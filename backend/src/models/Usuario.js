@@ -21,15 +21,13 @@ const usuarioSchema = new mongoose.Schema({
         required: true,
         bcrypt: true
     },
-    tipo: {
-        type: String,
-        enum: ['ALUMNO','PADRE', 'ADULTO'],
-        default: 'ADULTO'
-    }
-    ,
     provincia: {
         type: String,
         required: false,  
+    },
+    activo: {
+        type: Boolean,
+        default: true
     },
     instrumentos: [
         {

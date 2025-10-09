@@ -48,7 +48,21 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-async function main() { 
+
+// FUNCION PARA INSERTAR INSTRUMENTOS
+const instrumentos = async () => {
+    try {
+        const instrumentoDB = await Instrumento.find({})
+        if (instrumentoDB.length === 0) {
+            await Instrumento.insertMany(arrInstrumentos())
+        }
+    } catch (error) {
+        res.status(500).json({mensaje: 'Error al obtener los instrumentos', error: error.message});
+    }
+    
+}
+
+const main  = async () => { 
     //CORS => SOLICITUDES DESDE EL CLIENTE, LIMITAMOS LAS OPCIONES A LO QUE VAMOS A UTILIZAR
     
     app.use(cors( {
@@ -65,6 +79,13 @@ async function main() {
     }).catch(err => {
         console.error('Error de conexión', err);
     });
+
+    try {
+        instrumentos();
+        // Resto del código...
+    } catch (error) {
+        console.error('Error al insertar instrumentos', error);
+    }
 
 
 
@@ -88,7 +109,7 @@ async function main() {
                 telefono: req.body.telefono,
                 password: req.body.password,
                 imagen: req.body.imagen,
-                tipo: 'ALUMNO'
+                activo: true
             });
             await usuario.save();
             res.json({ mensaje: 'Usuario creado exitosamente' });
@@ -123,8 +144,8 @@ async function main() {
         }
     });
 
-    // BORRAR USUARIO
-    app.delete('/usuario/:id', async (req, res) => {
+    // BORRAR USUARIO (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
+    app.put('/usuario/:id', async (req, res) => {
         try {
             await Usuario.findByIdAndDelete(req.params.id);
             res.json({ mensaje: 'Usuario eliminado exitosamente' });
@@ -181,26 +202,7 @@ async function main() {
     
     // CRUD PROFESOR
 
-    // INICIO SESION PROFESOR
-    app.post('/profesor/login', async (req, res) => {
-        try {
-            const email = req.body.email;
-            const password = req.body.password;
-            
-            // Buscar el profesor con el correo electrónico y contraseña
-            const profesor = await Profesor.findOne({ "email": email });
-            if (!profesor || !bcrypt.compareSync(password, profesor.password)) {
-                return res.status(401).json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
-            }
-            
-            // Almacenar el ID del usuario en sesión
-            res.json({ mensaje: 'Iniciaste sesión exitosamente', usuario: profesor.nombre, id: profesor.id });
-            sessionStorage.setItem('usuarioId', profesor._id);
-            
-        } catch (error) {
-            res.status(500).json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
-        }
-    });
+    
     // AÑADIR PROFESOR
     app.post('/profesor', async (req, res) => {
         try {
@@ -210,7 +212,8 @@ async function main() {
                 telefono: req.body.telefono,
                 password: req.body.password,
                 imagen: req.body.imagen,
-                provincia: req.body.provincia
+                provincia: req.body.provincia,
+                activo: true
             });
             await profesor.save();
             res.json({ mensaje: 'Profesor creado exitosamente' });
@@ -258,7 +261,7 @@ async function main() {
         }
     });
 
-    // BORRAR DATOS PROFESOR
+    // BORRAR DATOS PROFESOR (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
     app.delete('/profesor/:id', async (req, res) => {
         try {
             await Profesor.findByIdAndDelete(req.params.id);
@@ -314,6 +317,27 @@ async function main() {
         }
     });
 
+    // INICIO SESION PROFESOR
+    app.post('/profesor/login', async (req, res) => {
+        try {
+            const email = req.body.email;
+            const password = req.body.password;
+            
+            // Buscar el profesor con el correo electrónico y contraseña
+            const profesor = await Profesor.findOne({ "email": email });
+            if (!profesor || !bcrypt.compareSync(password, profesor.password)) {
+                return res.status(401).json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+            }
+            
+            // Almacenar el ID del usuario en sesión
+            res.json({ mensaje: 'Iniciaste sesión exitosamente', usuario: profesor.nombre, id: profesor.id });
+            sessionStorage.setItem('usuarioId', profesor._id);
+            
+        } catch (error) {
+            res.status(500).json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
+        }
+    });
+
 
     // CRUD CLASE
 
@@ -362,10 +386,10 @@ async function main() {
         }
     });
 
-    // BORRAR CLASE
+    // BORRAR CLASE (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
     app.delete('/clase/:id', async (req, res) => {
         try {
-            await Clase.findByIdAndDelete(req.params.id);
+            await Clase.findByIdAndUpdate(req.params.id);
             res.json({ mensaje: 'Clase eliminada exitosamente' });
         } catch (error) {
             res.status(500).json({ mensaje: 'Error al eliminar la clase', error: error.message });
@@ -379,7 +403,7 @@ async function main() {
         try{
             const instrumentos = await Instrumento.find({});
             if (!instrumentos) {
-                await Instrumento.insertMany(arrInstrumentos());
+                await Instrumento.insertMany(arrInstrumentos);
             }
             res.json(instrumentos);
         } catch(error){
@@ -451,6 +475,8 @@ async function main() {
     } else {
         console.log('Admin user already exists, no need to create one');
     }
+
+    
     
     
     

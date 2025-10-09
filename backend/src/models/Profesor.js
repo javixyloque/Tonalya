@@ -28,6 +28,10 @@ const profesorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    activo: {
+        type: Boolean,
+        default: true
+    },
     instrumentos: [
         {
            type: String,
