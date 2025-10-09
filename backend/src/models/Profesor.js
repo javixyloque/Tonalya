@@ -34,7 +34,8 @@ const profesorSchema = new mongoose.Schema({
     },
     instrumentos: [
         {
-           type: String,
+           type: mongoose.Schema.Types.ObjectId,
+           ref: 'Instrumento'
         }
     ],
     clases: [
@@ -47,9 +48,7 @@ const profesorSchema = new mongoose.Schema({
 });
 
 profesorSchema.plugin(mongooseBcrypt);
-// profesorSchema.methods.comprobarPassword = async function (password) {
-//     return await bcrypt.compare(this.password, password);
-// };
+
 
 const Profesor = mongoose.model('Profesor', profesorSchema);
 

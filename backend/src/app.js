@@ -8,6 +8,16 @@
 // MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (SUBIR ARCHIVOS)
 // UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
 
+/*
+--------------------------------------------------------------------------------------------------------------------------------------
+
+FUNCIONAN TODAS LAS PETICIONES DE USUARIO MENOS LAS CLASES
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+*/
+
 import express from "express";
 import 'dotenv/config';
 import mongoose from "mongoose";
@@ -57,7 +67,7 @@ const instrumentos = async () => {
             await Instrumento.insertMany(arrInstrumentos())
         }
     } catch (error) {
-        res.status(500).json({mensaje: 'Error al obtener los instrumentos', error: error.message});
+        res.json({mensaje: 'Error al obtener los instrumentos', error: error.message});
     }
     
 }
@@ -100,7 +110,17 @@ const main  = async () => {
 
     // CRUD USUARIO
 
+    app.get('/usuario', async (req,res) => {
+        try {
+            const usuarios = await Usuario.find({activo: true})
+            res.json(usuarios);
+        } catch (error) {
+            res.json({mensaje: 'Error al obtener los usuarios', error: error.message});
+        }
+    })
+
     // CREAR USUARIO
+    
     app.post('/usuario', async (req, res) => {
         try {
             const usuario = new Usuario({
@@ -114,58 +134,59 @@ const main  = async () => {
             await usuario.save();
             res.json({ mensaje: 'Usuario creado exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al crear el usuario', error: error.message });
+            res.json({ mensaje: 'Error al crear el usuario', error: error.message });
         }
     });
 
     // OBTENER DATOS USUARIO
     app.get('/usuario/:id', async (req, res) => {
         try {
-            const usuario = await Usuario.findById(req.params.id);
+            const usuario = await Usuario.find({_id: req.params.id, activo: true});
             if (!usuario) {
-                return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+                return res.json({ mensaje: 'Usuario no encontrado' });
             }
             res.json(usuario);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al obtener el usuario', error: error.message });
+            res.json({ mensaje: 'Error al obtener el usuario', error: error.message });
         }
     });
 
-    // MODIFICAR USUARIO
+    // MODIFICAR USUARIO (TAMBIEN BORRADO LÓGICO)
     app.put('/usuario/:id', async (req, res) => {
         try {
-            const usuario = await Usuario.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            if (!usuario) {
-                return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+            
+            const usuario = await Usuario.findAndUpdate(req.params.id, req.body, { new: true });
+            if (!usuario || !usuario.activo) {
+                return res.json({ mensaje: 'Usuario no encontrado' });
             }
             res.json(usuario);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al actualizar el usuario', error: error.message });
+            res.json({ mensaje: 'Error al actualizar el usuario', error: error.message });
         }
     });
 
-    // BORRAR USUARIO (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
-    app.put('/usuario/:id', async (req, res) => {
+    // BORRAR USUARIO (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE (ADMIN))
+    app.delete('/usuario/:id', async (req, res) => {
         try {
-            await Usuario.findByIdAndDelete(req.params.id);
+            await Usuario.findAndDelete(req.params.id);
             res.json({ mensaje: 'Usuario eliminado exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al eliminar el usuario', error: error.message });
+            res.json({ mensaje: 'Error al eliminar el usuario', error: error.message });
         }
     });
 
     // AÑADIR CLASE A UN ALUMNO
-    app.put('/alumno/:id/clase', async (req, res) => {
+    app.put('/usuario/:id/clase', async (req, res) => {
         try {
-            const alumno = await Usuario.findById(req.params.id);
-            if (!alumno || alumno.tipo !== 'ALUMNO') {
-                return res.status(404).json({ mensaje: 'Alumno no encontrado o no es un alumno' });
+            const alumno = await Usuario.find({_id: req.params.id, activo: true});
+            if (!alumno) {
+                return res.json({ mensaje: 'Alumno no encontrado o no es un alumno' });
             }
             
             
             const clase = await Clase.findById(req.body.claseId);
             if (!clase) {
-                return res.status(404).json({ mensaje: 'Clase no encontrada' });
+                return res.json({ mensaje: 'Clase no encontrada' });
             }
             
             
@@ -174,31 +195,94 @@ const main  = async () => {
             
             res.json({ mensaje: 'Clase agregada exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al agregar la clase', error: error.message });
+            res.json({ mensaje: 'Error al agregar la clase', error: error.message });
         }
     });
-    
-    // INICIO SESIÓN ALUMNO
 
-    app.post('/alumno/login', async (req, res) => {
+    // ELIMINAR CLASE USUARIO
+
+    app.put('/usuario/:id/clase/:claseId', async (req, res) => {
+        try {
+            const alumno = await Usuario.find({_id: req.params.id, activo: true});
+            if (!alumno) {
+                return res.json({ mensaje: 'Alumno no encontrado o no es un alumno' });
+            }
+            
+            const clase = await Clase.findById(req.params.claseId);
+            if (!clase) {
+                return res.json({ mensaje: 'Clase no encontrada' });
+            }
+            
+            alumno.clases.pull(clase._id);
+            await alumno.save();
+            res.json({ mensaje: 'Clase eliminada exitosamente' });
+        } catch (error) {
+            res.json({ mensaje: 'Error al eliminar la clase', error: error.message });
+        }
+    });
+
+    // AÑADIR INSTRUMENTOS USUARIO
+
+    app.put('/usuario/:id/instrumento', async (req, res) => {
+        try {
+            const usuario = await Usuario.find({_id: req.params.id, activo: true});
+            if (!usuario) {
+                return res.json({ mensaje: 'usuario no encontrado' });
+            }
+            
+            const idInstrumento = req.body.instrumento;
+            const existeInstrumento = usuario.instrumentos.includes(idInstrumento);
+            
+            if (existeInstrumento) {
+                return res.json({ mensaje: 'El instrumento ya está agregado' });
+            }
+            
+            usuario.instrumentos.push(idInstrumento);
+            await usuario.save();
+            
+            res.json({ mensaje: 'Instrumento agregado exitosamente', usuario: usuario });
+        } catch (error) {
+            res.json({ mensaje: 'Error al agregar el instrumento', error: error.message });
+        }
+    });
+
+    // ELIMINAR INSTRUMENTO USUARIO
+    app.delete('/usuario/:id/instrumento/:idInstrumento', async (req, res) => {
+        try {
+            const usuario = await Usuario.find(req.params.id);
+            if (!usuario) {
+                res.json({ mensaje: 'Usuario no encontrado' });
+            }
+            const idInstrumento = req.params.idInstrumento;
+            usuario.instrumentos.pull(idInstrumento);
+            await usuario.save();
+            res.json({ mensaje: 'Instrumento eliminado exitosamente', usuario: usuario });
+        } catch(error) {
+            res.json({mensaje: 'Error al eliminar instrumentos', error: error.message})
+        }
+    })
+    
+    // INICIO SESIÓN USUARIO
+
+    app.post('/usuario/login', async (req, res) => {
         try {
             const email = req.body.email;
             const password = req.body.password;
             
-            // Buscar el alumno con el correo electrónico y contraseña
             const usuario = await Usuario.findOne({ "email": email });
             if (!usuario || !bcrypt.compareSync(password, usuario.password)) {
-                return res.status(401).json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+                return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
             }
             
-            // Almacenar el ID del usuario en sesión
-            sessionStorage.setItem('usuarioId', usuario._id);
+            // SESIONES HAY QUE HACERLAS EN FRONT
+            // sessionStorage.setItem('usuarioId', usuario._id);
             
             res.json({ mensaje: 'Iniciaste sesión exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
+            res.json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
         }
     });
+
     
     // CRUD PROFESOR
 
@@ -218,7 +302,7 @@ const main  = async () => {
             await profesor.save();
             res.json({ mensaje: 'Profesor creado exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al crear el profesor', error: error.message });
+            res.json({ mensaje: 'Error al crear el profesor', error: error.message });
         }
     });
 
@@ -227,11 +311,11 @@ const main  = async () => {
         try {
             const profesor = await Profesor.findById(req.params.id);
             if (!profesor) {
-                return res.status(404).json({ mensaje: 'Profesor no encontrado' });
+                return res.json({ mensaje: 'Profesor no encontrado' });
             }
             res.json(profesor);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al obtener el profesor', error: error.message });
+            res.json({ mensaje: 'Error al obtener el profesor', error: error.message });
         }
     });
 
@@ -244,7 +328,7 @@ const main  = async () => {
                 res.json(profesores);
             }
         } catch (error) {
-            res.status(500).json({mensaje: "Error al obtener los profesores", error: error.message})
+            res.json({mensaje: "Error al obtener los profesores", error: error.message})
         }
     })
 
@@ -253,11 +337,11 @@ const main  = async () => {
         try {
             const profesor = await Profesor.findByIdAndUpdate(req.params.id, req.body, { new: true });
             if (!profesor) {
-                return res.status(404).json({ mensaje: 'Profesor no encontrado' });
+                return res.json({ mensaje: 'Profesor no encontrado' });
             }
             res.json(profesor);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al actualizar el profesor', error: error.message });
+            res.json({ mensaje: 'Error al actualizar el profesor', error: error.message });
         }
     });
 
@@ -267,7 +351,7 @@ const main  = async () => {
             await Profesor.findByIdAndDelete(req.params.id);
             res.json({ mensaje: 'Profesor eliminado exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al eliminar el profesor', error: error.message });
+            res.json({ mensaje: 'Error al eliminar el profesor', error: error.message });
         }
     });
 
@@ -276,21 +360,43 @@ const main  = async () => {
         try {
             const profesor = await Profesor.findById(req.params.id);
             if (!profesor) {
-                return res.status(404).json({ mensaje: 'Profesor no encontrado' });
+                return res.json({ mensaje: 'Profesor no encontrado' });
             }
-            const instrumento = await Instrumento.findById(req.body.instrumento);
-            if (!instrumento) {
-                return res.status(404).json({ mensaje: 'Instrumento no encontrado' });
+            
+            const idInstrumento = req.body.instrumento;
+            const existeInstrumento = profesor.instrumentos.includes(idInstrumento);
+            
+            if (existeInstrumento) {
+                return res.json({ mensaje: 'El instrumento ya está agregado' });
             }
-            // PROFESOR._DOC -> ACCEDE AL OBJETO (LO MAPEA) Y AÑADE UNO AL ARRAY INSTRUMENTOS
-            const nuevoProfesor = new Profesor({ ...profesor._doc, instrumentos: [...profesor.instrumentos, instrumento] });
-            const guardado = await nuevoProfesor.save();
-            res.json({ mensaje: 'Instrumento agregado exitosamente', instrumento: guardado });
-        } catch(error) {
-            console.log(error);
-            res.status(500).json({ mensaje: 'Error al agregar el instrumento' });
+            
+            profesor.instrumentos.push(idInstrumento);
+            await profesor.save();
+            
+            res.json({ mensaje: 'Instrumento agregado exitosamente', profesor: nuevoProfesor });
+        } catch (error) {
+            res.json({ mensaje: 'Error al agregar el instrumento', error: error.message });
         }
     });
+
+    // ELIMINAR INSTRUMENTO PROFESOR
+    app.delete('/profesor/:id/instrumento/:idInstrumento', async (req, res) => {
+        try {
+            const profesor = await Profesor.findById(req.params.id);
+            if (!profesor) {
+                return res.json({ mensaje: 'Profesor no encontrado' });
+            }
+            
+            const idInstrumento = req.params.idInstrumento;
+            
+            profesor.instrumentos.pull(idInstrumento);
+            await profesor.save()
+
+             res.json({ mensaje: 'Instrumento eliminado exitosamente', profesor: profesor });
+        } catch (error) {
+            res.json({ mensaje: 'Error al eliminar el instrumento', error: error.message });
+        }
+    })
 
 
     // AÑADIR CLASE PROFESOR
@@ -298,13 +404,13 @@ const main  = async () => {
     try {
             const profesor = await Profesor.findById(req.params.id);
             if (!profesor) {
-                return res.status(404).json({ mensaje: 'Profesor no encontrado' });
+                return res.json({ mensaje: 'Profesor no encontrado' });
             }
             
             
             const clase = await Clase.findById(req.body.claseId);
             if (!clase) {
-                return res.status(404).json({ mensaje: 'Clase no encontrada' });
+                return res.json({ mensaje: 'Clase no encontrada' });
             }
             
             
@@ -313,7 +419,7 @@ const main  = async () => {
             
             res.json({ mensaje: 'Clase agregada exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al agregar la clase', error: error.message });
+            res.json({ mensaje: 'Error al agregar la clase', error: error.message });
         }
     });
 
@@ -326,7 +432,7 @@ const main  = async () => {
             // Buscar el profesor con el correo electrónico y contraseña
             const profesor = await Profesor.findOne({ "email": email });
             if (!profesor || !bcrypt.compareSync(password, profesor.password)) {
-                return res.status(401).json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+                return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
             }
             
             // Almacenar el ID del usuario en sesión
@@ -334,7 +440,7 @@ const main  = async () => {
             sessionStorage.setItem('usuarioId', profesor._id);
             
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
+            res.json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
         }
     });
 
@@ -356,7 +462,7 @@ const main  = async () => {
             await clase.save();
             res.json({ mensaje: 'Clase creada exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al crear la clase', error: error.message });
+            res.json({ mensaje: 'Error al crear la clase', error: error.message });
         }
     });
 
@@ -365,11 +471,11 @@ const main  = async () => {
         try {
             const clase = await Clase.findById(req.params.id);
             if (!clase) {
-                return res.status(404).json({ mensaje: 'Clase no encontrada' });
+                return res.json({ mensaje: 'Clase no encontrada' });
             }
             res.json(clase);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al obtener la clase', error: error.message });
+            res.json({ mensaje: 'Error al obtener la clase', error: error.message });
         }
     });
 
@@ -378,21 +484,21 @@ const main  = async () => {
         try {
             const clase = await Clase.findByIdAndUpdate(req.params.id, req.body, { new: true });
             if (!clase) {
-                return res.status(404).json({ mensaje: 'Clase no encontrada' });
+                return res.json({ mensaje: 'Clase no encontrada' });
             }
             res.json(clase);
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al actualizar la clase', error: error.message });
+            res.json({ mensaje: 'Error al actualizar la clase', error: error.message });
         }
     });
 
     // BORRAR CLASE (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
     app.delete('/clase/:id', async (req, res) => {
         try {
-            await Clase.findByIdAndUpdate(req.params.id);
+            await Clase.findByIdAndDelete(req.params.id);
             res.json({ mensaje: 'Clase eliminada exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al eliminar la clase', error: error.message });
+            res.json({ mensaje: 'Error al eliminar la clase', error: error.message });
         }
     });
     
@@ -402,13 +508,24 @@ const main  = async () => {
     app.get('/instrumentos', async (req,res) => {
         try{
             const instrumentos = await Instrumento.find({});
-            if (!instrumentos) {
-                await Instrumento.insertMany(arrInstrumentos);
-            }
+
             res.json(instrumentos);
         } catch(error){
             console.log("Error al obtener los instrumentos", error)
-            res.status(500).json({error: "Ocurrió un error"});
+            res.json({error: "Ocurrió un error"});
+        }
+    })
+
+    // OBTENER UN INSTRUMENTO
+    app.get('/instrumentos/:id' , async (req, res) => {
+        try {
+            const instrumento = await Instrumento.findById(req.params.id);
+            if (!instrumento) {
+                return res.json({ mensaje: 'Instrumento no encontrado' });
+            }
+            res.json(instrumento);
+        } catch (error) {
+            res.json({ mensaje: 'Error al obtener el instrumento', error: error.message });
         }
     })
 
@@ -419,7 +536,7 @@ const main  = async () => {
             await Instrumento.deleteMany({});
             res.json("Completado")
         } catch(error) {
-            res.status(500).json("Algo no ha salido bien borrando los instrumentos")
+            res.json("Algo no ha salido bien borrando los instrumentos")
         }
     })
     
@@ -442,7 +559,7 @@ const main  = async () => {
             await alumno.save();
             res.json({ mensaje: 'Alumno creado exitosamente' });
         } catch (error) {
-            res.status(500).json({ mensaje: 'Error al crear el alumno', error: error.message });
+            res.json({ mensaje: 'Error al crear el alumno', error: error.message });
         }
     });
         
@@ -453,7 +570,7 @@ const main  = async () => {
     //         const admins =  await Admin.find({});
     //         res.json(admins);
     //     } catch(error) {
-    //             res.status(500).json({ error: 'Ocurrido un error' });
+    //             res.json({ error: 'Ocurrido un error' });
     //             }
     // })
 
