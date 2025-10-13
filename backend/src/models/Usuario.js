@@ -44,7 +44,7 @@ const usuarioSchema = new mongoose.Schema({
 
     // DE MOMENTO IGNORAR
     imagen: {
-        type:Buffer,
+        type:String,
         required: false
     }
 
@@ -53,6 +53,6 @@ const usuarioSchema = new mongoose.Schema({
 // ENCRIPTAR CONTRASEÑAS
 usuarioSchema.plugin(mongooseBcrypt);
 
-// EXPORTAR ALUMNO
-const Usuario = mongoose.model('Alumno', usuarioSchema);
+// EXPORTAR USUARIO
+const Usuario = mongoose.model('Usuario', usuarioSchema);
 export default Usuario;
