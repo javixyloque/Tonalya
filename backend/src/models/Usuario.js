@@ -23,7 +23,7 @@ const usuarioSchema = new mongoose.Schema({
     },
     provincia: {
         type: String,
-        required: false,  
+        required: true,  
     },
     activo: {
         type: Boolean,

@@ -8,7 +8,7 @@ const ClaseSchema = new mongoose.Schema({
     fechaFin: Date,
     estado: {
         type: String,
-        enum: ['pendiente', 'aceptada', 'pagada']
+        enum: ['pendiente', 'aceptada', 'pagada', 'rechazada']
     },
     asistencia: Boolean,
     completada: Boolean,

@@ -6,14 +6,9 @@ import Profesor from "../models/Profesor.js";
 import Clase from "../models/Clase.js";
 
 
-router.get('/', async (req,res) => {
-    try {
-        const usuarios = await Usuario.find({activo: true})
-        res.json(usuarios);
-    } catch (error) {
-        res.json({mensaje: 'Error al obtener los usuarios', error: error.message});
-    }
-})
+const limpiarParametros = (param) => {
+    return String(param).trim().toLowerCase();
+}
 
 // CREAR USUARIO
 
@@ -49,9 +44,10 @@ router.get('/:id', async (req, res) => {
 
 // MODIFICAR USUARIO (TAMBIEN BORRADO LÓGICO)
 router.put('/:id', async (req, res) => {
+    
     try {
-        
-        const usuario = await Usuario.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const id = limpiarParametros(req.params.id);    
+        const usuario = await Usuario.findByIdAndUpdate(id, req.body, { new: true });
         if (!usuario || !usuario.activo) {
             return res.json({ mensaje: 'Usuario no encontrado' });
         }
@@ -64,7 +60,8 @@ router.put('/:id', async (req, res) => {
 // BORRAR USUARIO (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE (ADMIN))
 router.delete('/:id', async (req, res) => {
     try {
-        await Usuario.findByIdAndDelete(req.params.id);
+        const id = limpiarParametros(req.params.id);
+        await Usuario.findByIdAndDelete(id);
         res.json({ mensaje: 'Usuario eliminado exitosamente' });
     } catch (error) {
         res.json({ mensaje: 'Error al eliminar el usuario', error: error.message });
@@ -77,8 +74,8 @@ router.post('/reservar-clase', async (req, res) => {
     try {
         const descripcion = req.body.descripcion;
         const idAlumno = req.body.alumnoId;
-        const fechaInicio = new Date(moment.utc(req.body.fechaInicio).format('YYYY-MM-DD HH:mm:ss')); 
-const fechaFin = new Date(moment.utc(req.body.fechaFin).format('YYYY-MM-DD HH:mm:ss'));
+        const fechaInicio = new Date(Date.parse(req.body.fechaInicio));
+        const fechaFin = new Date(Date.parse(req.body.fechaFin));
         const instrumento = req.body.instrumento;
         const idProfesor = req.body.profesorId;
 
@@ -141,8 +138,8 @@ const fechaFin = new Date(moment.utc(req.body.fechaFin).format('YYYY-MM-DD HH:mm
 // PAGAR CLASE ALUMNO
 
 router.put('/pagar-clase/:id', async (req, res) => {
-    const idAlumno = req.params.id;
-    const idClasePagada = req.body.claseId;
+    const idAlumno = limpiarParametros(req.params.id);
+    const idClasePagada = limpiarParametros(req.body.claseId);
 
     const alumno = await Usuario.findById(idAlumno);
     if (!alumno) {
@@ -158,46 +155,28 @@ router.put('/pagar-clase/:id', async (req, res) => {
     clasePagada.estado = 'pagada';
     await clasePagada.save();
 
-    // PROFESOR ES UN ARRAY EN CLASE
-    const profesor = await Profesor.findById(clasePagada.profesor[0]);
-    if (profesor) {
-        // ACTUALIZAR HORA Y FECHA
-        const fechaYHora = clasePagada.fecha;
-        const nuevaFecha = new Date(fechaYHora);
-        profesor.horario.push({ fecha: nuevaFecha, hora: clasePagada.hora });
-
-        await profesor.save();
-    }
+    
 
     res.json({ mensaje: 'Clase pagada con éxito' });
 });
 
-
-
-
-// AÑADIR CLASE A UN ALUMNO
-router.put('/:id/clase', async (req, res) => {
+// OBTENER INFO CLASES USUARIO
+router.get('/clases/:id', async (req, res) => {
     try {
-        const alumno = await Usuario.find({_id: req.params.id, activo: true});
+        const idAlumno = limpiarParametros(req.params.id);
+        const alumno = await Usuario.findById(req.params.id);
         if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado o no es un alumno' });
+            return res.json({ mensaje: 'Alumno no encontrado' });
         }
-        
-        
-        const clase = await Clase.findById({_id: req.body.claseId});
-        if (!clase) {
-            return res.json({ mensaje: 'Clase no encontrada' });
-        }
-        
-        
-        alumno.clases.push(clase._id);
-        await alumno.save();
-        
-        res.json({ mensaje: 'Clase agregada exitosamente' });
+        alumno.clases.forEach( async claseId => {
+            return res.json(await Clase.findById(claseId))
+        })
     } catch (error) {
-        res.json({ mensaje: 'Error al agregar la clase', error: error.message });
+        res.json({ mensaje: 'Error al obtener las clases del alumno', error: error.message });
     }
-});
+})
+
+
 
 // ELIMINAR CLASE USUARIO
 

@@ -1,17 +1,17 @@
 // IMPORTAR LAS DEPENDENCIAS
 // require("dotenv").config();
 // EXPRESS => RUTEAR Y HTTP
-// BODY-PARSER => PARSEAR LOS DATOS ENVIADOS EN FORMATO JSON
-// MONGOOSE => CONECTAR CON MONGODB Y OPERAR
+// MONGOOSE => CONECTAR CON MONGODB Y OPERAR CON LA BASE DE DATOS
 // MONGOOSE-BCRYPT => ENCRIPTAR CONTRASEÑAS
 // CORS => SOLICITUDES DESDE EL CLIENTE
 // MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (SUBIR ARCHIVOS)
 // UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
+// NODEMAILER => ENVIAR CORREOS ELECTRONICOS
 
 /*
 --------------------------------------------------------------------------------------------------------------------------------------
 
-FUNCIONAN TODAS LAS PETICIONES DE USUARIO MENOS LAS CLASES
+FUNCIONAN TODAS LAS PETICIONES DE USUARIO MENOS LAS CLASES (POR LA FECHA, TODAVÍA NO HE PODIDO MANEJARLO DESDE EL FRONTEND)
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -22,39 +22,38 @@ import express from "express";
 import 'dotenv/config';
 import mongoose from "mongoose";
 import cors from "cors";
-import Clase from "./models/Clase.js";
-import Profesor from "./models/Profesor.js";
-import Usuario from "./models/Usuario.js";
 import Admin from "./models/Admin.js";
 import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js";
-import multer from "multer";
-import bcrypt from "bcrypt"
+// NO USADO AL FINAL POR PROBLEMA EN EL TIPADO, USO UNA FUNCION DE ENCODING EN EL FRONTEND Y GUARDO LAS IMAGENES COMO STRINGS
+// import multer from "multer";
+import bcrypt from "bcrypt";
 import usuarioRouter  from "./controllers/usuarioController.js";
 import profesorRouter from "./controllers/profesorController.js";
 import claseRouter from "./controllers/claseController.js";
+import adminRouter from "./controllers/adminController.js";
 
 
 
 
-// PUERTO => EXPRESS
+// DEFINIMOS EL PUERTO DEL BACKEND
 const PORT = process.env.PORT || 5000;
 
 // CONFIGURACION DE MULTER
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // DIRECTORIO ARCHIVOS GUARDADOS
-    cb(null, './uploads')
-  },
-  filename: function (req, file, cb) {
-    // NOMBRE ARCHIVO GUARDADO
-    const nombreArchivo = Date.now() + '_'+file.originalname;
-    cb(null, nombreArchivo)
-  }
-})
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // DIRECTORIO ARCHIVOS GUARDADOS
+//     cb(null, './uploads')
+//   },
+//   filename: function (req, file, cb) {
+//     // NOMBRE ARCHIVO GUARDADO
+//     const nombreArchivo = Date.now() + '_'+file.originalname;
+//     cb(null, nombreArchivo)
+//   }
+// })
 
 // INSTAR MULTER
-const upload = multer({storage});
+// const upload = multer({storage});
 
 
 
@@ -118,12 +117,14 @@ const main  = async () => {
     app.use('/profesor', profesorRouter);
     
     app.use('/clase', claseRouter)
+    
+    app.use('/admin', adminRouter);
 
     
     
     
     
-    // CREAR LOS INSTRUMENTOS A PARTIR DEL ARRAY DE INSTRUMENTOS
+    //  OBTENER INSTRUMENTOS
     app.get('/instrumentos', async (req,res) => {
         try{
             const instrumentos = await Instrumento.find({});
@@ -164,7 +165,7 @@ const main  = async () => {
     // })
 
 
-    // USUARIO => ADMIN
+    // CREAR ADMIN
     const admin = await Admin.findOne({ nombre: 'admin' });
     
     if (!admin) {

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import mongooseBcrypt from "mongoose-bcrypt";
 
 
-// EN SOLICITUDESRESERVA, LAS CLASES CON EL PARAMETRO PROGRAMADA: TRUE SON LAS QUE YA  SE HAN LLEVADO A CABO, MIENTRAS QUE LAS QUE TIENEN PROGRAMADA: FALSE SON LAS QUE NO SE HAN LLEGADO A ACEPTAR
 const profesorSchema = new mongoose.Schema({
     nombre:{
         type: String,

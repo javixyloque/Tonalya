@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseBcrypt from "mongoose-bcrypt";
 
 const adminSchema = new mongoose.Schema({
     email: { 
@@ -8,7 +9,8 @@ const adminSchema = new mongoose.Schema({
     },
     password: { 
         type: String, 
-        required: true 
+        required: true,
+        bcrypt: true
     },
     
 });

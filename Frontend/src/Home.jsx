@@ -10,6 +10,15 @@ import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
 
+/*
+Copyright (c) [2025] [Tonalya]. Todos los derechos reservados.
+
+Se prohíbe expresamente:
+- Uso comercial por terceros
+- Distribución, modificación o copia
+- Reverse engineering
+- Integración en otros productos comerciales"
+*/
 
 // MODAL PARA INICIAR SESION, PAGINA APARTE PARA REGISTRARSE
 

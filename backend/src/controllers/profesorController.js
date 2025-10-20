@@ -6,8 +6,9 @@ import Profesor from "../models/Profesor.js";
 import Clase from "../models/Clase.js";
 
 
-// CRUD PROFESOR
-
+const limpiarParametros = (param) => {
+    return String(param).trim().toLowerCase();
+}
     
 // AÑADIR PROFESOR
 router.post('/', async (req, res) => {
@@ -44,9 +45,35 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get(('/'), async (req, res) => {
+router.get(('/:instrumento'), async (req, res) => {
     try {
-        const profesores = await Profesor.find({});
+        const profesores = await Profesor.find({instrumentos: req.params.instrumento});
+        if (!profesores) {
+            res.json({mensaje: "No se ha encontrado ningun profesor"})
+        } else {
+            res.json(profesores);
+        }
+    } catch (error) {
+        res.json({mensaje: "Error al obtener los profesores", error: error.message})
+    }
+})
+
+router.get(('/profesor/:instrumento/:provincia'), async (req, res) => {
+    try {
+        const profesores = await Profesor.find({instrumentos: req.params.instrumento, provincia: req.params.provincia});
+        if (!profesores) {
+            res.json({mensaje: "No se ha encontrado ningun profesor"})
+        } else {
+            res.json(profesores);
+        }
+    } catch (error) {
+        res.json({mensaje: "Error al obtener los profesores", error: error.message})
+    }
+})
+
+router.get(('/profesor/:provincia'), async (req, res) => {
+    try {
+        const profesores = await Profesor.find({provincia: req.params.provincia});
         if (!profesores) {
             res.json({mensaje: "No se ha encontrado ningun profesor"})
         } else {
@@ -58,6 +85,18 @@ router.get(('/'), async (req, res) => {
 })
 
 // ACTUALIZAR DATOS PROFESOR
+router.put('/:id', async (req, res) => {
+    try {
+        const profesor = await Profesor.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!profesor) {
+            return res.json({ mensaje: 'Profesor no encontrado' });
+        }
+        res.json(profesor);
+    } catch (error) {
+        res.json({ mensaje: 'Error al actualizar el profesor', error: error.message });
+    }
+});
+
 router.put('/:id', async (req, res) => {
     try {
         const profesor = await Profesor.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -106,13 +145,13 @@ router.put('/:id/instrumento', async (req, res) => {
 
 // ELIMINAR INSTRUMENTO PROFESOR
 router.delete('/:id/instrumento/:idInstrumento', async (req, res) => {
+    const idProfesor = limpiarParametros(req.params.id);
+    const idInstrumento = limpiarParametros(req.params.idInstrumento);
     try {
-        const profesor = await Profesor.findById(req.params.id);
+        const profesor = await Profesor.findById(idProfesor);
         if (!profesor) {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }
-        
-        const idInstrumento = req.params.idInstrumento;
         
         profesor.instrumentos.pull(idInstrumento);
         await profesor.save()
@@ -124,32 +163,33 @@ router.delete('/:id/instrumento/:idInstrumento', async (req, res) => {
 })
 
 // ACEPTAR SOLICITUD DE RESERVA
-router.put('/aceptar-solicitud-de-reserva/:id', async (req, res) => {
-const idClase = req.params.id;
+router.put('/aceptar-reserva/:id', async (req, res) => {
+    const idClase = limpiarParametros(req.params.id);
 
-const clase = await Clase.findById(idClase);
-if (!clase) {
-    return res.json({ mensaje: 'Clase no encontrada' });
-}
+    const clase = await Clase.findById(idClase);
+    if (!clase) {
+        return res.json({ mensaje: 'Clase no encontrada' });
+    }
 
-// Actualizar el estado de la clase a "aceptada" en la base de datos
-clase.estado = 'aceptada';
-await clase.save();
+    // Actualizar el estado de la clase a "aceptada" en la base de datos
+    clase.estado = 'aceptada';
+    await clase.save();
 
-const alumno = await Usuario.findById(clase.alumno[0]);
-if (alumno) {
-    alumno.solicitudesDeReserva.splice(alumno.solicitudesDeReserva.indexOf(idClase), 1);
-    await alumno.save();
-}
+    const alumno = await Usuario.findById(clase.alumno[0]);
+    if (alumno) {
+        alumno.solicitudesDeReserva.splice(alumno.solicitudesDeReserva.indexOf(idClase), 1);
+        await alumno.save();
+    }
 
-res.json({ mensaje: 'Solicitud de reserva aceptada con éxito' });
+    res.json({ mensaje: 'Solicitud de reserva aceptada con éxito' });
 });
 
 
 // AÑADIR CLASE PROFESOR
 router.put('/:id/clase', async (req, res) => {
-try {
-        const profesor = await Profesor.findById(req.params.id);
+    try {
+        const idProfesor = limpiarParametros(req.params.id);   
+        const profesor = await Profesor.findById(idProfesor);
         if (!profesor) {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }

@@ -5,12 +5,16 @@ import Profesor from "../models/Profesor.js";
 
 const router = express.Router();
 
+const limpiarParametros = (param) => {
+    return String(param).trim().toLowerCase();
+}
 
 // AÑADIR CLASE
 router.post('/', async (req, res) => {
+
     try {
         const clase = new Clase({
-            titulo: req.body.titulo,
+            titulo: titulo,
             descripcion: req.body.descripcion,
             precio: req.body.precio,
             fecha: req.body.fecha,
@@ -28,8 +32,10 @@ router.post('/', async (req, res) => {
 
 // OBTENER DATOS CLASE
 router.get('/:id', async (req, res) => {
+    
     try {
-        const clase = await Clase.findById(req.params.id);
+        const id = req.params.id;
+        const clase = await Clase.findById(id);
         if (!clase) {
             return res.json({ mensaje: 'Clase no encontrada' });
         }
@@ -42,6 +48,7 @@ router.get('/:id', async (req, res) => {
 // MODIFICAR CLASE
 router.put('/:id', async (req, res) => {
     try {
+        const id = req.params.id;
         const clase = await Clase.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!clase) {
             return res.json({ mensaje: 'Clase no encontrada' });
@@ -55,7 +62,8 @@ router.put('/:id', async (req, res) => {
 // BORRAR CLASE (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
 router.delete('/:id', async (req, res) => {
     try {
-        await Clase.findByIdAndDelete(req.params.id);
+        const id = req.params.id;
+        await Clase.findByIdAndDelete(id);
         res.json({ mensaje: 'Clase eliminada exitosamente' });
     } catch (error) {
         res.json({ mensaje: 'Error al eliminar la clase', error: error.message });

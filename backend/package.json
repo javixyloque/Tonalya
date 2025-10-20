@@ -22,6 +22,7 @@
     "mongoose": "^8.10.1",
     "mongoose-bcrypt": "^1.11.0",
     "multer": "^2.0.1",
+    "nodemailer": "^7.0.9",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

@@ -1,12 +1,12 @@
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 // import {SyncLoader} from "react-spinners"
 import { useNavigate } from 'react-router-dom';
 import { codificarImagen64 } from "../functions/codificar.js";
 import {Container, Row, Col, Button, Form} from "react-bootstrap"
 import "./formprofesor.css";
 import Header from "../components/templates/Header.jsx";
-import { arrayProvincias, arrayInstrumentos} from "../functions/variables.js";
+import { arrayProvincias } from "../functions/variables.js";
 
 
 const FormProfesor = () => {
@@ -19,10 +19,27 @@ const FormProfesor = () => {
     const [imagen, setImagen]  = useState('');
     const [provincia, setProvincia] = useState('');
     const [instrumentoP, setInstrumentoP] = useState('');
+    const [instrumentos, setInstrumentos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
 
     const provincias = arrayProvincias();
-    const instrumentos = arrayInstrumentos();
+    useEffect (() => {
+        const fetchInstrumentos = async () => {
+            try {
+                const respuesta = await fetch('http://localhost:5000/instrumentos');
+                const bdInstrumentos = await respuesta.json();
+                setInstrumentos(bdInstrumentos);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        }
+        fetchInstrumentos();
+    }, [])
+
+
+        
         const enviarFormulario = async (event) => {
             const formulario =  event.currentTarget;
             event.preventDefault();
@@ -35,7 +52,7 @@ const FormProfesor = () => {
             
             
             
-            let imagenCodificada = undefined;
+            let imagenCodificada = btoa(imagen);
             
             if (imagen){
                 imagenCodificada = await codificarImagen64(imagen) || undefined;
