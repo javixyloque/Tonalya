@@ -13,6 +13,10 @@ const limpiarParametros = (param) => {
     return String(param).trim().toLowerCase();
 }
 
+router.get(('/', async (req, res) => {
+    
+}))
+
 // LOGIN ADMIN
 router.post('/login', async (req, res) => {
     try {
@@ -156,5 +160,6 @@ router.delete('/instrumento/:id', async (req, res) => {
         res.json({ mensaje: 'Error al eliminar el instrumento', error: error.message });
     }
 });
+
 
 export default router;

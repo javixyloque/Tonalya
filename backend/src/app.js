@@ -1,18 +1,15 @@
-// IMPORTAR LAS DEPENDENCIAS
+// IMPORTAR VARIABLES DE ENTORNO (.ENV)
 // require("dotenv").config();
 // EXPRESS => RUTEAR Y HTTP
 // MONGOOSE => CONECTAR CON MONGODB Y OPERAR CON LA BASE DE DATOS
 // MONGOOSE-BCRYPT => ENCRIPTAR CONTRASEÑAS
 // CORS => SOLICITUDES DESDE EL CLIENTE
-// MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (SUBIR ARCHIVOS)
+// MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (INACTIVO)
 // UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
 // NODEMAILER => ENVIAR CORREOS ELECTRONICOS
 
 /*
 --------------------------------------------------------------------------------------------------------------------------------------
-
-FUNCIONAN TODAS LAS PETICIONES DE USUARIO MENOS LAS CLASES (POR LA FECHA, TODAVÍA NO HE PODIDO MANEJARLO DESDE EL FRONTEND)
-
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -27,7 +24,6 @@ import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js";
 // NO USADO AL FINAL POR PROBLEMA EN EL TIPADO, USO UNA FUNCION DE ENCODING EN EL FRONTEND Y GUARDO LAS IMAGENES COMO STRINGS
 // import multer from "multer";
-import bcrypt from "bcrypt";
 import usuarioRouter  from "./controllers/usuarioController.js";
 import profesorRouter from "./controllers/profesorController.js";
 import claseRouter from "./controllers/claseController.js";
@@ -37,29 +33,13 @@ import adminRouter from "./controllers/adminController.js";
 
 
 // DEFINIMOS EL PUERTO DEL BACKEND
+// ES VARIABLE DE ENTORNO => dotenv/config
 const PORT = process.env.PORT || 5000;
-
-// CONFIGURACION DE MULTER
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     // DIRECTORIO ARCHIVOS GUARDADOS
-//     cb(null, './uploads')
-//   },
-//   filename: function (req, file, cb) {
-//     // NOMBRE ARCHIVO GUARDADO
-//     const nombreArchivo = Date.now() + '_'+file.originalname;
-//     cb(null, nombreArchivo)
-//   }
-// })
-
-// INSTAR MULTER
-// const upload = multer({storage});
 
 
 
 
 const app = express();
-// Middleware
 app.use(express.json());
 
 
@@ -96,7 +76,6 @@ const main  = async () => {
 
     try {
         instrumentos();
-        // Resto del código...
     } catch (error) {
         console.error('Error al insertar instrumentos', error);
     }
@@ -151,49 +130,30 @@ const main  = async () => {
 
     
 
-    
-        
-    
-
-    // app.get('/admin', async (req, res) => {
-    //     try{
-    //         const admins =  await Admin.find({});
-    //         res.json(admins);
-    //     } catch(error) {
-    //             res.json({ error: 'Ocurrido un error' });
-    //             }
-    // })
-
-
-    // CREAR ADMIN
-    const admin = await Admin.findOne({ nombre: 'admin' });
-    
-    if (!admin) {
-        const adminUser = new Admin ({
-            email: 'admin',
-            password: '645581'
-        });
-        try {
-            await adminUser.save();
-            console.log('Created admin user');
-        } catch (err) {
-            console.error('Error creating admin user:', err);
+    // USUARIO ADMIN
+    try {
+        const admin = await Admin.findOne({});
+        if (!admin) {
+            console.log('Admin no encontrado, creandolo');
+            const adminUser = new Admin ({
+                email: 'admin@admin.com',
+                password: '645581'
+            });
+            try {
+                await adminUser.save();
+                console.log({ mensaje: 'Admin creado exitosamente' });
+            } catch (err) {
+                console.error('Error al crear el admin');
+            }
+        } else {
+            console.log('Admin ya existe');
         }
-    } else {
-        console.log('Admin user already exists, no need to create one');
+    } catch (error) {
+        console.error('Error al obtener el admin');
+
     }
 
     
-    
-    
-    
-
-
-
-
-
-
-
 // CONFIGURAR PUERTO
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
@@ -201,5 +161,4 @@ app.listen(PORT, () => {
 
 }
 
-// Ejecutar la función principal
 main();

@@ -60,7 +60,7 @@ router.get(('/:instrumento'), async (req, res) => {
 
 router.get(('/profesor/:instrumento/:provincia'), async (req, res) => {
     try {
-        const profesores = await Profesor.find({instrumentos: req.params.instrumento, provincia: req.params.provincia});
+        const profesores = await Profesor.find({instrumentos: req.body.instrumento, provincia: req.params.provincia});
         if (!profesores) {
             res.json({mensaje: "No se ha encontrado ningun profesor"})
         } else {
