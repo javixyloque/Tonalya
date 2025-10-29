@@ -7,7 +7,7 @@ const Profesores = () => {
     useEffect(() => {
         async function fetchProfesores() {
             try {
-                const response = await fetch('http://localhost:5000/profesor', {
+                const response = await fetch('http://localhost:5000/admin/profesores', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

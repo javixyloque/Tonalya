@@ -13,9 +13,9 @@ const limpiarParametros = (param) => {
     return String(param).trim().toLowerCase();
 }
 
-router.get(('/', async (req, res) => {
+router.get('/', async (req, res) => {
     
-}))
+})
 
 // LOGIN ADMIN
 router.post('/login', async (req, res) => {

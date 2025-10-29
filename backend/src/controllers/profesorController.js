@@ -216,14 +216,14 @@ router.post('/login', async (req, res) => {
         const email = req.body.email;
         const password = req.body.password;
         
-        // Buscar el profesor con el correo electrónico y contraseña
+        
         const profesor = await Profesor.findOne({ "email": email });
         if (!profesor || !bcrypt.compareSync(password, profesor.password)) {
             return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
         }
         
         // SESIONES HAY QUE HACERLAS EN FRONT
-        res.json({ mensaje: 'Iniciaste sesión exitosamente', usuario: profesor.nombre, id: profesor.id });
+        res.json({ mensaje: 'Iniciaste sesión exitosamente', email: profesor.email, id: profesor._id });
         // sessionStorage.setItem('usuarioId', profesor._id);
         
     } catch (error) {

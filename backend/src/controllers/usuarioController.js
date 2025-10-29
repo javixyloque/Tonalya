@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Clase from "../models/Clase.js";
+// SHARP => LIMITAR RESOLUCION IMAGEN
+import sharp from "sharp"
 
 
 const limpiarParametros = (param) => {
@@ -256,7 +258,7 @@ router.post('/login', async (req, res) => {
         // SESIONES HAY QUE HACERLAS EN FRONT
         // sessionStorage.setItem('usuarioId', usuario._id);
         
-        res.json({ mensaje: 'Iniciaste sesión exitosamente' });
+        res.json({ mensaje: 'Iniciaste sesión exitosamente' , email: usuario.email, id: usuario._id});
     } catch (error) {
         res.json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
     }

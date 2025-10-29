@@ -8,6 +8,7 @@ import Instrumentos from './components/Instrumentos.jsx';
 import InstrumentosProfesor from './components/InstrumentosProfesor.jsx';
 import Registrarse from './components/templates/Registrarse.jsx';
 
+// FONTAWESOME => ICONOS FAMILIAS INSTRUMENTOS
 
 /**
  * Componente que renderiza las rutas de la aplicación
@@ -16,6 +17,7 @@ import Registrarse from './components/templates/Registrarse.jsx';
 const App = () => {
     return (
         <>
+        
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />

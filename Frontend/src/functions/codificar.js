@@ -11,7 +11,7 @@ export function codificarImagen64(imagen) {
         reader.onerror = (error) => {
             reject(error);
         };
-        reader.readAsDataURL(new Blob([imagen], {type: 'image/png'}));
+        reader.readAsDataURL(imagen); 
     });
 }
 
