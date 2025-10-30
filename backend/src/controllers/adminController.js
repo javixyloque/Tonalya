@@ -13,8 +13,14 @@ const limpiarParametros = (param) => {
     return String(param).trim().toLowerCase();
 }
 
-router.get('/', async (req, res) => {
-    
+router.delete('/', async (req, res) => {
+    try {
+        await Admin.deleteMany({});
+        res.json({mensaje: "administrador eliminado correctamente"})
+
+    } catch (exception) {
+        res.json({error: exception})
+    }
 })
 
 // LOGIN ADMIN
@@ -22,6 +28,7 @@ router.post('/login', async (req, res) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
+        console.log("Intentando inciar sesion como admin")
 
         const admin = await Admin.findOne({ "email": email });
         if (!admin || !bcrypt.compareSync(password, admin.password)) {
@@ -29,7 +36,7 @@ router.post('/login', async (req, res) => {
         }
 
         // SESIONES HAY QUE HACERLAS EN FRONT
-        res.json({ mensaje: 'Iniciaste sesión exitosamente', usuario: admin.nombre, id: admin.id });
+        res.json({ mensaje: 'Sesión iniciada correctamente', email: admin.email, id: admin._id });
 
     } catch (error) {
         res.json({ mensaje: 'Error al iniciar sesión como administrador', error: error.message });

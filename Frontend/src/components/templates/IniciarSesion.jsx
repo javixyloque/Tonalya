@@ -1,95 +1,12 @@
-// import { useState } from "react"
-// import { Modal, Form, Button } from "react-bootstrap"
-// import { useNavigate } from "react-router-dom";
-
-// const IniciarSesion = () => {
-//     const navigate = new useNavigate();
-
-//     const [mostrar, setMostrar] = useState(false);
-//     const [email, setEmail] = useState("");
-//     const [contrasenya, setContrasenya] = useState("");
-    
-//     const mostrarModal = () => setMostrar(true);
-//     const ocultarModal = () => setMostrar(false);
-
-//     const comprobarLogin = async (event) => {
-//         event.preventDefault();
-
-        
-        
-//         try {
-//             let respuesta = await fetch (`http://localhost:5000/profesor/${email}`, {
-//                 method: 'POST', 
-//                 headers: {
-//                     "Content/Type": "application/json"
-//                 },
-//                 body: {
-//                     password: contrasenya
-//                 }
-//             });
-//             if (respuesta == 1) {
-//                 navigate("/profesor");
-//             } else if (respuesta == 0) {
-//                 alert("Contraseña incorrecta");
-//             } else {
-//                 alert("Usuario no encontrado");
-//                 navigate()
-//             }
-//         } catch (Exception) {
-//             console.error(Exception);
-//         }
-//     }
-//     return (
-//         <>
-
-//         <Button className='btn-success' onClick={mostrarModal}> Iniciar Sesión</Button>
-//         <Modal centered show={mostrar} onHide={ocultarModal} >
-//                 <Modal.Header closeButton>
-//                     <Modal.Title>Iniciar sesión</Modal.Title>
-//                 </Modal.Header>
-//                 <Form  onSubmit={comprobarLogin}>
-//                     <Modal.Body>
-                        
-//                             <Form.Label>EMAIL</Form.Label>
-//                             <Form.Control  
-//                                 type="email"
-//                                 placeholder="ejemplo@ejemplo.es"
-//                                 required
-//                                 autoFocus
-//                                 value={email}
-//                                 onChange={(e) => setEmail(e.target.value)}
-//                             />
-//                             <Form.Label>CONTRASEÑA</Form.Label>
-//                             <Form.Control
-//                                 type="password"
-//                                 placeholder="*****"
-//                                 required
-//                                 value={contrasenya}
-//                                 onChange={e => setContrasenya(e.target.value)}
-//                             />
-                        
-//                     </Modal.Body>
-//                     <Modal.Footer>
-//                             <Button className="btn btn-secondary" onClick={ocultarModal}>Cancelar</Button>
-//                             <Button className="btn btn-primary" type="submit">INICIAR SESIÓN</Button>
-//                     </Modal.Footer>
-//                 </Form>
-//             </Modal>
-//         </>
-//     )
-// }
-
-// export default IniciarSesion;
-
-
 import { useState } from "react"
 import { Modal, Form, Button} from "react-bootstrap"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "./iniciarSesion.css";
 
 const IniciarSesion = () => {
     const navigate = useNavigate();
     const [mostrar, setMostrar] = useState(false);
-    const [rol, setRol] = useState(""); // Nuevo estado para almacenar la opción seleccionada
+    const [rol, setRol] = useState(""); 
     const [email, setEmail] = useState("");
     const [contrasenya, setContrasenya] = useState("");
     
@@ -99,7 +16,7 @@ const IniciarSesion = () => {
     const comprobarLogin = async (event) => {
         event.preventDefault();
 
-        if (rol === "profesor") {
+        if (rol == "profesor") {
             try {
                 let respuesta = await fetch (`http://localhost:5000/profesor/login`, {
                     method: 'POST', 
@@ -114,7 +31,8 @@ const IniciarSesion = () => {
                 if (respuesta.ok) {
                     const objetoRespuesta = await respuesta.json()
         console.log('Credenciales guardadas:', objetoRespuesta);
-                    sessionStorage.setItem('profesor', objetoRespuesta.email) 
+                    sessionStorage.setItem('usuario', objetoRespuesta.email)
+                    sessionStorage.setItem("profesor", objetoRespuesta.nombre); 
                     sessionStorage.setItem('id', objetoRespuesta.id)
                     navigate("/profesores");
                 } else if (respuesta == 0) {
@@ -126,7 +44,7 @@ const IniciarSesion = () => {
             } catch (Exception) {
                 console.error(Exception);
             }
-        } else if (rol === "alumno") {
+        } else if (rol == "alumno") {
             try {
                 let respuesta = await fetch (`http://localhost:5000/alumno/login`, {
                     method: 'POST', 
@@ -140,80 +58,94 @@ const IniciarSesion = () => {
                 });
                 if (respuesta.ok) {
                     const objetoRespuesta = await respuesta.json();
-                    sessionStorage.setItem("alumno", objetoRespuesta.email);
+                    sessionStorage.setItem("usuario", objetoRespuesta.email);
+                    sessionStorage.setItem("alumno", objetoRespuesta.nombre)
                     sessionStorage.setItem("id", objetoRespuesta.id)
-                    navigate("/alumno");
+                    alert(objetoRespuesta.mensaje)
                 } else if (respuesta == 0) {
                     alert("Contraseña incorrecta");
                 } else {
                     alert("Usuario no encontrado");
-                    navigate()
                 }
             } catch (Exception) {
                 console.error(Exception);
             }
         } else if (rol== "admin") {
-            let respuesta = await fetch('http://localhost:5000/admin/login', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: contrasenya
+            try {
+                let respuesta = await fetch('http://localhost:5000/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: contrasenya
+                    })
                 })
-            })
-            if (respuesta.ok) {
-                const objetoRespuesta = await respuesta.json();
-                sessionStorage.setItem("admin", objetoRespuesta.email);
-                sessionStorage.setItem("admin", objetoRespuesta.id)
-            } else {
-                console.log(respuesta.json())
+                if (respuesta.ok) {
+                    const objetoRespuesta = await respuesta.json();
+                    sessionStorage.setItem("admin", objetoRespuesta.email);
+                    sessionStorage.setItem("id", objetoRespuesta.id)
+                    alert(objetoRespuesta.mensaje)
+                } else {
+                    console.log(respuesta.json())
+                }
+            } catch (exception) {
+                console.error(exception)
             }
         }
     }
     return (
         <>
 
-        <Button className='btn-success' onClick={mostrarModal}> Iniciar Sesión</Button>
-        <Modal centered show={mostrar} onHide={ocultarModal} >
-                <Modal.Header closeButton>
+            <Link to="#" className='mx-2 my-2 flex-end' style={{color: "#213448", textDecoration: "none", cursor: "pointer", right: 0}} onClick={mostrarModal}> Iniciar Sesión</Link>
+            <Modal centered show={mostrar} onHide={ocultarModal} style={{color: "red"}}>
+
+            {/* CABECERO */}
+                <Modal.Header  style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
                     <Modal.Title>Iniciar sesión</Modal.Title>
                 </Modal.Header>
                 <Form  onSubmit={comprobarLogin}>
-                    <Modal.Body>
+                    <Modal.Body style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+
+                        {/*TIPO DE USUARIO */}
                         <Form.Group className="mb-3">
                                 <Form.Label>Selecciona tipo de usuario:</Form.Label>
                                 <Form.Select value={rol} onChange={(e) => setRol(e.target.value)}>
-                                    <option value="admin"></option>
+                                    <option value="admin">Tipo de usuario</option>
                                     <option value="alumno">Alumno</option>
                                     <option value="profesor">Profesor</option>
                                 </Form.Select>
-                         
                         </Form.Group>
                         
-                            <Form.Label>EMAIL</Form.Label>
-                            <Form.Control className="mb-3"  
-                                type="email"
-                                placeholder="ejemplo@ejemplo.es"
-                                required
-                                autoFocus
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <Form.Label>CONTRASEÑA</Form.Label>
-                            <Form.Control className="mb-3"
-                                type="password"
-                                placeholder="*****"
-                                required
-                                value={contrasenya}
-                                onChange={e => setContrasenya(e.target.value)}
-                            />
+                        {/* EMAIL */}
+                        <Form.Label>EMAIL</Form.Label>
+                        <Form.Control className="mb-3"  
+                            type="email"
+                            placeholder="ejemplo@ejemplo.es"
+                            required
+                            autoFocus
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+
+                        {/* CONTRASENYA */}
+                        <Form.Label>CONTRASEÑA</Form.Label>
+                        <Form.Control className="mb-3"
+                            type="password"
+                            placeholder="*****"
+                            required
+                            value={contrasenya}
+                            onChange={e => setContrasenya(e.target.value)}
+                        />
                         
                     </Modal.Body>
-                    <Modal.Footer>
-                            <Button className="btn btn-secondary" onClick={ocultarModal}>Cancelar</Button>
-                            <Button className="btn btn-primary" type="submit">INICIAR SESIÓN</Button>
+
+                    {/* PIE => BOTONES */}
+                    <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}}>
+                                Iniciar sesión
+                                </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

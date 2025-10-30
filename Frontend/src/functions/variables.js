@@ -9,11 +9,3 @@ export function arrayProvincias() {
         "Tarragona", "Teruel", "Toledo", "Valencia", "Valladolid",  "Zaragoza"];
 }
 
-export function arrayInstrumentos() {
-    return {"Cuerda": ["Violín", "Viola","Violonchelo", "Contrabajo", "Guitarra acústica", "Guitarra eléctrica", "Bajo" ],
-     "Viento madera": ["Flauta", "Oboe", "Clarinete", "Fagot", "Saxofón"], 
-     "Viento metal": ["Trompeta", "Trombón", "Trompa", "Tuba"], 
-     "Percusión": ["Percusión sinfónica", "Caja", "Timbales", "Xilófono", "Batería", "Cajón"], 
-     "Teclado": ["Piano", "Órgano", "Acordeón"]
-    };
-}

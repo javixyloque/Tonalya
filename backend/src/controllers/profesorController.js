@@ -223,7 +223,7 @@ router.post('/login', async (req, res) => {
         }
         
         // SESIONES HAY QUE HACERLAS EN FRONT
-        res.json({ mensaje: 'Iniciaste sesión exitosamente', email: profesor.email, id: profesor._id });
+        res.json({ mensaje: 'Iniciaste sesión exitosamente', email: profesor.email, id: profesor._id ,nombre: profesor.nombre });
         // sessionStorage.setItem('usuarioId', profesor._id);
         
     } catch (error) {

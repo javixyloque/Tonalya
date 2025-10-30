@@ -258,7 +258,7 @@ router.post('/login', async (req, res) => {
         // SESIONES HAY QUE HACERLAS EN FRONT
         // sessionStorage.setItem('usuarioId', usuario._id);
         
-        res.json({ mensaje: 'Iniciaste sesión exitosamente' , email: usuario.email, id: usuario._id});
+        res.json({ mensaje: 'Iniciaste sesión exitosamente' , email: usuario.email, id: usuario._id, nombre: usuario.nombre});
     } catch (error) {
         res.json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
     }
