@@ -46,6 +46,7 @@ const FormUsuario = () => {
         event.preventDefault();
         const formulario = event.currentTarget;
 
+        // VALIDAR EL FORMULARIO 
         if (formulario.checkValidity() === false) {
             event.stopPropagation();
             setValidated(true);
@@ -72,7 +73,7 @@ const FormUsuario = () => {
         });
 
         try {
-            const response = await fetch('http://localhost:5000/alumno/login', {
+            const response = await fetch('http://localhost:5000/usuario', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +82,7 @@ const FormUsuario = () => {
             });
             
             if (response.ok) {
-                navigate('/alumnos');
+                navigate('/');
             } else {
                 const errorData = await response.json();
                 console.error('Error al enviar el formulario', errorData);
@@ -99,8 +100,11 @@ const FormUsuario = () => {
         <>
         {loading ? (
             <>
-            <Header />
+            <Header/>
+            <div className="loader">
+
             <SyncLoader size={150} color={'#213448'} loading={loading} />
+            </div>
             </>
         ) : (
 
@@ -200,9 +204,12 @@ const FormUsuario = () => {
                                 </Form.Select>
                             </Form.Group>
 
-                            <Button type="submit" variant="primary">
-                                ¡Crear cuenta!
-                            </Button>
+                            <Col xs={12} style={{display: "flex", justifyContent: "center"}}>
+                                <Button variant="outline-dark" type="submit" className="mt-4">
+                                    ¡Crear cuenta!
+                                </Button>
+                            </Col>
+                            
                         </Form>
                     </Col>
                     <Col xs={0} md={4}></Col>

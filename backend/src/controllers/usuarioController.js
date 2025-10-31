@@ -5,7 +5,18 @@ import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Clase from "../models/Clase.js";
 // SHARP => LIMITAR RESOLUCION IMAGEN
-import sharp from "sharp"
+// import sharp from "sharp"
+import nodemailer from 'nodemailer';
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: 'tonalyamusica@gmail.com',
+        pass: 'ctig qiqw wgqp iirw'
+    }
+});
 
 
 const limpiarParametros = (param) => {
@@ -22,10 +33,22 @@ router.post('/', async (req, res) => {
             telefono: req.body.telefono,
             password: req.body.password,
             imagen: req.body.imagen,
+            instrumentos: req.body.instrumentos,
+            provincia: req.body.provincia,
             activo: true
         });
         await usuario.save();
-        res.json({ mensaje: 'Usuario creado exitosamente' });
+        if (!usuario) {
+            return res.json({ mensaje: 'Usuario no encontrado' });
+        }
+        const cuerpoCorreo = {
+            from: '"TONALYA" <tonalyamusica@gmail.com>',
+            to: usuario.email,
+            subject: `Bienvenido a TONALYA, ${usuario.nombre}`,
+            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, haz click en el siguiente enlace: <a href="http://localhost:5173/usuario/${usuario._id}">Perfil</a></p>`
+        };
+        const respuestaCorreo = await transporter.sendMail(cuerpoCorreo);
+        res.json({ mensaje: 'Usuario creado exitosamente', correo: respuestaCorreo });
     } catch (error) {
         res.json({ mensaje: 'Error al crear el usuario', error: error.message });
     }

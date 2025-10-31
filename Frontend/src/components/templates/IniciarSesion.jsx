@@ -18,7 +18,7 @@ const IniciarSesion = () => {
 
         if (rol == "profesor") {
             try {
-                let respuesta = await fetch (`http://localhost:5000/profesor/login`, {
+                let respuesta = await fetch('http://localhost:5000/profesor/login', {
                     method: 'POST', 
                     headers: {
                         "Content-Type": "application/json"
@@ -28,22 +28,34 @@ const IniciarSesion = () => {
                         password: contrasenya
                     })
                 });
-                if (respuesta.ok) {
-                    const objetoRespuesta = await respuesta.json()
-        console.log('Credenciales guardadas:', objetoRespuesta);
-                    sessionStorage.setItem('usuario', objetoRespuesta.email)
-                    sessionStorage.setItem("profesor", objetoRespuesta.nombre); 
-                    sessionStorage.setItem('id', objetoRespuesta.id)
-                    navigate("/profesores");
-                } else if (respuesta == 0) {
-                    alert("Contraseña incorrecta");
-                } else {
-                    alert("Usuario no encontrado");
-                    navigate()
+
+                const objetoRespuesta = await respuesta.json(); 
+                
+                console.log(objetoRespuesta);
+
+                if (!respuesta.ok) {
+                    alert(objetoRespuesta.mensaje || 'Error en el servidor');
+                    return;
                 }
-            } catch (Exception) {
-                console.error(Exception);
+
+                if (objetoRespuesta.mensaje === "Correo electrónico o contraseña incorrectos") {
+                    alert(objetoRespuesta.mensaje);
+                } else if (objetoRespuesta.mensaje === 'Iniciaste sesión exitosamente') {
+                    sessionStorage.setItem('usuario', objetoRespuesta.email);
+                    sessionStorage.setItem("profesor", objetoRespuesta.nombre); 
+                    sessionStorage.setItem('id', objetoRespuesta.id);
+                    sessionStorage.setItem('rol', 'profesor');
+                    navigate("/");
+                } else {
+                    navigate("/"); // Redirigir a página principal por defecto
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión con el servidor');
             }
+
+
         } else if (rol == "alumno") {
             try {
                 let respuesta = await fetch (`http://localhost:5000/alumno/login`, {
@@ -61,6 +73,7 @@ const IniciarSesion = () => {
                     sessionStorage.setItem("usuario", objetoRespuesta.email);
                     sessionStorage.setItem("alumno", objetoRespuesta.nombre)
                     sessionStorage.setItem("id", objetoRespuesta.id)
+                    sessionStorage.setItem("rol", "alumno")
                     alert(objetoRespuesta.mensaje)
                 } else if (respuesta == 0) {
                     alert("Contraseña incorrecta");
@@ -86,6 +99,7 @@ const IniciarSesion = () => {
                     const objetoRespuesta = await respuesta.json();
                     sessionStorage.setItem("admin", objetoRespuesta.email);
                     sessionStorage.setItem("id", objetoRespuesta.id)
+                    sessionStorage.setItem("rol", "admin")
                     alert(objetoRespuesta.mensaje)
                 } else {
                     console.log(respuesta.json())
@@ -143,7 +157,7 @@ const IniciarSesion = () => {
 
                     {/* PIE => BOTONES */}
                     <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
-                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}}>
+                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}} onClick={comprobarLogin}>
                                 Iniciar sesión
                                 </Button>
                     </Modal.Footer>

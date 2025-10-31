@@ -9,6 +9,7 @@ import InstrumentosProfesor from './components/InstrumentosProfesor.jsx';
 import Registrarse from './components/templates/Registrarse.jsx';
 import CerrarSesion from './components/templates/CerrarSesion.jsx';
 import FormUsuario from './components/FormUsuario.jsx';
+import PerfilProfesor from './components/templates/PerfilProfesor.jsx';
 // FONTAWESOME => ICONOS FAMILIAS INSTRUMENTOS
 // <script type="module"> import react-bootstrap from https://cdn.jsdelivr.net/npm/react-bootstrap@2.10.10/+esm </script>
 /**
@@ -29,6 +30,7 @@ const App = () => {
                 <Route path="/instrumentos-profesor" element={<InstrumentosProfesor />} />
                 <Route path="/cerrar-sesion" element={<CerrarSesion/>} />
                 <Route path="/formusuario" element={<FormUsuario/>}/>
+                <Route path="/perfil-profesor" element={<PerfilProfesor/>} />
             </Routes>
         </BrowserRouter>
         

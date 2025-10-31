@@ -42,6 +42,7 @@ const FormProfesor = () => {
         event.preventDefault();
         const formulario = event.currentTarget;
         
+        // VALIDAR EL FORMULARIO
         if (formulario.checkValidity() === false) {
             event.stopPropagation();
             setValidated(true);
@@ -64,12 +65,12 @@ const FormProfesor = () => {
             password: contrasenya,
             imagen: imagenCodificada,
             provincia: provincia,
-            instrumentos: instrumentoP,
-            precioHora: precio
+            precioHora: precio,
+            instrumentos: instrumentoP
         });
 
         try {
-            const response = await fetch('http://localhost:5000/profesor/login', {
+            const response = await fetch('http://localhost:5000/profesor', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,6 +79,7 @@ const FormProfesor = () => {
             });
             
             if (response.ok) {
+                console.log(response.correo)
                 navigate('/profesores');
             } else {
                 const errorData = await response.json();
@@ -207,7 +209,7 @@ const FormProfesor = () => {
                                     required>
                                     <option value="">Selecciona tu instrumento</option>
                                     {instrumentos.map((instrumento, index) => (
-                                        <option key={index} value={instrumento.id || instrumento.nombre}>
+                                        <option key={index} value={instrumento._id }>
                                             {instrumento.nombre}
                                         </option>
                                     ))}
@@ -231,7 +233,7 @@ const FormProfesor = () => {
                             </Form.Group>
 
                             <Col xs={12} style={{display: "flex", justifyContent: "center"}}>
-                                <Button variant="outline-dark" type="submit">REGISTRARSE</Button>
+                                <Button variant="outline-dark" type="submit" className="mt-4">REGISTRARSE</Button>
                             </Col>
                         </Form>
                     </Col>

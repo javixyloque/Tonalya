@@ -37,6 +37,27 @@ ul {
     background-color: #94B4C1;
 }
 
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: transparent; /* color del fondo de la página */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loader > * {
+  margin: auto;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
 
 
 
