@@ -1,11 +1,11 @@
 import {useState, useEffect} from "react";
 import {SyncLoader} from "react-spinners"
 import { useNavigate } from 'react-router-dom';
-import { codificarImagen64 } from "../functions/codificar.js";
+import { codificarImagen64 } from "../../functions/codificar.js";
 import {Container, Row, Col, Button, Form} from "react-bootstrap"
 import "./formprofesor.css";
-import Header from "../components/templates/Header.jsx";
-import { arrayProvincias } from "../functions/variables.js";
+import Header from "../templates/Header.jsx";
+import { arrayProvincias } from "../../functions/variables.js";
 
 const FormProfesor = () => {
     const navigate = useNavigate();
@@ -79,8 +79,17 @@ const FormProfesor = () => {
             });
             
             if (response.ok) {
-                console.log(response.correo)
-                navigate('/profesores');
+                const objetoRespuesta = await response.json();
+                if (objetoRespuesta.mensaje == "El correo electrónico ya está en uso") {
+                    alert(objetoRespuesta.mensaje)
+                } else {
+                    alert(objetoRespuesta.mensaje)
+                    setLoading(true);
+                    setTimeout(() => {
+                        setLoading(false);
+                        navigate('/', {replace: true});
+                    }, 1000)
+                }
             } else {
                 const errorData = await response.json();
                 console.error('Error al enviar el formulario', errorData);

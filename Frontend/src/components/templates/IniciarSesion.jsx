@@ -1,10 +1,9 @@
 import { useState } from "react"
 import { Modal, Form, Button} from "react-bootstrap"
-import { useNavigate, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import "./iniciarSesion.css";
 
 const IniciarSesion = () => {
-    const navigate = useNavigate();
     const [mostrar, setMostrar] = useState(false);
     const [rol, setRol] = useState(""); 
     const [email, setEmail] = useState("");
@@ -45,9 +44,8 @@ const IniciarSesion = () => {
                     sessionStorage.setItem("profesor", objetoRespuesta.nombre); 
                     sessionStorage.setItem('id', objetoRespuesta.id);
                     sessionStorage.setItem('rol', 'profesor');
-                    navigate("/");
-                } else {
-                    navigate("/"); // Redirigir a página principal por defecto
+                    alert(`Bienvenido ${objetoRespuesta.nombre}! nos alegra tenerte de vuelta`);
+                    window.location.reload();
                 }
                 
             } catch (error) {
@@ -58,7 +56,7 @@ const IniciarSesion = () => {
 
         } else if (rol == "alumno") {
             try {
-                let respuesta = await fetch (`http://localhost:5000/alumno/login`, {
+                let respuesta = await fetch ('http://localhost:5000/usuario/login', {
                     method: 'POST', 
                     headers: {
                         "Content-Type": "application/json"
@@ -74,10 +72,10 @@ const IniciarSesion = () => {
                     sessionStorage.setItem("alumno", objetoRespuesta.nombre)
                     sessionStorage.setItem("id", objetoRespuesta.id)
                     sessionStorage.setItem("rol", "alumno")
-                    alert(objetoRespuesta.mensaje)
-                } else if (respuesta == 0) {
-                    alert("Contraseña incorrecta");
+                    alert(`Bienvenido, ${objetoRespuesta.nombre}! nos alegra tenerte de vuelta`);
+                    window.location.reload();
                 } else {
+                    console.error("Error al iniciar sesión");
                     alert("Usuario no encontrado");
                 }
             } catch (Exception) {
@@ -85,7 +83,7 @@ const IniciarSesion = () => {
             }
         } else if (rol== "admin") {
             try {
-                let respuesta = await fetch('http://localhost:5000/admin/login', {
+                const respuesta = await fetch('http://localhost:5000/admin/login', {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json"
@@ -97,12 +95,14 @@ const IniciarSesion = () => {
                 })
                 if (respuesta.ok) {
                     const objetoRespuesta = await respuesta.json();
+                    console.log(objetoRespuesta)
                     sessionStorage.setItem("admin", objetoRespuesta.email);
+                    sessionStorage.setItem("usuario", objetoRespuesta.email)
                     sessionStorage.setItem("id", objetoRespuesta.id)
                     sessionStorage.setItem("rol", "admin")
                     alert(objetoRespuesta.mensaje)
                 } else {
-                    console.log(respuesta.json())
+                    console.error("Ha ocurrido un error en la peticion")
                 }
             } catch (exception) {
                 console.error(exception)

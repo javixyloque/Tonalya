@@ -9,9 +9,18 @@ import Clase from "../models/Clase.js";
 import Instrumento from "../models/Instrumento.js";
 import Admin from "../models/Admin.js";
 
-const limpiarParametros = (param) => {
-    return String(param).trim().toLowerCase();
-}
+
+router.get('/', async (req, res) => {
+    try {
+        const admin = await Admin.findOne({});
+        if (!admin) {
+            return res.json({ mensaje: 'Administrador no encontrado' });
+        }
+        res.json(admin);
+    } catch (error) {
+        res.json({ mensaje: 'Error al obtener el administrador', error: error.message });
+    }
+})
 
 router.delete('/', async (req, res) => {
     try {

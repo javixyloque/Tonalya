@@ -27,6 +27,13 @@ const limpiarParametros = (param) => {
 
 router.post('/', async (req, res) => {
     try {
+        const email  = req.body.email;
+        const usuarioExistente = await Usuario.findOne({ "email": email });
+
+        if (usuarioExistente != null) {
+            return res.json({ mensaje: 'El correo electrónico ya está en uso' });
+            
+        }
         const usuario = new Usuario({
             nombre: req.body.nombre,
             email: req.body.email,
@@ -45,7 +52,7 @@ router.post('/', async (req, res) => {
             from: '"TONALYA" <tonalyamusica@gmail.com>',
             to: usuario.email,
             subject: `Bienvenido a TONALYA, ${usuario.nombre}`,
-            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, haz click en el siguiente enlace: <a href="http://localhost:5173/usuario/${usuario._id}">Perfil</a></p>`
+            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a></p>`
         };
         const respuestaCorreo = await transporter.sendMail(cuerpoCorreo);
         res.json({ mensaje: 'Usuario creado exitosamente', correo: respuestaCorreo });
@@ -57,7 +64,7 @@ router.post('/', async (req, res) => {
 // OBTENER DATOS USUARIO
 router.get('/:id', async (req, res) => {
     try {
-        const usuario = await Usuario.find({_id: req.params.id, activo: true});
+        const usuario = await Usuario.findOne({_id: req.params.id, activo: true});
         if (!usuario) {
             return res.json({ mensaje: 'Usuario no encontrado' });
         }
@@ -104,10 +111,6 @@ router.post('/reservar-clase', async (req, res) => {
         const instrumento = req.body.instrumento;
         const idProfesor = req.body.profesorId;
 
-
-     
-        
-        
         var minsInicio  = fechaInicio.getMinutes();
         var horaInicio = fechaInicio.getHours();
         var minsFin = fechaFin.getMinutes();
@@ -185,10 +188,12 @@ router.put('/pagar-clase/:id', async (req, res) => {
     res.json({ mensaje: 'Clase pagada con éxito' });
 });
 
+// OBTENER TODAS LAS CLASES DE UN USUARIO 
+
+
 // OBTENER INFO CLASES USUARIO
 router.get('/clases/:id', async (req, res) => {
     try {
-        const idAlumno = limpiarParametros(req.params.id);
         const alumno = await Usuario.findById(req.params.id);
         if (!alumno) {
             return res.json({ mensaje: 'Alumno no encontrado' });
@@ -207,7 +212,7 @@ router.get('/clases/:id', async (req, res) => {
 
 router.put('/:id/clase/:claseId', async (req, res) => {
     try {
-        const alumno = await Usuario.find({_id: req.params.id, activo: true});
+        const alumno = await Usuario.findOne({_id: req.params.id, activo: true});
         if (!alumno) {
             return res.json({ mensaje: 'Alumno no encontrado' });
         }
@@ -229,7 +234,7 @@ router.put('/:id/clase/:claseId', async (req, res) => {
 
 router.put('/:id/instrumento', async (req, res) => {
     try {
-        const usuario = await Usuario.find({_id: req.params.id, activo: true});
+        const usuario = await Usuario.findOne({_id: req.params.id, activo: true});
         if (!usuario) {
             return res.json({ mensaje: 'usuario no encontrado' });
         }
@@ -253,7 +258,7 @@ router.put('/:id/instrumento', async (req, res) => {
 // ELIMINAR INSTRUMENTO USUARIO
 router.delete('/:id/instrumento/:idInstrumento', async (req, res) => {
     try {
-        const usuario = await Usuario.find(req.params.id);
+        const usuario = await Usuario.findById(req.params.id);
         if (!usuario) {
             res.json({ mensaje: 'Usuario no encontrado' });
         }

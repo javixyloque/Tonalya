@@ -1,4 +1,4 @@
-import {Nav, Navbar, NavDropdown, Image} from "react-bootstrap"
+import {Nav, Navbar, Image} from "react-bootstrap"
 // LOGO
 import Tipograma from "../../resources/images/tonalya_tipograma.png";
 import "./dropdown.css"
@@ -31,14 +31,21 @@ const Header = () => {
                             </NavDropdown.Item >
                         </NavDropdown> */}
 
+                        {/* SI ESTA LOGEADO */}
                         {logeado ? (
                             <>
-                            {rol == "profesor" ? (
-                                <Nav.Link to="/perfil-profesor" className="mx-2 my-2 flex-end">Perfil</Nav.Link>
+                            {/* SI EL ROL ES PROFESOR  */}
+                            {
+                            rol == "profesor" ? (
+                                <Nav.Link href="/perfil-profesor" className="mx-2 my-2 flex-end">Perfil</Nav.Link>
+                                
+                                // ELSE SI EL ROL ES ALUMNO 
                             ): rol == "alumno" ? (
-                                <Nav.Link to="/perfil-alumno" className="mx-2 my-2 flex-end">Perfil</Nav.Link>
+                                <Nav.Link href="/perfil-usuario" className="mx-2 my-2 flex-end">Perfil</Nav.Link>
+                                
+                                // ELSE SI EL ROL ES ADMIN 
                             ): rol == "admin"? (
-                                <Nav.Link to="/perfil-admin" className="mx-2 my-2 flex-end" style={{textDecoration: "none", cursor: "pointer"}}>Perfil</Nav.Link>
+                                <Nav.Link href="/perfil-admin" className="mx-2 my-2 flex-end" style={{textDecoration: "none", cursor: "pointer"}}>Perfil</Nav.Link>
                             ): null
                             }
                             <Nav.Link className="mx-2 my-2 flex-end" href="/cerrar-sesion" style={{color: "#213448"}}>

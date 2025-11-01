@@ -26,6 +26,13 @@ const transporter = nodemailer.createTransport({
 // AÑADIR PROFESOR
 router.post('/', async (req, res) => {
     try {
+        const email  = req.body.email;
+        const profesorExistente = await Profesor.findOne({ "email": email });
+
+        if (profesorExistente != null) {
+            return res.json({ mensaje: 'El correo electrónico ya está en uso' });
+            
+        }
         
         const profesor = new Profesor({
             nombre: req.body.nombre,

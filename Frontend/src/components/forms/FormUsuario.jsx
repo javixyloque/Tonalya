@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { SyncLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
-import { codificarImagen64 } from "../functions/codificar.js";
+import { codificarImagen64 } from "../../functions/codificar.js";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 // import "./formalumno.css";
-import Header from "../components/templates/Header.jsx";
-import {arrayProvincias} from "../functions/variables.js";
+import Header from "../templates/Header.jsx";
+import {arrayProvincias} from "../../functions/variables.js";
 
 
 const FormUsuario = () => {
@@ -45,6 +45,7 @@ const FormUsuario = () => {
     const enviarFormulario = async (event) => {
         event.preventDefault();
         const formulario = event.currentTarget;
+        setLoading(true)
 
         // VALIDAR EL FORMULARIO 
         if (formulario.checkValidity() === false) {
@@ -81,11 +82,19 @@ const FormUsuario = () => {
                 body: datosFormulario,
             });
             
-            if (response.ok) {
-                navigate('/');
+            const objetoRespuesta = await response.json();
+            if (objetoRespuesta.mensaje == "El correo electrónico ya está en uso") {
+                alert(objetoRespuesta.mensaje)
+                setLoading(false);
             } else {
-                const errorData = await response.json();
-                console.error('Error al enviar el formulario', errorData);
+
+                if (objetoRespuesta.mensaje) {
+                    alert(objetoRespuesta.mensaje);
+                    navigate('/', {replace: true});
+                
+                }
+                setLoading(false);
+                
             }
         } catch (error) {
             console.error('Error de red:', error);
