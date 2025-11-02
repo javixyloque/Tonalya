@@ -17,7 +17,7 @@ const Header = () => {
                 <Navbar.Collapse id="navegacion">
                     <Nav className="me-auto" style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
                         <Nav.Link href="/" style={{color: "#547792"}}>Inicio</Nav.Link>
-                        <Nav.Link href="/instrumentos" style={{color: "#547792"}}>Instrumentos</Nav.Link>
+                        <Nav.Link href="/buscador-profesores" style={{color: "#547792"}}>Profesores</Nav.Link>
                         
                         {/* <NavDropdown title="Utilidades" id="dropdown" style={{color: "#547792"}}>
                             <NavDropdown.Item href="/instrumentos" style={{color: "#213448"}}>Instrumentos</NavDropdown.Item>

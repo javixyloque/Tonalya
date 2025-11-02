@@ -11,6 +11,7 @@ import Registrarse from './components/templates/Registrarse.jsx';
 import CerrarSesion from './components/templates/CerrarSesion.jsx';
 import PerfilProfesor from './components/PerfilProfesor.jsx';
 import PerfilUsuario from './components/PerfilUsuario.jsx';
+import BuscadorProfesores from './components/BuscadorProfesores.jsx';
 // FONTAWESOME => ICONOS FAMILIAS INSTRUMENTOS
 // <script type="module"> import react-bootstrap from https://cdn.jsdelivr.net/npm/react-bootstrap@2.10.10/+esm </script>
 /**
@@ -33,6 +34,7 @@ const App = () => {
                 <Route path="/formusuario" element={<FormUsuario/>}/>
                 <Route path="/perfil-profesor" element={<PerfilProfesor/>} />
                 <Route path="/perfil-usuario" element={<PerfilUsuario/>} />
+                <Route path="/buscador-profesores" element={<BuscadorProfesores/>} />
             </Routes>
         </BrowserRouter>
         

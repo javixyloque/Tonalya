@@ -102,6 +102,7 @@ router.delete('/:id', async (req, res) => {
 
 // AÑADIR RESERVA DE CLASE ALUMNO
 
+
 router.post('/reservar-clase', async (req, res) => {
     try {
         const descripcion = req.body.descripcion;
@@ -153,6 +154,37 @@ router.post('/reservar-clase', async (req, res) => {
         
         alumno.clases.push(claseSolicitada._id);
         await alumno.save();
+        const cuerpoCorreoProfesor = {
+            from: "TONALYA <tonalyamusica@gmail.com>",
+            subject: "Solicitud de reserva de clase",
+            to: profesor.email,
+            html: `<h1>Solicitud de reserva de clase</h1>
+            <p>Alumno: ${alumno.nombre} ${alumno.apellido}</p>
+            <p>Instrumento: ${instrumento}</p>
+            <p>Descripción: ${descripcion}</p>
+            <p>Fecha inicio: ${claseSolicitada.fechaInicio}</p>
+            <p>Fecha fin: ${claseSolicitada.fechaFin}</p>
+            <p>Duracion: ${horas} horas</p>
+            <p>Precio: ${claseSolicitada.precio}</p>`
+        }
+        const cuerpoCorreoAlumno = {
+            from: "TONALYA <tonalyamusica@gmail.com>",
+            subject: "Solicitud de reserva de clase exitosa",
+            to: alumno.email,
+            html: `<h1>Solicitud de reserva de clase exitosa</h1>
+            <p>Profesor: ${profesor.nombre}</p>
+            <p>Instrumento: ${instrumento}</p>
+            <p>Descripción: ${descripcion}</p>
+            <p>Fecha inicio: ${claseSolicitada.fechaInicio}</p>
+            <p>Fecha fin: ${claseSolicitada.fechaFin}</p>
+            <p>Duracion: ${horas} horas</p>
+            <p>Precio: ${claseSolicitada.precio}</p>
+            <p>En cuanto ${profesor.nombre} acepte tu solicitud, te enviaremos un correo con los detalles de la clase,<br> Gracias por utilizar Tonalya!!</p>
+            `
+        }
+
+        await transporter.sendMail(cuerpoCorreoProfesor);
+        await transporter.sendMail(cuerpoCorreoAlumno);
 
 
         res.json({ mensaje: 'Solicitud de reserva enviada con éxito' });
@@ -198,9 +230,9 @@ router.get('/clases/:id', async (req, res) => {
         if (!alumno) {
             return res.json({ mensaje: 'Alumno no encontrado' });
         }
-        alumno.clases.forEach( async claseId => {
-            return res.json(await Clase.findById(claseId))
-        })
+        // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
+        const clases = await Clase.find({ _id: { $in: alumno.clases } })
+        res.json(clases);
     } catch (error) {
         res.json({ mensaje: 'Error al obtener las clases del alumno', error: error.message });
     }
@@ -232,7 +264,7 @@ router.put('/:id/clase/:claseId', async (req, res) => {
 
 // AÑADIR INSTRUMENTOS USUARIO
 
-router.put('/:id/instrumento', async (req, res) => {
+router.post('/:id/instrumento', async (req, res) => {
     try {
         const usuario = await Usuario.findOne({_id: req.params.id, activo: true});
         if (!usuario) {

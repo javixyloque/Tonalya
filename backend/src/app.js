@@ -61,7 +61,7 @@ const main  = async () => {
     //CORS => SOLICITUDES DESDE EL CLIENTE, LIMITAMOS LAS OPCIONES A LO QUE VAMOS A UTILIZAR
     
     app.use(cors( {
-        origin: 'http://localhost:5173',
+        origin: ['http://localhost:5173', /*'https://ewa-translatable-bindingly.ngrok-free.dev'*/],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
     }));
@@ -156,7 +156,7 @@ const main  = async () => {
 
     
 // CONFIGURAR PUERTO
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 

@@ -1,4 +1,4 @@
-import express, { text } from "express";
+import express from "express";
 const router = express.Router();
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.js";
@@ -65,6 +65,16 @@ router.post('/', async (req, res) => {
     }
 });
 
+// OBTENER TODOS LOS PROFESORES
+router.get('/', async (req, res) => {
+    try {
+        const profesores = await Profesor.find();
+        res.json(profesores);
+    } catch (error) {
+        res.json({ mensaje: 'Error al obtener los profesores', error: error.message });
+    }
+});
+
 // OBTENER DATOS PROFESOR
 router.get('/:id', async (req, res) => {
     try {
@@ -118,17 +128,7 @@ router.get(('/profesor/:provincia'), async (req, res) => {
 })
 
 // ACTUALIZAR DATOS PROFESOR
-router.put('/:id', async (req, res) => {
-    try {
-        const profesor = await Profesor.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!profesor) {
-            return res.json({ mensaje: 'Profesor no encontrado' });
-        }
-        res.json(profesor);
-    } catch (error) {
-        res.json({ mensaje: 'Error al actualizar el profesor', error: error.message });
-    }
-});
+
 
 router.put('/:id', async (req, res) => {
     try {
@@ -153,7 +153,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // ANADIR INSTRUMENTO/S PROFESOR
-router.put('/:id/instrumento', async (req, res) => {
+router.post('/:id/instrumento', async (req, res) => {
     try {
         const profesor = await Profesor.findById(req.params.id);
         if (!profesor) {
@@ -170,7 +170,7 @@ router.put('/:id/instrumento', async (req, res) => {
         profesor.instrumentos.push(idInstrumento);
         await profesor.save();
         
-        res.json({ mensaje: 'Instrumento agregado exitosamente', profesor: nuevoProfesor });
+        res.json({ mensaje: 'Instrumento agregado exitosamente', profesor: profesor }); 
     } catch (error) {
         res.json({ mensaje: 'Error al agregar el instrumento', error: error.message });
     }
@@ -216,6 +216,22 @@ router.put('/aceptar-reserva/:id', async (req, res) => {
 
     res.json({ mensaje: 'Solicitud de reserva aceptada con éxito' });
 });
+
+router.get("/clases/:id", async (req, res) => {
+    try {
+        const profesor = await Profesor.findById(req.params.id);
+        if (!profesor) {
+            return res.json({ mensaje: 'Profesor no encontrado' });
+        }
+        // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
+        const clases = await Clase.find({ _id: { $in: profesor.clases } })
+        res.json(clases);
+    } catch (error) {
+        res.json({ mensaje: 'Error al obtener las clases del profesor', error: error.message });
+    }
+})
+
+
 
 
 // AÑADIR CLASE PROFESOR

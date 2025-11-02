@@ -1,0 +1,152 @@
+nov 02 18:09:11 javixyloque kernel: 
+nov 02 18:09:15 javixyloque kernel: [0;1;31m[0;1;39m[0;1;31mACPI BIOS Error (bug): Could not resolve symbol [\_TZ.ETMD], AE_NOT_FOUND (20240827/psargs-332)[0m
+nov 02 18:09:15 javixyloque kernel: [0;1;31m[0;1;39m[0;1;31mACPI Error: Aborting method \_SB.IETM._OSC due to previous error (AE_NOT_FOUND) (20240827/psparse-529)[0m
+nov 02 18:09:16 javixyloque (uidsynth)[2227]: [0;1;31m[0;1;39m[0;1;31mfluidsynth.service: Failed to drop capabilities: Operation not permitted[0m
+nov 02 18:09:16 javixyloque systemd[2150]: [0;1;31m[0;1;39m[0;1;31mFailed to start fluidsynth.service - FluidSynth Daemon.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 40 and the job result is failed.[0m
+nov 02 18:09:16 javixyloque systemd[2150]: [0;1;31m[0;1;39m[0;1;31mFailed to start openrazer-daemon.service - Daemon to manage razer devices in userspace.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 41 and the job result is failed.[0m
+nov 02 18:09:24 javixyloque gdm-password][3585]: [0;1;31m[0;1;39m[0;1;31mgkr-pam: unable to locate daemon control file[0m
+nov 02 18:09:24 javixyloque (uidsynth)[3618]: [0;1;31m[0;1;39m[0;1;31mfluidsynth.service: Failed to drop capabilities: Operation not permitted[0m
+nov 02 18:09:24 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start fluidsynth.service - FluidSynth Daemon.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 36 and the job result is failed.[0m
+nov 02 18:09:25 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_added: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 18:09:25 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dpkcs11-3855.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 293 and the job result is failed.[0m
+nov 02 18:09:25 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dsecrets-3859.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 297 and the job result is failed.[0m
+nov 02 18:09:25 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dssh-3854.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 289 and the job result is failed.[0m
+nov 02 18:09:26 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-spice\x2dvdagent-4002.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 335 and the job result is failed.[0m
+nov 02 18:09:26 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-im\x2dlaunch-4099.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 394 and the job result is failed.[0m
+nov 02 18:09:26 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-ubuntu\x2dreport\x2don\x2dupgrade-4054.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 370 and the job result is failed.[0m
+nov 02 18:09:26 javixyloque systemd[3596]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-user\x2ddirs\x2dupdate\x2dgtk-4080.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 382 and the job result is failed.[0m
+nov 02 18:09:27 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_removed: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 18:26:51 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_added: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 18:26:52 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_removed: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 18:26:52 javixyloque (uidsynth)[23214]: [0;1;31m[0;1;39m[0;1;31mfluidsynth.service: Failed to drop capabilities: Operation not permitted[0m
+nov 02 18:26:52 javixyloque systemd[23198]: [0;1;31m[0;1;39m[0;1;31mFailed to start fluidsynth.service - FluidSynth Daemon.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 42 and the job result is failed.[0m
+nov 02 18:26:52 javixyloque systemd[23198]: [0;1;31m[0;1;39m[0;1;31mFailed to start openrazer-daemon.service - Daemon to manage razer devices in userspace.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 43 and the job result is failed.[0m
+nov 02 18:27:00 javixyloque gdm-password][23734]: [0;1;31m[0;1;39m[0;1;31mgkr-pam: unable to locate daemon control file[0m
+nov 02 18:27:00 javixyloque (uidsynth)[23761]: [0;1;31m[0;1;39m[0;1;31mfluidsynth.service: Failed to drop capabilities: Operation not permitted[0m
+nov 02 18:27:00 javixyloque systemd[23744]: [0;1;31m[0;1;39m[0;1;31mFailed to start fluidsynth.service - FluidSynth Daemon.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 40 and the job result is failed.[0m
+nov 02 18:27:01 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_added: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 18:27:01 javixyloque systemd[23744]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dpkcs11-23985.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 293 and the job result is failed.[0m
+nov 02 18:27:01 javixyloque systemd[23744]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dsecrets-23991.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 297 and the job result is failed.[0m
+nov 02 18:27:01 javixyloque systemd[23744]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-gnome\x2dkeyring\x2dssh-23984.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 289 and the job result is failed.[0m
+nov 02 18:27:02 javixyloque systemd[23744]: [0;1;31m[0;1;39m[0;1;31mFailed to start app-gnome-ubuntu\x2dreport\x2don\x2dupgrade-24205.scope - Application launched by gnome-session-binary.[0m
+[0;38;5;245m░░ [0m[0;32mSubject: A start job for unit UNIT has failed[0m
+[0;38;5;245m░░[0m [0;32mDefined-By: systemd[0m
+[0;38;5;245m░░[0m [0;32mSupport: http://www.ubuntu.com/support[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mA start job for unit UNIT has finished with a failure.[0m
+[0;38;5;245m░░[0m [0;32m[0m
+[0;38;5;245m░░[0m [0;32mThe job identifier is 370 and the job result is failed.[0m
+nov 02 18:27:03 javixyloque gdm3[2108]: [0;1;31m[0;1;39m[0;1;31mGdm: on_display_removed: assertion 'GDM_IS_REMOTE_DISPLAY (display)' failed[0m
+nov 02 19:25:22 javixyloque kernel: [0;1;31m[0;1;39m[0;1;31musb 1-1.1: device descriptor read/64, error -32[0m
