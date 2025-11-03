@@ -35,20 +35,24 @@ router.delete('/', async (req, res) => {
 // LOGIN ADMIN
 router.post('/login', async (req, res) => {
     try {
-        const email = req.body.email;
-        const password = req.body.password;
-        console.log("Intentando inciar sesion como admin")
+        const { email, password } = req.body;
 
-        const admin = await Admin.findOne({ "email": email });
-        if (!admin || !bcrypt.compareSync(password, admin.password)) {
-            return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+        const admin = await Admin.findOne({ email });
+        if (!admin) {
+            return res.status(401).json({ mensaje: 'Correo electrónico incorrecto' });
+        }
+
+        const contrasenyaValida = bcrypt.compareSync(password, admin.password);
+        if (!contrasenyaValida) {
+            return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
         }
 
         // SESIONES HAY QUE HACERLAS EN FRONT
-        res.json({ mensaje: 'Sesión iniciada correctamente', email: admin.email, id: admin._id });
+        res.json({ mensaje: 'Sesión iniciada correctamente', email: admin.email, id: admin._id, nombre: admin.email });
 
     } catch (error) {
-        res.json({ mensaje: 'Error al iniciar sesión como administrador', error: error.message });
+        console.log(error);
+        res.status(500).json({ mensaje: 'Error al iniciar sesión como administrador', error: error.message });
     }
 });
 
@@ -90,10 +94,10 @@ router.delete('/usuario/:id', async (req, res) => {
     }
 });
 
-// OBTENER DATOS DE TODOS LOS PROFESORES
+// OBTENER DATOS DE TODOS LOS PROFESORES (ORDEN ALFABETICO POR NOMBRE)
 router.get('/profesores', async (req, res) => {
     try {
-        const profesores = await Profesor.find({});
+        const profesores = await Profesor.find({}).sort({ nombre: 1 });
         if (!profesores) {
             return res.json({ mensaje: 'No se ha encontrado ningún profesor' });
         }

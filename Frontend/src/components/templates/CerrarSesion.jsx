@@ -23,8 +23,8 @@ const CerrarSesion = () => {
         <>
             {loading && (
                 <div className="loader">
-                    <SyncLoader color="#ECEFCA"/><br></br>
-                    <p style={{color: "#ECEFCA"}}>Cerrando sesión...</p>
+                    <SyncLoader color="#213448"/><br></br>
+                    <p style={{color: "#213448"}}>Cerrando sesión...</p>
                 </div>
             )}
         </>

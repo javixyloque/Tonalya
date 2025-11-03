@@ -102,20 +102,20 @@ const BuscadorProfesores = () => {
                 {/* FORMULARIO DE BÚSQUEDA */}
                 <Row className="mb-4">
                     <Col xs={12}>
-                        <Card className="shadow-sm">
+                        <Card className="shadow-sm" style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
                             <Card.Body>
                                 <Form onSubmit={buscarProfesores}>
                                     <Row>
                                         <Col xs={12} md={4} className="mb-3">
                                             <Form.Group>
                                                 <Form.Label>Instrumento</Form.Label>
-                                                <Form.Select
+                                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
                                                     value={instrumentoSeleccionado}
                                                     onChange={(e) => setInstrumentoSeleccionado(e.target.value)}
                                                 >
-                                                    <option value="">Todos los instrumentos</option>
+                                                    <option value="" >Todos los instrumentos</option>
                                                     {instrumentosDisponibles.map(instrumento => (
-                                                        <option key={instrumento._id} value={instrumento._id}>
+                                                        <option key={instrumento._id} value={instrumento._id} >
                                                             {instrumento.nombre} ({instrumento.familia})
                                                         </option>
                                                     ))}
@@ -126,11 +126,11 @@ const BuscadorProfesores = () => {
                                         <Col xs={12} md={4} className="mb-3">
                                             <Form.Group>
                                                 <Form.Label>Provincia</Form.Label>
-                                                <Form.Select
+                                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
                                                     value={provinciaSeleccionada}
                                                     onChange={(e) => setProvinciaSeleccionada(e.target.value)}
                                                 >
-                                                    <option value="">Todas las provincias</option>
+                                                    <option value="" >Todas las provincias</option>
                                                     {provincias.map((provincia, index) => (
                                                         <option key={index} value={provincia}>
                                                             {provincia}
@@ -151,7 +151,7 @@ const BuscadorProfesores = () => {
                                                   Buscar Profesores
                                                 </Button>
                                                 <Button 
-                                                    variant="outline-secondary" 
+                                                    variant="secondary" 
                                                     onClick={limpiarFiltros}
                                                     disabled={loading}
                                                 >
@@ -178,8 +178,8 @@ const BuscadorProfesores = () => {
                         {loading ? (
                            <>
                                 <div className="loader">
-                                    <SyncLoader color="#ECEFCA"/><br></br>
-                                    <p style={{color: "#ECEFCA"}}>Buscando...</p>
+                                    <SyncLoader color="#213448"/><br></br>
+                                    <p style={{color: "#213448"}}>Buscando...</p>
                                 </div>
                             </>
                         ) : (
@@ -187,7 +187,7 @@ const BuscadorProfesores = () => {
                                 {profesores.length > 0 && (
                                     <div className="mb-3">
                                         <h4>
-                                            {profesores.length} profesor{profesores.length !== 1 ? 'es' : ''} encontrado{profesores.length !== 1 ? 's' : ''}
+                                            {profesores.length} profesor{profesores.length > 1 ? 'es' : ''} encontrado{profesores.length > 1 ? 's' : ''}
                                         </h4>
                                     </div>
                                 )}
@@ -195,7 +195,7 @@ const BuscadorProfesores = () => {
                                 <Row>
                                     {profesores.map(profesor => (
                                         <Col xs={12} md={6} lg={4} key={profesor._id} className="mb-4">
-                                            <Card className="h-100 shadow-sm">
+                                            <Card className="h-100 shadow-sm" style={{backgroundColor: "#ECEFCA"}}>
                                                 {profesor.imagen && (
                                                     <Card.Img 
                                                         variant="top" 
@@ -225,7 +225,7 @@ const BuscadorProfesores = () => {
                                                             size="sm" 
                                                             className="w-100"
                                                             onClick={() => {
-                                                                // Aquí puedes añadir la navegación al perfil del profesor
+                                                                
                                                                 console.log('Ver perfil de:', profesor._id);
                                                             }}
                                                         >

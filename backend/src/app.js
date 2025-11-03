@@ -61,7 +61,8 @@ const main  = async () => {
     //CORS => SOLICITUDES DESDE EL CLIENTE, LIMITAMOS LAS OPCIONES A LO QUE VAMOS A UTILIZAR
     
     app.use(cors( {
-        origin: ['http://localhost:5173', /*'https://ewa-translatable-bindingly.ngrok-free.dev'*/],
+        origin: true,
+        // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
     }));

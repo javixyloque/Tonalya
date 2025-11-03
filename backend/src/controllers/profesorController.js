@@ -267,9 +267,14 @@ router.post('/login', async (req, res) => {
         
         
         const profesor = await Profesor.findOne({ "email": email });
-        
-        if (!profesor || !bcrypt.compareSync(password, profesor.password)) {
-            return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+
+        if (!profesor) {
+            return res.status(401).json({ mensaje: 'Correo electrónico incorrecto' });
+        }
+
+        const contrasenyaValida = bcrypt.compareSync(password, profesor.password);
+        if (!contrasenyaValida) {
+            return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
         }
         
         // SESIONES HAY QUE HACERLAS EN FRONT

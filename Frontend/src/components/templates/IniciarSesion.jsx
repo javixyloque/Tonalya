@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Modal, Form, Button} from "react-bootstrap"
+import { Modal, Form, Button, Alert} from "react-bootstrap"
 import {  Link } from "react-router-dom";
 import "./iniciarSesion.css";
 
@@ -8,112 +8,83 @@ const IniciarSesion = () => {
     const [rol, setRol] = useState(""); 
     const [email, setEmail] = useState("");
     const [contrasenya, setContrasenya] = useState("");
+
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
+    const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [tipoAlerta, setTipoAlerta] = useState('success'); 
     
     const mostrarModal = () => setMostrar(true);
     const ocultarModal = () => setMostrar(false);
 
     const comprobarLogin = async (event) => {
         event.preventDefault();
-
-        if (rol == "profesor") {
-            try {
-                let respuesta = await fetch('http://localhost:5000/profesor/login', {
-                    method: 'POST', 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: contrasenya
-                    })
-                });
-
-                const objetoRespuesta = await respuesta.json(); 
-                
-                console.log(objetoRespuesta);
-
-                if (!respuesta.ok) {
-                    alert(objetoRespuesta.mensaje || 'Error en el servidor');
-                    return;
-                }
-
-                if (objetoRespuesta.mensaje === "Correo electrónico o contraseña incorrectos") {
-                    alert(objetoRespuesta.mensaje);
-                } else if (objetoRespuesta.mensaje === 'Iniciaste sesión exitosamente') {
-                    sessionStorage.setItem('usuario', objetoRespuesta.email);
-                    sessionStorage.setItem("profesor", objetoRespuesta.nombre); 
-                    sessionStorage.setItem('id', objetoRespuesta.id);
-                    sessionStorage.setItem('rol', 'profesor');
-                    alert(`Bienvenido ${objetoRespuesta.nombre}! nos alegra tenerte de vuelta`);
-                    window.location.reload();
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error de conexión con el servidor');
-            }
-
-
-        } else if (rol == "alumno") {
-            try {
-                let respuesta = await fetch ('http://localhost:5000/usuario/login', {
-                    method: 'POST', 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify( {
-                        email: email,
-                        password: contrasenya
-                    })
-                });
-                if (respuesta.ok) {
-                    const objetoRespuesta = await respuesta.json();
-                    sessionStorage.setItem("usuario", objetoRespuesta.email);
-                    sessionStorage.setItem("alumno", objetoRespuesta.nombre)
-                    sessionStorage.setItem("id", objetoRespuesta.id)
-                    sessionStorage.setItem("rol", "alumno")
-                    alert(`Bienvenido, ${objetoRespuesta.nombre}! nos alegra tenerte de vuelta`);
-                    window.location.reload();
-                } else {
-                    console.error("Error al iniciar sesión");
-                    alert("Usuario no encontrado");
-                }
-            } catch (Exception) {
-                console.error(Exception);
-            }
-        } else if (rol== "admin") {
-            try {
-                const respuesta = await fetch('http://localhost:5000/admin/login', {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: contrasenya
-                    })
-                })
-                if (respuesta.ok) {
-                    const objetoRespuesta = await respuesta.json();
-                    console.log(objetoRespuesta)
-                    sessionStorage.setItem("admin", objetoRespuesta.email);
-                    sessionStorage.setItem("usuario", objetoRespuesta.email)
-                    sessionStorage.setItem("id", objetoRespuesta.id)
-                    sessionStorage.setItem("rol", "admin")
-                    alert(objetoRespuesta.mensaje)
-                } else {
-                    console.error("Ha ocurrido un error en la peticion")
-                }
-            } catch (exception) {
-                console.error(exception)
-            }
+        let urlPeticion;
+        switch (rol) {
+            case "profesor":
+                urlPeticion = "http://localhost:5000/profesor/login";
+                break;
+            case "alumno":
+                urlPeticion = "http://localhost:5000/usuario/login";
+                break;
+            case "admin":
+                urlPeticion = "http://localhost:5000/admin/login";
+                break;
         }
+        const respuesta = await fetch(urlPeticion, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: contrasenya
+            })
+        });
+        console.log(email, contrasenya, rol);
+        console.log("Status de respuesta:", respuesta.status);
+        
+        const objetoRespuesta = await respuesta.json();
+        console.log("Respuesta completa:", objetoRespuesta);
+        
+        if (respuesta.ok) {
+            sessionStorage.setItem("usuario", objetoRespuesta.email);
+            sessionStorage.setItem("id", objetoRespuesta.id);
+            sessionStorage.setItem("rol", rol);
+            
+            setMensajeAlerta(`Bienvenido de nuevo ${objetoRespuesta.nombre}, ¡Es un placer tenerte de vuelta!`);
+            setTipoAlerta('success');
+            setMostrarAlerta(true);
+            
+            // window.location.href = '/';
+
+            setTimeout(() => {
+                setMostrarAlerta(false);
+                ocultarModal();
+                window.location.href='/';
+            }, 2000);
+        } else {
+            setMensajeAlerta(objetoRespuesta.mensaje);
+            setTipoAlerta('danger');
+            setMostrarAlerta(true);
+
+            setTimeout(() => {
+                setMostrarAlerta(false);
+            }, 2000);
+        }
+
+        
+         
+        
     }
+
+
+
+
     return (
         <>
 
             <Link to="#" className='mx-2 my-2 flex-end' style={{color: "#213448", textDecoration: "none", cursor: "pointer", right: 0}} onClick={mostrarModal}> Iniciar Sesión</Link>
-            <Modal centered show={mostrar} onHide={ocultarModal} style={{color: "red"}}>
+            <Modal centered show={mostrar} onHide={ocultarModal}>
 
             {/* CABECERO */}
                 <Modal.Header  style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
@@ -122,19 +93,29 @@ const IniciarSesion = () => {
                 <Form  onSubmit={comprobarLogin}>
                     <Modal.Body style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
 
+                        {mostrarAlerta && (
+                            <Alert variant={tipoAlerta} className="mb-3">
+                                {mensajeAlerta}
+                            </Alert>
+                        )}
+
                         {/*TIPO DE USUARIO */}
                         <Form.Group className="mb-3">
                                 <Form.Label>Selecciona tipo de usuario:</Form.Label>
-                                <Form.Select value={rol} onChange={(e) => setRol(e.target.value)}>
-                                    <option value="admin">Tipo de usuario</option>
+                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                                     value={rol} 
+                                     onChange={(e) => setRol(e.target.value)}>
+                                    <option value="">Selecciona el tipo de usuario</option>
                                     <option value="alumno">Alumno</option>
                                     <option value="profesor">Profesor</option>
+                                    <option value="admin">Administrador</option>
+                                    
                                 </Form.Select>
                         </Form.Group>
-                        
+                      
                         {/* EMAIL */}
                         <Form.Label>EMAIL</Form.Label>
-                        <Form.Control className="mb-3"  
+                        <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}} 
                             type="email"
                             placeholder="ejemplo@ejemplo.es"
                             required
@@ -145,7 +126,7 @@ const IniciarSesion = () => {
 
                         {/* CONTRASENYA */}
                         <Form.Label>CONTRASEÑA</Form.Label>
-                        <Form.Control className="mb-3"
+                        <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}}
                             type="password"
                             placeholder="*****"
                             required
@@ -159,7 +140,10 @@ const IniciarSesion = () => {
                     <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
                             <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}} onClick={comprobarLogin}>
                                 Iniciar sesión
-                                </Button>
+                            </Button>
+                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}} onClick={ocultarModal}>
+                                Cancelar
+                            </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

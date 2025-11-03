@@ -311,8 +311,13 @@ router.post('/login', async (req, res) => {
         const password = req.body.password;
         
         const usuario = await Usuario.findOne({ "email": email });
-        if (!usuario || !bcrypt.compareSync(password, usuario.password)) {
-            return res.json({ mensaje: 'Correo electrónico o contraseña incorrectos' });
+        if (!usuario) {
+            return res.status(401).json({ mensaje: 'Correo electrónico incorrecto' });
+        }
+        
+        const contrasenyaValida = bcrypt.compareSync(password, usuario.password);
+        if (!contrasenyaValida) {
+            return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
         }
         
         // SESIONES HAY QUE HACERLAS EN FRONT

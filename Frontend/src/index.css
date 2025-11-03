@@ -6,7 +6,7 @@ line-height: 1.5;
 font-weight: 400;
 
 
-background-color: #213448;
+/* background-color: #213448; */
 
 text-rendering: optimizeLegibility;
 -webkit-font-smoothing: antialiased;
@@ -14,6 +14,7 @@ text-rendering: optimizeLegibility;
 }
 #root {
 background: radial-gradient( #ECEFCA, #94B4C1);
+min-height: 100vh;
 }
 
 * {
@@ -42,7 +43,7 @@ ul {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: transparent; /* color del fondo de la página */
+  background-color: transparent;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
