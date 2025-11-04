@@ -82,9 +82,7 @@ const PerfilAdmin = () =>  {
         }
     }
 
-  // USEEFFECT QUE CARGA DATOS AL INICIAR
   useEffect(() => {
-    // FUNCIONES INSTANTIADAS DENTRO DEL USEEFFECT (PETICIONES INICIALES)
     async function obtenerDatosIniciales() {
       setCargando(true);
       setError(null);
@@ -156,37 +154,37 @@ const PerfilAdmin = () =>  {
   }
 
   // ELIMINAR RECURSO (USUARIO/PROFESOR/INSTRUMENTO)
-  async function eliminarRecurso() {
-    if (!objetivoEliminar) return;
-    setCargando(true);
-    setError(null);
-    try {
-        const { tipo, datos } = objetivoEliminar;
-        let url = baseApi;
-        if (tipo === "usuario") url += `/usuario/${datos._id}`;
-        if (tipo === "profesor") url += `/profesor/${datos._id}`;
-        if (tipo === "instrumento") url += `/instrumento/${datos._id}`;
+    async function eliminarRecurso() {
+      if (!objetivoEliminar) return;
+      setCargando(true);
+      setError(null);
+      try {
+          const { tipo, datos } = objetivoEliminar;
+          let url = baseApi;
+          if (tipo === "usuario") url += `/usuario/${datos._id}`;
+          if (tipo === "profesor") url += `/profesor/${datos._id}`;
+          if (tipo === "instrumento") url += `/instrumento/${datos._id}`;
 
-        const res = await fetch(url, { method: "DELETE" });
-        if (!res.ok) {
-            const cuerpo = await res.json().catch(() => ({}));
-            throw new Error(cuerpo.mensaje || "Error al eliminar");
-        }
-        setMostrandoAlerta(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado correctamente`);
+          const res = await fetch(url, { method: "DELETE" });
+          if (!res.ok) {
+              const cuerpo = await res.json().catch(() => ({}));
+              throw new Error(cuerpo.mensaje || "Error al eliminar");
+          }
+          setMostrandoAlerta(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado correctamente`);
 
-        setTimeout(() => {
-            setMostrandoAlerta(null)
-        }, 2500);
+          setTimeout(() => {
+              setMostrandoAlerta(null)
+          }, 2500);
 
-        setMostrarModalEliminar(false);
-        setObjetivoEliminar(null);
-        await refrescarDatos();
-    } catch (err) {
-        setError("Error al eliminar: " + (err.message || err));
-    } finally {
-        setCargando(false);
+          setMostrarModalEliminar(false);
+          setObjetivoEliminar(null);
+          await refrescarDatos();
+      } catch (err) {
+          setError("Error al eliminar: " + (err.message || err));
+      } finally {
+          setCargando(false);
+      }
     }
-  }
 
   // ABRIR MODAL DE EDICIÓN
   function abrirModalEditar(tipo, datos) {

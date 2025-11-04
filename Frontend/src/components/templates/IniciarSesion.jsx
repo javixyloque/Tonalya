@@ -29,6 +29,14 @@ const IniciarSesion = () => {
             case "admin":
                 urlPeticion = "http://localhost:5000/admin/login";
                 break;
+            case "":
+                setTipoAlerta("warning");
+                setMensajeAlerta("Debes seleccionar el tipo de usuario");
+                setMostrarAlerta(true);
+                setTimeout(() => {
+                    setMostrarAlerta(false);
+                }, 2000)
+                break;
         }
         const respuesta = await fetch(urlPeticion, {
             method: 'POST',

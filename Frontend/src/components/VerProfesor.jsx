@@ -1,20 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal } from "react-bootstrap";
+import Header from "./templates/Header";
 
-/**
- * PERFIL PROFESOR
- * ----------------------------------------------------------
- * MUESTRA LOS DATOS DEL PROFESOR SELECCIONADO DESDE LA URL.
- * PERMITE AL ALUMNO (CON SESIÓN INICIADA) SOLICITAR UNA CLASE.
- * LAS PETICIONES SE HACEN CON FETCH NATIVO.
- * SIN TYPESCRIPT. VARIABLES Y COMENTARIOS EN ESPAÑOL.
- * ----------------------------------------------------------
- */
 
 const VerProfesor = () => {
     // OBTENER EL ID DEL PROFESOR DESDE LA URL
-    const { id } = useParams();
+    const {id}  = useParams();
 
     // OBTENER EL ID DEL ALUMNO DESDE SESSIONSTORAGE
     const idAlumno = sessionStorage.getItem("id");
@@ -132,6 +124,8 @@ const VerProfesor = () => {
     }
 
     return (
+        <>
+        <Header/>
         <Container className="py-4">
             {/* ALERTAS DE ERROR O ÉXITO */}
             {error && <Alert variant="danger">{error}</Alert>}
@@ -145,7 +139,7 @@ const VerProfesor = () => {
                             {profesor.imagen && (
                                 <Card.Img
                                     variant="top"
-                                    src={profesor.imagen} // SE ASUME BASE64 YA CODIFICADO
+                                    src={profesor.imagen} 
                                     alt={profesor.nombre}
                                     style={{ maxHeight: "300px", objectFit: "cover" }}
                                 />
@@ -280,6 +274,7 @@ const VerProfesor = () => {
                 </Modal.Body>
             </Modal>
         </Container>
+        </>
     );
 }
 
