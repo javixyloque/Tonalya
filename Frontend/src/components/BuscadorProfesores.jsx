@@ -225,7 +225,7 @@ const BuscadorProfesores = () => {
                                                             size="sm" 
                                                             className="w-100"
                                                             onClick={() => {
-                                                                
+                                                                window.location.href = `/ver-profesor/${profesor._id}`;
                                                                 console.log('Ver perfil de:', profesor._id);
                                                             }}
                                                         >

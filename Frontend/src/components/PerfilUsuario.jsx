@@ -37,6 +37,8 @@ const PerfilUsuario = () => {
                 // CLASES E INSTRUMENTOS
                 const [clasesResp, instrumentosResp] = await Promise.all([
                     fetch(`http://localhost:5000/usuario/clases/${idUsr}`).then(res => res.json()),
+
+                    // USUARIOS NO TIENEN ORDEN PARA OBTENER SUS INSTRUMENTOS (NO OCUPA MUCHO TAMPOCO)
                     Promise.all(
                         (usr.instrumentos).map(idInstrumento => 
                             fetch(`http://localhost:5000/instrumentos/${idInstrumento}`).then(res => res.json())

@@ -48,11 +48,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const instrumentos = async () => {
     try {
         const instrumentoDB = await Instrumento.find({})
-        if (instrumentoDB.length === 0) {
+        if (!instrumentoDB) {
             await Instrumento.insertMany(arrInstrumentos())
         }
     } catch (error) {
-        res.json({mensaje: 'Error al obtener los instrumentos', error: error.message});
+        console.error({mensaje: 'Error al obtener los instrumentos', error: error.message});
     }
     
 }
