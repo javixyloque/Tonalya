@@ -229,7 +229,7 @@ const BuscadorProfesores = () => {
                                                                 console.log('Ver perfil de:', profesor._id);
                                                             }}
                                                         >
-                                                            Ver Perfil Completo
+                                                            Ver Perfil / Reservar
                                                         </Button>
                                                     </div>
                                                 </Card.Body>
