@@ -19,7 +19,7 @@ const PerfilProfesor = () => {
     // CARGAR TODOS LOS DATOS DEL PROFESOR
     useEffect(() => {
         async function cargarDatosProfesor() {
-            if (!sessionStorage.getItem('id') || sessionStorage.getItem('rol') !== "profesor") {
+            if (!sessionStorage.getItem('usuario') || sessionStorage.getItem('rol') !== "profesor") {
                 window.location.href = '/';
                 return;
             }

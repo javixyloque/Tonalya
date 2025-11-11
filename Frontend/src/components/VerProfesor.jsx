@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Form, Alert, Modal } from "react-bootstrap";
 import Header from "./templates/Header";
-
-
+import {SyncLoader} from "react-spinners";
+/**
+ * VISTA DE PROFESOR
+ * - Vista de los usuarios del perfil de un profesor
+ * - Se puede reservar una clase desde esta vista
+ */
 const VerProfesor = () => {
     // OBTENER EL ID DEL PROFESOR DESDE LA URL
     const {id}  = useParams();
@@ -23,13 +27,13 @@ const VerProfesor = () => {
         instrumento: "",
     });
 
-    // ESTADOS DE UI
+    // ESTADOS DE USUARIO
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState(null);
     const [exito, setExito] = useState(null);
     const [mostrarModalReserva, setMostrarModalReserva] = useState(false);
 
-    // FUNCIÓN PARA OBTENER DATOS DEL PROFESOR
+    // EFECTO  => DATOS PROFESOR
     useEffect(() => {
         async function obtenerProfesor() {
             setCargando(true);
@@ -108,9 +112,10 @@ const VerProfesor = () => {
     // SI ESTÁ CARGANDO Y NO HAY DATOS AÚN
     if (cargando && !profesor) {
         return (
-            <Container className="py-5 text-center">
-                <Spinner animation="border" />
-            </Container>
+            <div className="loader">
+                    <SyncLoader color="#213448"/><br></br>
+                    <p style={{color: "#213448"}}>Cargando datos del profesor...</p>
+            </div>
         );
     }
 
@@ -161,7 +166,16 @@ const VerProfesor = () => {
 
                                 <Button
                                     variant="primary"
-                                    onClick={() => setMostrarModalReserva(true)}
+                                    onClick={() =>{ 
+                                        if (!sessionStorage.getItem("usuario") || sessionStorage.getItem("rol") !== "alumno") {
+                                           
+                                            alert("Debes estar logueado como alumno para solicitar una clase")
+                                            
+                                        } else {
+                                            setMostrarModalReserva(true)
+                                        }
+                                    }
+                                }
                                 >
                                     Solicitar clase
                                 </Button>

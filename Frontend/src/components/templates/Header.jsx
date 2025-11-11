@@ -10,7 +10,7 @@ const Header = () => {
     return (
         <>
             {/* style={{, position: "fixed", width: "100%", height: "60px", zIndex: 1 }} */}
-            <Navbar  className="py-xs-5 py-md-0 px-3 fixed-top"  expand="lg" style={{zIndex: 1, backgroundColor: "#ECEFCA"}} >
+            <Navbar  className="py-xs-5 py-md-0 px-3 fixed-top"  expand="lg" style={{zIndex: 50, backgroundColor: "#ECEFCA"}} >
             
                 <Navbar.Brand href="/" ><Image height={30} src={Tipograma} alt="Tonalya" rounded></Image></Navbar.Brand>
                 <Navbar.Toggle aria-controls="navegacion" />

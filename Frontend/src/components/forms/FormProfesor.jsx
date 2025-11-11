@@ -7,7 +7,12 @@ import "./formprofesor.css";
 import Header from "../templates/Header.jsx";
 import { arrayProvincias } from "../../functions/variables.js";
 
+
+
 const FormProfesor = () => {
+    if (sessionStorage.getItem('usuario')) {
+        window.location.href = "/";
+    } 
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [nombre, setNombre] = useState('');
@@ -101,8 +106,9 @@ const FormProfesor = () => {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <SyncLoader/>
+            <div className="loader">
+                    <SyncLoader color="#213448"/><br></br>
+                    <p style={{color: "#213448"}}>Registrando usuario</p>
             </div>
         );
     }

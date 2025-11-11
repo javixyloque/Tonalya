@@ -4,6 +4,7 @@ import {  Link } from "react-router-dom";
 import "./iniciarSesion.css";
 
 const IniciarSesion = () => {
+    
     const [mostrar, setMostrar] = useState(false);
     const [rol, setRol] = useState(""); 
     const [email, setEmail] = useState("");
@@ -38,6 +39,7 @@ const IniciarSesion = () => {
                 }, 2000)
                 break;
         }
+        
         const respuesta = await fetch(urlPeticion, {
             method: 'POST',
             headers: {

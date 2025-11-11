@@ -11,6 +11,9 @@ import {arrayProvincias} from "../../functions/variables.js";
 
 
 const FormUsuario = () => {
+    if (sessionStorage.getItem('usuario')) {
+        window.location.href = "/";
+    }
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [nombre, setNombre] = useState('');
