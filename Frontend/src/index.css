@@ -33,9 +33,10 @@ ul {
 }
 
 .container {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+    padding-top: 5rem !important;
+    padding-bottom: 5rem !important;
     background-color: #94B4C1;
+    min-height: 100vh;
 }
 
 .loader {

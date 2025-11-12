@@ -18,6 +18,8 @@ const VerProfesor = () => {
     // ESTADOS DE PROFESOR E INSTRUMENTOS
     const [profesor, setProfesor] = useState(null);
     const [instrumentos, setInstrumentos] = useState([]);
+    
+    const horasDia = ["08:00","08:30", "09:00","09:30", "10:00","10:30", "11:00","11:30", "12:00","12:30", "13:00","13:30", "14:00","14:30", "15:00","15:30", "16:00","16:30", "17:00","17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00","21:30", "22:00"];
 
     // ESTADOS DE FORMULARIO DE RESERVA
     const [formReserva, setFormReserva] = useState({
@@ -76,16 +78,29 @@ const VerProfesor = () => {
         setCargando(true);
         setError(null);
         setExito(null);
+        
+
+        if (!formReserva.diaClase || !formReserva.horaInicioClase || !formReserva.horaFinClase ) {
+            alert("Por favor, completa todos los campos de la solicitud de reserva.");
+            return;
+        }
+        const fechaInicio = `${formReserva.diaClase}T${formReserva.horaInicioClase}`;
+        const fechaFin = `${formReserva.diaClase}T${formReserva.horaFinClase}`;
+        if (fechaInicio > fechaFin) {
+            alert("La clase tiene que empezar antes que acabar.");
+            return;
+        }
 
         try {
             const cuerpo = {
                 descripcion: formReserva.descripcion,
                 alumnoId: idAlumno,
-                fechaInicio: formReserva.fechaInicio,
-                fechaFin: formReserva.fechaFin,
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin,
                 instrumento: formReserva.instrumento,
                 profesorId: id,
             };
+            console.log(cuerpo);
 
             const respuesta = await fetch("http://localhost:5000/usuario/reservar-clase", {
                 method: "POST",
@@ -101,9 +116,12 @@ const VerProfesor = () => {
 
             setExito(datos.mensaje || "Solicitud de clase enviada con éxito");
             setMostrarModalReserva(false);
+
             setFormReserva({ descripcion: "", fechaInicio: "", fechaFin: "", instrumento: "" });
+            setTimeout(() => setExito(null), 2000);
         } catch (err) {
             setError("Error al enviar la solicitud: " + err.message);
+            setTimeout(() => setError(null), 2000);
         } finally {
             setCargando(false);
         }
@@ -131,7 +149,7 @@ const VerProfesor = () => {
     return (
         <>
         <Header/>
-        <Container className="py-4">
+        <Container  >
             {/* ALERTAS DE ERROR O ÉXITO */}
             {error && <Alert variant="danger">{error}</Alert>}
             {exito && <Alert variant="success">{exito}</Alert>}
@@ -163,14 +181,16 @@ const VerProfesor = () => {
                                         </ul>
                                     </>
                                 )}
+                                <h6>Precio por hora de clase: <strong>{profesor.precioHora}€</strong></h6>
 
                                 <Button
                                     variant="primary"
                                     onClick={() =>{ 
                                         if (!sessionStorage.getItem("usuario") || sessionStorage.getItem("rol") !== "alumno") {
                                            
-                                            alert("Debes estar logueado como alumno para solicitar una clase")
-                                            
+                                            setError("Debes estar logueado como alumno para solicitar una clase")
+                                            setTimeout(() => setError(null), 3000)
+                                      
                                         } else {
                                             setMostrarModalReserva(true)
                                         }
@@ -216,37 +236,35 @@ const VerProfesor = () => {
 
                         {/* FECHAS */}
                         <Row>
-                            <Col>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Fecha de inicio</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        value={formReserva.fechaInicio}
-                                        onChange={(e) =>
-                                            setFormReserva({
-                                                ...formReserva,
-                                                fechaInicio: e.target.value,
-                                            })
-                                        }
-                                        required
-                                    />
-                                </Form.Group>
+                            <Form.Group className="mb-3">
+                            <Form.Label>Día</Form.Label>
+                            <Form.Control type="date" value={formReserva.diaClase} onChange={(e) => setFormReserva({ ...formReserva, diaClase: e.target.value })}>
+
+
+                            </Form.Control>
+                            </Form.Group>
+                        </Row>
+
+                        <Row>
+                            
+                            
+                            <Col xs={12} md={6} className="mb-3">
+                                <Form.Label>Hora inicio</Form.Label>
+                                <Form.Select value={formReserva.horaInicioClase} onChange={(e) => setFormReserva({ ...formReserva, horaInicioClase: e.target.value })}>
+                                    <option value="">Selecciona una hora</option>
+                                    {horasDia.map((hora) => (
+                                        <option key={hora} value={hora}>{hora}</option>
+                                    ))}
+                                </Form.Select>
                             </Col>
-                            <Col>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Fecha de fin</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        value={formReserva.fechaFin}
-                                        onChange={(e) =>
-                                            setFormReserva({
-                                                ...formReserva,
-                                                fechaFin: e.target.value,
-                                            })
-                                        }
-                                        required
-                                    />
-                                </Form.Group>
+                            <Col xs={12} md={6} className="mb-3">
+                                <Form.Label>Hora fin</Form.Label>
+                                <Form.Select value={formReserva.horaFinClase} onChange={(e) => setFormReserva({ ...formReserva, horaFinClase: e.target.value })}>
+                                    <option value="">Selecciona una hora</option>
+                                    {horasDia.map((hora) => (
+                                        <option key={hora} value={hora}>{hora}</option>
+                                    ))}
+                                </Form.Select>
                             </Col>
                         </Row>
 
@@ -265,7 +283,7 @@ const VerProfesor = () => {
                             >
                                 <option value="">Selecciona un instrumento</option>
                                 {instrumentos.map((inst) => (
-                                    <option key={inst._id} value={inst.nombre}>
+                                    <option key={inst._id} value={inst._id}>
                                         {inst.nombre}
                                     </option>
                                 ))}
@@ -280,8 +298,8 @@ const VerProfesor = () => {
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" variant="primary" disabled={cargando}>
-                                {cargando ? "Enviando..." : "Enviar solicitud"}
+                            <Button type="submit" variant="primary">
+                                Enviar solicitud
                             </Button>
                         </div>
                     </Form>

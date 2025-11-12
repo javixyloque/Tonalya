@@ -3,6 +3,7 @@ const router = express.Router();
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
+import Instrumento from "../models/Instrumento.js";
 import Clase from "../models/Clase.js";
 // SHARP => LIMITAR RESOLUCION IMAGEN
 // import sharp from "sharp"
@@ -107,32 +108,44 @@ router.post('/reservar-clase', async (req, res) => {
     try {
         const descripcion = req.body.descripcion;
         const idAlumno = req.body.alumnoId;
-        const fechaInicio = new Date(Date.parse(req.body.fechaInicio));
-        const fechaFin = new Date(Date.parse(req.body.fechaFin));
-        const instrumento = req.body.instrumento;
+        const fechaInicio = new Date(req.body.fechaInicio);
+        const fechaFin = new Date(req.body.fechaFin);
+        const idInstrumento = req.body.instrumento;
         const idProfesor = req.body.profesorId;
 
-        var minsInicio  = fechaInicio.getMinutes();
-        var horaInicio = fechaInicio.getHours();
-        var minsFin = fechaFin.getMinutes();
-        var horaFin = fechaFin.getHours();
+        let minsInicio = fechaInicio.getMinutes();
+        let minsFin = fechaFin.getMinutes();
+        let horasInicio = fechaInicio.getHours();
+        let horasFin = fechaFin.getHours();
+
+        if (horasFin > horasInicio) {
+            minsFin += 60 * (horasFin - horasInicio);
+        } else {
+            minsFin -= 60 * (horasInicio - horasFin);
+        }
+        let totalMinutos = minsFin - minsInicio;
+        let totalHoras = Math.floor(totalMinutos / 60);
+        let minutosExtra = (totalMinutos % 60)/60;
         
         const profesor = await Profesor.findById(idProfesor);
-        minsFin+=horaFin*60;
-        minsInicio+=horaInicio*60;
-        var horas = (minsFin - minsInicio) / 60
+        // minsFin+=horaFin*60;
+        // minsInicio+=horaInicio*60;
+        // var horas = (minsFin - minsInicio) / 60
+        if (!profesor) {
+            return res.json({ mensaje: 'Profesor no encontrado' });
+        }
         
         const nuevaClase = new Clase({
             descripcion: descripcion,
-            precio: profesor.precioHora * horas,
-            fechaInicio: fechaInicio.toLocaleString(),
-            fechaFin: fechaFin.toLocaleString(),
+            precio: profesor.precioHora * (totalHoras+minutosExtra),
+            fechaInicio: fechaInicio,
+            fechaFin: fechaFin,
             estado: 'pendiente',
             asistencia: false,
             completada: false,
             alumno: idAlumno,
             profesor: idProfesor,
-            instrumento: instrumento
+            instrumento: idInstrumento
         });
         
         await nuevaClase.save();
@@ -146,9 +159,13 @@ router.post('/reservar-clase', async (req, res) => {
         }
         
         const alumno = await Usuario.findById(idAlumno);
-        if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado' });
+        const instrumento = await Instrumento.findById(idInstrumento);
+        if (!alumno || !instrumento) {
+            return res.json({ mensaje: 'Alumno o instrumento no encontrado' });
         }
+        const formatoFecha = (fecha) => {
+            return fecha.toLocaleString('es-ES');
+        };
         
         
         
@@ -159,13 +176,13 @@ router.post('/reservar-clase', async (req, res) => {
             subject: "Solicitud de reserva de clase",
             to: profesor.email,
             html: `<h1>Solicitud de reserva de clase</h1>
-            <p>Alumno: ${alumno.nombre} ${alumno.apellido}</p>
-            <p>Instrumento: ${instrumento}</p>
+            <p>Alumno: ${alumno.nombre}</p>
+            <p>Instrumento: ${instrumento.nombre}</p>
             <p>Descripción: ${descripcion}</p>
-            <p>Fecha inicio: ${claseSolicitada.fechaInicio}</p>
-            <p>Fecha fin: ${claseSolicitada.fechaFin}</p>
-            <p>Duracion: ${horas} horas</p>
-            <p>Precio: ${claseSolicitada.precio}</p>`
+            <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
+            <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
+            <p>Duracion: ${totalHoras+minutosExtra} horas</p>
+            <p>Precio: ${claseSolicitada.precio} &euro;</p>`
         }
         const cuerpoCorreoAlumno = {
             from: "TONALYA <tonalyamusica@gmail.com>",
@@ -173,12 +190,12 @@ router.post('/reservar-clase', async (req, res) => {
             to: alumno.email,
             html: `<h1>Solicitud de reserva de clase exitosa</h1>
             <p>Profesor: ${profesor.nombre}</p>
-            <p>Instrumento: ${instrumento}</p>
+            <p>Instrumento: ${instrumento.nombre}</p>
             <p>Descripción: ${descripcion}</p>
-            <p>Fecha inicio: ${claseSolicitada.fechaInicio}</p>
-            <p>Fecha fin: ${claseSolicitada.fechaFin}</p>
-            <p>Duracion: ${horas} horas</p>
-            <p>Precio: ${claseSolicitada.precio}</p>
+            <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
+            <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
+            <p>Duracion: ${totalHoras+minutosExtra} horas</p>
+            <p>Precio: ${claseSolicitada.precio} &euro;</p>
             <p>En cuanto ${profesor.nombre} acepte tu solicitud, te enviaremos un correo con los detalles de la clase,<br> Gracias por utilizar Tonalya!!</p>
             `
         }

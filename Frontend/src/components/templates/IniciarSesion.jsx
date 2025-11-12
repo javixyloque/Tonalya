@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { Modal, Form, Button, Alert} from "react-bootstrap"
+import { Modal, Form, Button, Alert, InputGroup} from "react-bootstrap"
 import {  Link } from "react-router-dom";
 import "./iniciarSesion.css";
+import {Eye, EyeSlash} from "react-bootstrap-icons";
 
 const IniciarSesion = () => {
     
@@ -9,6 +10,8 @@ const IniciarSesion = () => {
     const [rol, setRol] = useState(""); 
     const [email, setEmail] = useState("");
     const [contrasenya, setContrasenya] = useState("");
+    
+    const [mostrarContrasenya, setMostrarContrasenya] = useState(false);
 
     const [mostrarAlerta, setMostrarAlerta] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
@@ -16,6 +19,10 @@ const IniciarSesion = () => {
     
     const mostrarModal = () => setMostrar(true);
     const ocultarModal = () => setMostrar(false);
+
+    const manejarMostrarContrasenya = () => {
+        setMostrarContrasenya(!mostrarContrasenya);
+    }
 
     const comprobarLogin = async (event) => {
         event.preventDefault();
@@ -135,14 +142,21 @@ const IniciarSesion = () => {
                         />
 
                         {/* CONTRASENYA */}
-                        <Form.Label>CONTRASEÑA</Form.Label>
-                        <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}}
-                            type="password"
-                            placeholder="*****"
-                            required
-                            value={contrasenya}
-                            onChange={e => setContrasenya(e.target.value)}
-                        />
+                        <Form.Group>
+                            <Form.Label>CONTRASEÑA</Form.Label>
+                            <InputGroup>
+                            <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                                type={mostrarContrasenya ? "text" : "password"}
+                                placeholder="*****"
+                                required
+                                value={contrasenya}
+                                onChange={e => setContrasenya(e.target.value)}
+                            />
+                            <Button variant="outline-secondary" onClick={() => manejarMostrarContrasenya()}>
+                                {mostrarContrasenya ? <EyeSlash/> : <Eye/>}
+                                </Button>
+                            </InputGroup>
+                        </Form.Group>
                         
                     </Modal.Body>
 
