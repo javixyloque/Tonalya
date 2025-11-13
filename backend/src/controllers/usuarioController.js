@@ -140,9 +140,8 @@ router.post('/reservar-clase', async (req, res) => {
             precio: profesor.precioHora * (totalHoras+minutosExtra),
             fechaInicio: fechaInicio,
             fechaFin: fechaFin,
-            estado: 'pendiente',
+            estado: 'aceptada',
             asistencia: false,
-            completada: false,
             alumno: idAlumno,
             profesor: idProfesor,
             instrumento: idInstrumento
@@ -163,6 +162,7 @@ router.post('/reservar-clase', async (req, res) => {
         if (!alumno || !instrumento) {
             return res.json({ mensaje: 'Alumno o instrumento no encontrado' });
         }
+
         const formatoFecha = (fecha) => {
             return fecha.toLocaleString('es-ES');
         };
@@ -181,7 +181,7 @@ router.post('/reservar-clase', async (req, res) => {
             <p>Descripción: ${descripcion}</p>
             <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
             <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
-            <p>Duracion: ${totalHoras+minutosExtra} horas</p>
+            <p>Duracion: ${totalHoras+minutosExtra} hora${totalHoras+minutosExtra > 1 ? 's' : ''}</p>
             <p>Precio: ${claseSolicitada.precio} &euro;</p>`
         }
         const cuerpoCorreoAlumno = {
@@ -194,7 +194,7 @@ router.post('/reservar-clase', async (req, res) => {
             <p>Descripción: ${descripcion}</p>
             <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
             <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
-            <p>Duracion: ${totalHoras+minutosExtra} horas</p>
+            <p>Duracion: ${totalHoras+minutosExtra} hora${totalHoras+minutosExtra > 1 ? 's' : ''}</p>
             <p>Precio: ${claseSolicitada.precio} &euro;</p>
             <p>En cuanto ${profesor.nombre} acepte tu solicitud, te enviaremos un correo con los detalles de la clase,<br> Gracias por utilizar Tonalya!!</p>
             `
@@ -237,11 +237,56 @@ router.put('/pagar-clase/:id', async (req, res) => {
     res.json({ mensaje: 'Clase pagada con éxito' });
 });
 
-// OBTENER TODAS LAS CLASES DE UN USUARIO 
+// OBTENER TODAS LAS CLASES DE UN USUARIO (CON INSTRUMENTO)
+
+router.get('/clases-instrumentos/:id', async (req, res) => {
+    try {
+        const usuario = await Usuario.findOne({ _id: req.params.id, activo: true })
+            .populate({
+                path: 'clases',
+                populate: { 
+                    path: 'instrumento'
+                }
+            });
+        
+        if (!usuario || !usuario.activo) {
+            return res.json({ mensaje: 'Usuario no encontrado' });
+        }
+        
+        const clasesConInstrumentos = usuario.clases.map(clase => ({
+            ...clase.toJSON(), 
+            instrumento: clase.instrumento
+        }));
+        
+        res.json({
+            clasesConInstrumentos
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener las clases con instrumentos del usuario',
+            error: error.message
+        });
+    }
+});
 
 
-// OBTENER INFO CLASES USUARIO
-router.get('/clases/:id', async (req, res) => {
+// OBTENER INFO CLASES PENDIENTES USUARIO
+router.get('/clases-pendientes/:id', async (req, res) => {
+try {
+    const alumno = await Usuario.findById(req.params.id);
+    if (!alumno) {
+        return res.json({ mensaje: 'Alumno no encontrado' });
+    }
+    // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
+    const clases = await Clase.find({ _id: { $in: alumno.clases }, estado: 'pendiente' })
+    res.json(clases);
+    } catch (error) {
+        res.json({ mensaje: 'Error al obtener las clases pendientes del alumno', error: error.message });
+    }
+})
+
+// OBTENER INFO CLASES ACEPTADAS USUARIO
+router.get('/clases-aceptadas/:id', async (req, res) => {
     try {
         const alumno = await Usuario.findById(req.params.id);
         if (!alumno) {
@@ -254,6 +299,41 @@ router.get('/clases/:id', async (req, res) => {
         res.json({ mensaje: 'Error al obtener las clases del alumno', error: error.message });
     }
 })
+
+// OBTENER INFO CLASES PAGADAS USUARIO
+router.get('/clases-pagadas/:id', async (req, res) => {
+    try {
+        const alumno = await Usuario.findById(req.params.id);
+        if (!alumno) {
+            return res.json({ mensaje: 'Alumno no encontrado' });
+        }
+        // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
+        const clases = await Clase.find({ _id: { $in: alumno.clases }, estado: 'pagada' })
+        res.json(clases);
+    } catch (error) {
+        res.json({ mensaje: 'Error al obtener las clases pagadas del alumno', error: error.message });
+    }
+})
+
+// OBTENER INFO CLASES COMPLETADAS USUARIO
+router.get('/clases-completadas/:id', async (req, res) => {
+    try {
+        const alumno = await Usuario.findById(req.params.id);
+        if (!alumno) {
+            return res.json({ mensaje: 'Alumno no encontrado' });
+        } 
+        const clases = await Clase.find({_id:  {$in: alumno.clases}, estado: 'completada'})
+        res.json(clases)
+        
+    } catch(error) {
+        res.json({ mensaje: 'Error al obtener las clases completadas del alumno', error: error.message });
+    }
+})
+
+
+
+
+        
 
 
 

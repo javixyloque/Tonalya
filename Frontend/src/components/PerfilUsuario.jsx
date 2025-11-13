@@ -11,7 +11,11 @@ import { codificarImagen64 } from "../functions/codificar.js";
 const PerfilUsuario = () => {
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [clases, setClases] = useState([]);
+    const [clasesPendientes, setClasesPendientes] = useState([]);
+    const [clasesAceptadas, setClasesAceptadas] = useState([]);    
+    const [clasesPagadas, setClasesPagadas] = useState([]);
+    const [clasesRechazadas, setClasesRechazadas] = useState([]);   
+    const [clasesCompletadas, setClasesCompletadas] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [mostrarGestionInstrumentos, setMostrarGestionInstrumentos] = useState(false);
     const [instrumentosDisponibles, setInstrumentosDisponibles] = useState([]);
@@ -33,21 +37,45 @@ const PerfilUsuario = () => {
                 const datosUsr = await fetch(`http://localhost:5000/usuario/${idUsr}`);
                 const usr = await datosUsr.json();
                 setUsuario(usr);
+                const clasesInstrumentos = await fetch (` http://localhost:5000/usuario/clases-instrumentos/${idUsr}`);
+                const datosClases = await clasesInstrumentos.json();
 
-                // CLASES E INSTRUMENTOS
-                const [clasesResp, instrumentosResp] = await Promise.all([
-                    fetch(`http://localhost:5000/usuario/clases/${idUsr}`).then(res => res.json()),
-
-                    // USUARIOS NO TIENEN ORDEN PARA OBTENER SUS INSTRUMENTOS (NO OCUPA MUCHO TAMPOCO)
-                    Promise.all(
-                        (usr.instrumentos).map(idInstrumento => 
-                            fetch(`http://localhost:5000/instrumentos/${idInstrumento}`).then(res => res.json())
-                        )
-                    )
-                ]);
-
-                setClases(clasesResp);
-                setInstrumentos(instrumentosResp);
+                let clases = (datosClases.clasesConInstrumentos);
+                // SE ME DUPLICABAN LOS DATOS, NO SE POR QUÉ, Y HE CAMBIADO LA LOGICA A ESTO
+                let tipoClases = {
+                    pendiente: [],
+                    aceptada: [],
+                    pagada: [],
+                    rechazada: [],
+                    completada: [],
+                }
+               
+                clases.forEach((clase) => {
+                    switch (clase.estado){
+                        case 'pendiente':
+                            tipoClases.pendiente.push(clase);
+                            break;
+                        case 'aceptada':
+                            tipoClases.aceptada.push(clase);
+                            break;
+                        case 'pagada':
+                            tipoClases.pagada.push(clase)
+                            break;
+                        case 'rechazada':
+                            tipoClases.rechazada.push(clase)
+                            break;
+                        case 'completada':
+                            tipoClases.completada.push(clase)
+                            break;
+                    } 
+                })
+                console.log(clases)
+                setClasesPendientes(tipoClases.pendiente);
+                setClasesAceptadas(tipoClases.aceptada);
+                setClasesPagadas(tipoClases.pagada);
+                setClasesRechazadas(tipoClases.rechazada);
+                setClasesCompletadas(tipoClases.completada);
+                
 
             } catch (error) {
                 console.error('Error cargando datos:', error);
@@ -87,7 +115,7 @@ const PerfilUsuario = () => {
                 provincia: usuario.provincia,
                 
             }
-            if (usuario.imagen) {
+            if (imagen) {
                 const imagenCodificada = await codificarImagen64(imagen);
                 datosActualizados.imagen = imagenCodificada;
             }
@@ -266,13 +294,79 @@ const PerfilUsuario = () => {
                 </Form>
 
                 {/* CLASES DEL ALUMNO */}
+
+                {/* CLASES PAGADAS  */}
                 <Row className="mb-3">
                     <Col xs={12} md={6}>
-                        <h3>Clases del alumno</h3>
+                        <h3>Clases Pagadas (sin completar)</h3>
                         <ListGroup>
-                            {clases.map((clase, index) => (
+                            {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
+                                <ListGroup.Item key={index} variant="success">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/*CLASES ACEPTADAS */}
+                <Row className="mb-3">
+                    <Col xs={12} md={6}>
+                        <h3>Clases pendientes de pago</h3>
+                        <ListGroup>
+                            {clasesAceptadas.length>0 && clasesAceptadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="primary">
-                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()}
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/*CLASES PENDIENTES DE ACEPTAR */}
+                <Row className="mb-3">
+                    <Col xs={12} md={6}>
+                        <h3>Clases pendientes de confirmar</h3>
+                        <ListGroup>
+                            {clasesPendientes.length>0 && clasesPendientes.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                <Button variant="outline-danger">Eliminar</Button>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/* CLASES COMPLETADAS */}
+                <Row className="mb-3">
+                    <Col xs={12} md={6}>
+                        <h3>Clases completadas</h3>
+                        <ListGroup>
+                            {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                <Button variant="outline-danger">Eliminar</Button>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/* CLASES RECHAZADAS */}
+                <Row className="mb-3">
+                    <Col xs={12} md={6}>
+                        <h3>Clases rechazadas</h3>
+                        <ListGroup>
+                            {clasesRechazadas.length>0 && clasesRechazadas.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                <Button variant="outline-danger">Eliminar</Button>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>

@@ -8,10 +8,10 @@ const ClaseSchema = new mongoose.Schema({
     fechaFin: Date,
     estado: {
         type: String,
-        enum: ['pendiente', 'aceptada', 'pagada', 'rechazada']
+        enum: ['pendiente', 'aceptada', 'pagada', 'rechazada', "completada"]
     },
     asistencia: Boolean,
-    completada: Boolean,
+    // completada: Boolean,
     instrumento: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Instrumento'

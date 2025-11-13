@@ -30,6 +30,19 @@ router.post('/', async (req, res) => {
     }
 });
 
+// OBTENER DATOS TODAS LAS CLASES => DESARROLLO
+router.get('/', async (req, res) => {
+    const clases = await Clase.find({});
+    res.json(clases);
+
+})
+// ELIMINAR => DESARROLLO
+router.delete ('/', async(req, res) => {
+    const clases = await Clase.deleteMany({});
+    res.json(clases);
+})
+
+
 // OBTENER DATOS CLASE
 router.get('/:id', async (req, res) => {
     
