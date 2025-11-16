@@ -238,7 +238,7 @@ const BuscadorProfesores = () => {
                                     ))}
                                 </Row>
 
-                                {profesores.length === 0 && !error && (
+                                {(profesores.length === 0 && !error) && (
                                     <div className="text-center my-5 text-muted">
                                         <h5>No hay profesores para mostrar</h5>
                                         <p>Usa los filtros para buscar profesores</p>

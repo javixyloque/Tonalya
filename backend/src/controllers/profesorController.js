@@ -4,22 +4,15 @@ import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Clase from "../models/Clase.js";
+import Instrumento from "../models/Instrumento.js";
 import nodemailer from 'nodemailer';
 import { reject } from "bcrypt/promises.js";
-
+import { enviarEmailsRechazoProfesor } from "../biblioteca.js";
 // SI NO ABIERTO, ABRIR: 
 // sudo ufw status
 // sudo ufw allow 587
 // sudo service ufw restart
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth: {
-        user: 'tonalyamusica@gmail.com',
-        pass: 'ctig qiqw wgqp iirw'
-    }
-});
 
 
     
@@ -217,6 +210,38 @@ router.put('/aceptar-reserva/:id', async (req, res) => {
     res.json({ mensaje: 'Solicitud de reserva aceptada con éxito' });
 });
 
+router.get('/clases-instrumentos/:id', async (req, res) => {
+    try {
+        const profesor = await Profesor.findOne({ _id: req.params.id, activo: true })
+            .populate({
+                path: 'clases',
+                populate: { 
+                    path: 'instrumento'
+                }
+            });
+        
+        if (!profesor || !profesor.activo) {
+            return res.json({ mensaje: 'Profesor no encontrado' });
+        }
+        
+        const clasesConInstrumentos = profesor.clases.map(clase => ({
+            ...clase.toJSON(), 
+            instrumento: clase.instrumento
+        }));
+        
+        res.json({
+            clasesConInstrumentos
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al obtener las clases con instrumentos del usuario',
+            error: error.message
+        });
+    }
+});
+
+
+
 router.get("/clases/:id", async (req, res) => {
     try {
         const profesor = await Profesor.findById(req.params.id);
@@ -256,6 +281,33 @@ router.put('/:id/clase', async (req, res) => {
         res.json({ mensaje: 'Clase agregada exitosamente' });
     } catch (error) {
         res.json({ mensaje: 'Error al agregar la clase', error: error.message });
+    }
+});
+
+// MODIFICAR CLASE
+router.put('/clase/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        const clase = await Clase.findByIdAndUpdate(id, req.body, { new: true });
+        const [alumno, profesor, instrumento] = await Promise.all([
+            Usuario.findById(clase.alumno),
+            Profesor.findById(clase.profesor),
+            Instrumento.findById(clase.instrumento)
+        ])
+        if (!clase) {
+            return res.json({ mensaje: 'Clase no encontrada' });
+        }
+        const tipoAccion = req.body.estado;
+        const mensaje = req.body.mensaje || '';
+        if (tipoAccion== 'rechazada') {
+            enviarEmailsRechazoProfesor(profesor, alumno, clase, instrumento, mensaje);
+        } else if (tipoAccion =='pagada') {
+            // enviarEmailsReserva(profesor[0], alumno[0], clase, instrumento[0]);
+        }
+        res.json(clase);
+    } catch (error) {
+        res.json({ mensaje: 'Error al actualizar la clase', error: error.message });
     }
 });
 

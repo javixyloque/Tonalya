@@ -7,6 +7,7 @@ import Header from "./templates/Header";
 import {arrayProvincias} from "../functions/variables.js";
 // import {Link} from "react-router-dom"
 import { codificarImagen64 } from "../functions/codificar.js";
+import "./perfil.css"
 
 const PerfilUsuario = () => {
     const [usuario, setUsuario] = useState(null);
@@ -34,11 +35,22 @@ const PerfilUsuario = () => {
             const idUsr = sessionStorage.getItem('id');
             
             try {
-                const datosUsr = await fetch(`http://localhost:5000/usuario/${idUsr}`);
-                const usr = await datosUsr.json();
+                const [datosUsr, clasesInstrumentos, instrumentosUsu] = await Promise.all([
+                    fetch(`http://localhost:5000/usuario/${idUsr}`).then(res => res.json()),
+                    fetch(`http://localhost:5000/usuario/clases-instrumentos/${idUsr}`).then(res => res.json()),
+                    fetch(`http://localhost:5000/usuario/${idUsr}/instrumentos`).then(res => res.json())
+                ])
+                console.log(clasesInstrumentos)
+                
+
+                
+
+
+                const usr =  datosUsr;
+                const instrumentosUsuario = instrumentosUsu.instrumentos;
                 setUsuario(usr);
-                const clasesInstrumentos = await fetch (` http://localhost:5000/usuario/clases-instrumentos/${idUsr}`);
-                const datosClases = await clasesInstrumentos.json();
+                setInstrumentos(instrumentosUsuario);
+                const datosClases = clasesInstrumentos;
 
                 let clases = (datosClases.clasesConInstrumentos);
                 // SE ME DUPLICABAN LOS DATOS, NO SE POR QUÉ, Y HE CAMBIADO LA LOGICA A ESTO
@@ -193,12 +205,39 @@ const PerfilUsuario = () => {
         }
     };
 
+    const rechazarClase = async  (claseId) => {
+        const decisionFinal = window.confirm('¿Estas seguro de que quieres rechazar esta clase?');
+
+        if (!decisionFinal) { 
+            return 
+        };
+        try {
+            const respuesta = await fetch(`http://localhost:5000/usuario/clase/${claseId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                },
+                body: JSON.stringify({ estado: 'rechazada' })
+            })
+            if (respuesta.ok) {
+                alert('Clase rechazada correctamente');
+                window.location.reload();
+            } else {
+                alert('Error al rechazar la clase');
+
+            }
+        } catch (error) {
+            console.error('Error rechazando clase:', error);
+        }
+    }
+
     return (
         <>
         {loading ? (
             <div className="loader">
-                <SyncLoader color="#ECEFCA"/><br></br>
-                <p style={{color: "#ECEFCA"}}>Cargando perfil...</p>
+                <SyncLoader color="213448"/><br></br>
+                <p style={{color: "#213448"}}>Cargando perfil...</p>
             </div>
         ) : (
             <>
@@ -284,41 +323,117 @@ const PerfilUsuario = () => {
                             </Form.Group>
                             </Col>
                     </Row>
+                    <hr />
+                    {/* INSTRUMENTOS DEL USUARIO  */}
+                    <Row className="my-5">
+                        <Col xs={12}>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h3>Tus Instrumentos</h3>
+                                <Button 
+                                    variant="outline-primary" 
+                                    onClick={() => setMostrarGestionInstrumentos(!mostrarGestionInstrumentos)}
+                                >
+                                    {mostrarGestionInstrumentos ? 'Cancelar' : 'Añadir instrumento'}
+                                </Button>
+                            </div>
+
+                            <ListGroup>
+                                {/* BUCLE MOSTRAR INSTRUMENTOS (Y BORRAR) */}
+                                {instrumentos.map((instrumento) => (
+                                    <ListGroup.Item key={instrumento._id} className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{instrumento.nombre}</strong> - {instrumento.familia}
+                                        </div>
+                                        <Button 
+                                            variant="outline-danger" 
+                                            size="sm"
+                                            onClick={() => eliminarInstrumento(instrumento._id)}
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </Col>
+                    </Row>
+
+                    {/* FORMULARIO AÑADIR INSTRUMENTO */}
+                    {mostrarGestionInstrumentos && (
+                        <Row className="mb-4 mx-1 p-3 border rounded bg-light">
+                            <Col xs={12}>
+                                <h4>Añadir Nuevo Instrumento</h4>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Selecciona un instrumento:</Form.Label>
+                                    <Form.Select 
+                                        value={instrumentoSeleccionado} 
+                                        onChange={(e) => setInstrumentoSeleccionado(e.target.value)}
+                                    >
+                                        <option value="">-- Selecciona un instrumento --</option>
+                                        {instrumentosDisponibles.map(instr => (
+                                            <option key={instr._id} value={instr._id}>
+                                                {instr.nombre} ({instr.familia})
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                                <div className="d-flex gap-2">
+                                    <Button 
+                                        variant="success" 
+                                        onClick={añadirInstrumento}
+                                        disabled={!instrumentoSeleccionado}
+                                    >
+                                        Añadir Instrumento
+                                    </Button>
+                                    <Button 
+                                        variant="secondary" 
+                                        onClick={() => setMostrarGestionInstrumentos(false)}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                </div>
+                            </Col>
+                        </Row>
+                    )}
 
                     <Row className="d-flex d-md-block justify-content-center w-100 w-md-25 mt-0 mt-md-5" >
-                        <Button variant="success" type="submit" className="mx-auto text-center justify-content-center d-flex" style={{maxWidth: "200px"}} >
+                        <Button variant="success" type="submit" className="mx-auto mb-5 text-center justify-content-center d-flex" style={{maxWidth: "200px"}} >
                         Guardar cambios
                         </Button>
                         
                     </Row>
                 </Form>
 
+                <hr className="my-5" />
+
                 {/* CLASES DEL ALUMNO */}
 
                 {/* CLASES PAGADAS  */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
+                <Row className="mb-5">
+                    <Col xs={12} md={6} className="my-3">
                         <h3>Clases Pagadas (sin completar)</h3>
                         <ListGroup>
                             {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="success">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                {/* <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}></Button> */}
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
                     </Col>
-                </Row>
 
                 {/*CLASES ACEPTADAS */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
+                
+                    <Col xs={12} md={6} className="my-3">
                         <h3>Clases pendientes de pago</h3>
                         <ListGroup>
                             {clasesAceptadas.length>0 && clasesAceptadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="primary">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+
+                                <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}>Rechazar</Button>
+
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -326,15 +441,16 @@ const PerfilUsuario = () => {
                 </Row>
 
                 {/*CLASES PENDIENTES DE ACEPTAR */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
+                <Row className="mb-5">
+                    <Col xs={12} md={6} className="my-3">
                         <h3>Clases pendientes de confirmar</h3>
                         <ListGroup>
                             {clasesPendientes.length>0 && clasesPendientes.map((clase, index) => (
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
-                                <Button variant="outline-danger">Eliminar</Button>
+                                <Button variant="outline-danger" onClick={() =>rechazarClase(clase._id)}>Rechazar</Button>
+
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -342,31 +458,31 @@ const PerfilUsuario = () => {
                 </Row>
 
                 {/* CLASES COMPLETADAS */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
+                <Row className="mb-5" >
+                    <Col xs={12} md={6} className="my-3">
                         <h3>Clases completadas</h3>
                         <ListGroup>
                             {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
-                                <Button variant="outline-danger">Eliminar</Button>
                                 </ListGroup.Item>
                             ))}
+
                         </ListGroup>
                     </Col>
-                </Row>
+            
 
                 {/* CLASES RECHAZADAS */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
+                
+                    <Col xs={12} md={6} className="my-3">
                         <h3>Clases rechazadas</h3>
                         <ListGroup>
                             {clasesRechazadas.length>0 && clasesRechazadas.map((clase, index) => (
-                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="danger">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
-                                <Button variant="outline-danger">Eliminar</Button>
+                                
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -374,75 +490,7 @@ const PerfilUsuario = () => {
                 </Row>
 
                 {/* INSTRUMENTOS DEL ALUMNO */}
-                <Row className="mb-3">
-                    <Col xs={12}>
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h3>Tus Instrumentos</h3>
-                            <Button 
-                                variant="outline-primary" 
-                                onClick={() => setMostrarGestionInstrumentos(!mostrarGestionInstrumentos)}
-                            >
-                                {mostrarGestionInstrumentos ? 'Cancelar' : 'Añadir instrumento'}
-                            </Button>
-                        </div>
-
-                        <ListGroup>
-                            {/* BUCLE MOSTRAR INSTRUMENTOS (Y BORRAR) */}
-                            {instrumentos.map((instrumento) => (
-                                <ListGroup.Item key={instrumento._id} className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{instrumento.nombre}</strong> - {instrumento.familia}
-                                    </div>
-                                    <Button 
-                                        variant="outline-danger" 
-                                        size="sm"
-                                        onClick={() => eliminarInstrumento(instrumento._id)}
-                                    >
-                                        Eliminar
-                                    </Button>
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup>
-                    </Col>
-                </Row>
-
-                {/* FORMULARIO AÑADIR INSTRUMENTO */}
-                {mostrarGestionInstrumentos && (
-                    <Row className="mb-4 p-3 border rounded bg-light">
-                        <Col xs={12}>
-                            <h4>Añadir Nuevo Instrumento</h4>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Selecciona un instrumento:</Form.Label>
-                                <Form.Select 
-                                    value={instrumentoSeleccionado} 
-                                    onChange={(e) => setInstrumentoSeleccionado(e.target.value)}
-                                >
-                                    <option value="">-- Selecciona un instrumento --</option>
-                                    {instrumentosDisponibles.map(instr => (
-                                        <option key={instr._id} value={instr._id}>
-                                            {instr.nombre} ({instr.familia})
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-                            <div className="d-flex gap-2">
-                                <Button 
-                                    variant="success" 
-                                    onClick={añadirInstrumento}
-                                    disabled={!instrumentoSeleccionado}
-                                >
-                                    Añadir Instrumento
-                                </Button>
-                                <Button 
-                                    variant="secondary" 
-                                    onClick={() => setMostrarGestionInstrumentos(false)}
-                                >
-                                    Cancelar
-                                </Button>
-                            </div>
-                        </Col>
-                    </Row>
-                )}
+                
 
                 </Container>
             </>  

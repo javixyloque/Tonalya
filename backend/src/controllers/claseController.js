@@ -62,7 +62,12 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const clase = await Clase.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        
+        const clase = await Clase.findByIdAndUpdate(id, req.body, { new: true });
+        const [alumno, profesor] = await Promise.all([
+            Usuario.find({ clases: id }),
+            Profesor.find({ clases: id })
+        ])
         if (!clase) {
             return res.json({ mensaje: 'Clase no encontrada' });
         }
@@ -72,11 +77,20 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// BORRAR CLASE (NO NECESARIO POR BORRADO LÓGICO PERO SE PUEDE)
+// BORRAR CLASE (borrado logico)
 router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        await Clase.findByIdAndDelete(id);
+        const clase = await Clase.findById(id);
+        await Promise.all([
+            Usuario.updateMany({ clases: id }, { $pull: { clases: id } }),
+            Profesor.updateMany({ clases: id }, { $pull: { clases: id } })  
+        ])
+        if (!clase) {
+            return res.json({ mensaje: 'Clase no encontrada' });
+        }
+
+
         res.json({ mensaje: 'Clase eliminada exitosamente' });
     } catch (error) {
         res.json({ mensaje: 'Error al eliminar la clase', error: error.message });

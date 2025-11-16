@@ -18,16 +18,16 @@ const VerProfesor = () => {
     // ESTADOS DE PROFESOR E INSTRUMENTOS
     const [profesor, setProfesor] = useState(null);
     const [instrumentos, setInstrumentos] = useState([]);
+    const [fecha, setFecha] = useState("");
+    const [descripcion, setDescripcion] = useState("");
+    const [horaInicio, setHoraInicio] = useState("");
+    const [horaFin, setHoraFin] = useState("");
+    const [instrumentoClase, setInstrumentoClase] = useState("");   
     
     const horasDia = ["08:00","08:30", "09:00","09:30", "10:00","10:30", "11:00","11:30", "12:00","12:30", "13:00","13:30", "14:00","14:30", "15:00","15:30", "16:00","16:30", "17:00","17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00","21:30", "22:00"];
 
-    // ESTADOS DE FORMULARIO DE RESERVA
-    const [formReserva, setFormReserva] = useState({
-        descripcion: "",
-        fechaInicio: "",
-        fechaFin: "",
-        instrumento: "",
-    });
+   
+
 
     // ESTADOS DE USUARIO
     const [cargando, setCargando] = useState(false);
@@ -74,50 +74,59 @@ const VerProfesor = () => {
 
     // FUNCIÓN PARA ENVIAR LA SOLICITUD DE RESERVA
     async function enviarReserva(e) {
+        
         e.preventDefault();
         setCargando(true);
         setError(null);
         setExito(null);
         
 
-        if (!formReserva.diaClase || !formReserva.horaInicioClase || !formReserva.horaFinClase ) {
+        if (!fecha || !horaInicio || !horaFin || !instrumentoClase) {
             alert("Por favor, completa todos los campos de la solicitud de reserva.");
             return;
         }
-        const fechaInicio = `${formReserva.diaClase}T${formReserva.horaInicioClase}`;
-        const fechaFin = `${formReserva.diaClase}T${formReserva.horaFinClase}`;
+        const fechaInicio = `${fecha}T${horaInicio}`;
+        const fechaFin = `${fecha}T${horaFin}`;
         if (fechaInicio > fechaFin) {
             alert("La clase tiene que empezar antes que acabar.");
             return;
         }
 
         try {
-            const cuerpo = {
-                descripcion: formReserva.descripcion,
+            const cuerpo = JSON.stringify({
+                descripcion: descripcion,
                 alumnoId: idAlumno,
                 fechaInicio: fechaInicio,
                 fechaFin: fechaFin,
-                instrumento: formReserva.instrumento,
-                profesorId: id,
-            };
-            console.log(cuerpo);
-
+                instrumento: instrumentoClase,
+                profesorId: profesor._id,
+            });
             const respuesta = await fetch("http://localhost:5000/usuario/reservar-clase", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(cuerpo),
+                headers: { 
+                    "Connection": "keep-alive",
+                    "Content-Type": "application/json",
+                },
+                body: cuerpo,
             });
-
+           
             const datos = await respuesta.json();
 
             if (!respuesta.ok) {
                 throw new Error(datos.mensaje || "Error al solicitar la clase");
             }
+            
 
             setExito(datos.mensaje || "Solicitud de clase enviada con éxito");
             setMostrarModalReserva(false);
+            setDescripcion("");
+            setFecha("");
+            setHoraInicio("");
+            setHoraFin("");
+            setInstrumentoClase("");
 
-            setFormReserva({ descripcion: "", fechaInicio: "", fechaFin: "", instrumento: "" });
+
+            // setFormReserva({ descripcion: "", fechaInicio: "", fechaFin: "", instrumento: "" });
             setTimeout(() => setExito(null), 2000);
         } catch (err) {
             setError("Error al enviar la solicitud: " + err.message);
@@ -223,13 +232,8 @@ const VerProfesor = () => {
                                 as="textarea"
                                 rows={3}
                                 placeholder="Describe brevemente la clase que deseas..."
-                                value={formReserva.descripcion}
-                                onChange={(e) =>
-                                    setFormReserva({
-                                        ...formReserva,
-                                        descripcion: e.target.value,
-                                    })
-                                }
+                                value={descripcion}
+                                onChange={(e) =>setDescripcion(e.target.value)}
                                 required
                             />
                         </Form.Group>
@@ -238,7 +242,7 @@ const VerProfesor = () => {
                         <Row>
                             <Form.Group className="mb-3">
                             <Form.Label>Día</Form.Label>
-                            <Form.Control type="date" value={formReserva.diaClase} onChange={(e) => setFormReserva({ ...formReserva, diaClase: e.target.value })}>
+                            <Form.Control type="date" onChange={(e) => setFecha(e.target.value)} defaultValue=''>
 
 
                             </Form.Control>
@@ -250,7 +254,7 @@ const VerProfesor = () => {
                             
                             <Col xs={12} md={6} className="mb-3">
                                 <Form.Label>Hora inicio</Form.Label>
-                                <Form.Select value={formReserva.horaInicioClase} onChange={(e) => setFormReserva({ ...formReserva, horaInicioClase: e.target.value })}>
+                                <Form.Select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)}>
                                     <option value="">Selecciona una hora</option>
                                     {horasDia.map((hora) => (
                                         <option key={hora} value={hora}>{hora}</option>
@@ -259,7 +263,7 @@ const VerProfesor = () => {
                             </Col>
                             <Col xs={12} md={6} className="mb-3">
                                 <Form.Label>Hora fin</Form.Label>
-                                <Form.Select value={formReserva.horaFinClase} onChange={(e) => setFormReserva({ ...formReserva, horaFinClase: e.target.value })}>
+                                <Form.Select value={horaFin} onChange={(e) => setHoraFin(e.target.value)}>
                                     <option value="">Selecciona una hora</option>
                                     {horasDia.map((hora) => (
                                         <option key={hora} value={hora}>{hora}</option>
@@ -272,13 +276,8 @@ const VerProfesor = () => {
                         <Form.Group className="mb-3">
                             <Form.Label>Instrumento</Form.Label>
                             <Form.Select
-                                value={formReserva.instrumento}
-                                onChange={(e) =>
-                                    setFormReserva({
-                                        ...formReserva,
-                                        instrumento: e.target.value,
-                                    })
-                                }
+                                value={instrumentoClase}
+                                onChange={(e) => setInstrumentoClase(e.target.value)}
                                 required
                             >
                                 <option value="">Selecciona un instrumento</option>

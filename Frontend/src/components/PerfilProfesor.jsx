@@ -8,7 +8,11 @@ import { codificarImagen64 } from "../functions/codificar.js";
 const PerfilProfesor = () => {
     const [profesor, setProfesor] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [clases, setClases] = useState([]);
+    const [clasesPendientes, setClasesPendientes] = useState([]);
+    const [clasesAceptadas, setClasesAceptadas] = useState([]);
+    const [clasesPagadas, setClasesPagadas] = useState([]);
+    const [clasesRechazadas, setClasesRechazadas] = useState([]);
+    const [clasesCompletadas, setClasesCompletadas] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [mostrarGestionInstrumentos, setMostrarGestionInstrumentos] = useState(false);
     const [instrumentosDisponibles, setInstrumentosDisponibles] = useState([]);
@@ -32,9 +36,9 @@ const PerfilProfesor = () => {
                 setProfesor(prof);
 
                 // CLASES N INSTRUMENTOS PROFESOR
-                const [clasesResp, instrumentosResp] = await Promise.all([
+                const [clasesInstrumentos, instrumentosResp] = await Promise.all([
                     // CLASES
-                    fetch(`http://localhost:5000/profesor/clases/${idProf}`).then(res => res.json()),
+                    fetch(`http://localhost:5000/profesor/clases-instrumentos/${idProf}`).then(res => res.json()),
                     // INSTRUMENTOS
                     Promise.all(
                         (prof.instrumentos).map(idInstrumento => 
@@ -42,8 +46,45 @@ const PerfilProfesor = () => {
                         )
                     )
                 ]);
+                const datosClases = clasesInstrumentos;
 
-                setClases(clasesResp);
+                let clases = (datosClases.clasesConInstrumentos);
+                // SE ME DUPLICABAN LOS DATOS, NO SE POR QUÉ, Y HE CAMBIADO LA LOGICA A ESTO
+                let tipoClases = {
+                    pendiente: [],
+                    aceptada: [],
+                    pagada: [],
+                    rechazada: [],
+                    completada: [],
+                }
+               
+                clases.forEach((clase) => {
+                    switch (clase.estado){
+                        case 'pendiente':
+                            tipoClases.pendiente.push(clase);
+                            break;
+                        case 'aceptada':
+                            tipoClases.aceptada.push(clase);
+                            break;
+                        case 'pagada':
+                            tipoClases.pagada.push(clase)
+                            break;
+                        case 'rechazada':
+                            tipoClases.rechazada.push(clase)
+                            break;
+                        case 'completada':
+                            tipoClases.completada.push(clase)
+                            break;
+                    } 
+                })
+                console.log(clases)
+                setClasesPendientes(tipoClases.pendiente);
+                setClasesAceptadas(tipoClases.aceptada);
+                setClasesPagadas(tipoClases.pagada);
+                setClasesRechazadas(tipoClases.rechazada);
+                setClasesCompletadas(tipoClases.completada);
+
+                // setClases(clasesResp);
                 setInstrumentos(instrumentosResp);
 
             } catch (error) {
@@ -72,6 +113,38 @@ const PerfilProfesor = () => {
 
         cargarInstrumentosDisponibles();
     }, [mostrarGestionInstrumentos]);
+
+    const rechazarClase = async  (claseId) => {
+        const mensaje = window.prompt('Explique al alumno el motivo de su rechazo');
+
+        if (mensaje === null) {
+            return;
+        } else if (mensaje === '' || mensaje.length < 20) {
+            alert('El motivo debe tener al menos 20 caracteres');
+            rechazarClase(claseId);
+            return;
+        }
+        
+        try {
+            const respuesta = await fetch(`http://localhost:5000/profesor/clase/${claseId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                },
+                body: JSON.stringify({ estado: 'rechazada', mensaje: mensaje })
+            })
+            if (respuesta.ok) {
+                alert('Clase rechazada correctamente');
+                window.location.reload();
+            } else {
+                alert('Error al rechazar la clase');
+
+            }
+        } catch (error) {
+            console.error('Error rechazando clase:', error);
+        }
+    }
 
     // ACTUALIZAR PERFIL PROFESOR
     const enviarFormulario = async (event) => {
@@ -287,27 +360,10 @@ const PerfilProfesor = () => {
                             </Col>
                     </Row>
 
-                    <Row className="d-flex d-md-block justify-content-center w-100 w-md-25 mt-0 mt-md-5" >
-                        <Button variant="success" type="submit" className="mx-auto text-center justify-content-center d-flex" style={{maxWidth: "200px"}} >
-                        Guardar cambios
-                        </Button>
-                        
-                    </Row>
+                    
                 </Form>
 
-                {/* CLASES DEL PROFESOR */}
-                <Row className="mb-3">
-                    <Col xs={12} md={6}>
-                        <h3>Clases impartidas</h3>
-                        <ListGroup>
-                            {clases.map((clase, index) => (
-                                <ListGroup.Item key={index} variant="primary">
-                                    {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()}
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup>
-                    </Col>
-                </Row>
+                
 
                 {/* INSTRUMENTOS DEL PROFESOR */}
                 <Row className="mb-3">
@@ -378,6 +434,99 @@ const PerfilProfesor = () => {
                         </Col>
                     </Row>
                 )}
+
+                <Row className="d-flex d-md-block justify-content-center w-100 w-md-25 mt-0 mt-md-5" >
+                        <Button variant="success" type="submit" className="mx-auto text-center justify-content-center d-flex" style={{maxWidth: "200px"}} >
+                        Guardar cambios
+                        </Button>
+                        
+                    </Row>
+
+                 <hr className="my-5" />
+
+                {/* CLASES DEL ALUMNO */}
+
+                {/* CLASES PAGADAS  */}
+                <Row className="mb-5">
+                    <Col xs={12} md={6} className="my-3">
+                        <h3>Clases Pagadas (sin completar)</h3>
+                        <ListGroup>
+                            {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
+                                <ListGroup.Item key={index} variant="success">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                {/* <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}></Button> */}
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+
+                {/*CLASES ACEPTADAS */}
+                
+                    <Col xs={12} md={6} className="my-3">
+                        <h3>Clases pendientes de pago</h3>
+                        <ListGroup>
+                            {clasesAceptadas.length>0 && clasesAceptadas.map((clase, index) => (
+                                <ListGroup.Item key={index} variant="primary">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+
+                                <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}>Rechazar</Button>
+
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/*CLASES PENDIENTES DE ACEPTAR */}
+                <Row className="mb-5">
+                    <Col xs={12} md={6} className="my-3">
+                        <h3>Clases pendientes de confirmar</h3>
+                        <ListGroup>
+                            {clasesPendientes.length>0 && clasesPendientes.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                <Button variant="outline-danger" onClick={() =>rechazarClase(clase._id)}>Rechazar</Button>
+
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
+
+                {/* CLASES COMPLETADAS */}
+                <Row className="mb-5" >
+                    <Col xs={12} md={6} className="my-3">
+                        <h3>Clases completadas</h3>
+                        <ListGroup>
+                            {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                </ListGroup.Item>
+                            ))}
+
+                        </ListGroup>
+                    </Col>
+            
+
+                {/* CLASES RECHAZADAS */}
+                
+                    <Col xs={12} md={6} className="my-3">
+                        <h3>Clases rechazadas</h3>
+                        <ListGroup>
+                            {clasesRechazadas.length>0 && clasesRechazadas.map((clase, index) => (
+                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="danger">
+                                    
+                                {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+                </Row>
 
                 </Container>
             </>  

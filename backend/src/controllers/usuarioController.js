@@ -5,19 +5,13 @@ import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Instrumento from "../models/Instrumento.js";
 import Clase from "../models/Clase.js";
+import { enviarEmailsReserva, enviarEmailsRechazoUsuario } from "../biblioteca.js";
 // SHARP => LIMITAR RESOLUCION IMAGEN
 // import sharp from "sharp"
 import nodemailer from 'nodemailer';
 
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth: {
-        user: 'tonalyamusica@gmail.com',
-        pass: 'ctig qiqw wgqp iirw'
-    }
-});
+
 
 
 const limpiarParametros = (param) => {
@@ -75,6 +69,52 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// MODIFICAR CLASE
+router.put('/clase/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        const clase = await Clase.findByIdAndUpdate(id, req.body, { new: true });
+        const [alumno, profesor, instrumento] = await Promise.all([
+            Usuario.findById(clase.alumno),
+            Profesor.findById(clase.profesor),
+            Instrumento.findById(clase.instrumento)
+        ])
+        if (!clase) {
+            return res.json({ mensaje: 'Clase no encontrada' });
+        }
+        const tipoAccion = req.body.estado;
+        if (tipoAccion== 'rechazada') {
+            enviarEmailsRechazoUsuario(profesor, alumno, clase, instrumento);
+        } else if (tipoAccion =='pagada') {
+            enviarEmailsReserva(profesor, alumno, clase, instrumento);
+        }
+        res.json(clase);
+    } catch (error) {
+        res.json({ mensaje: 'Error al actualizar la clase', error: error.message });
+    }
+});
+
+
+// ELIMINAR CLASE DEL ARRAY DE USUARIO (borrado logico)
+router.delete(':idUsuario/clase/:id', async (req, res) => {
+    try {
+        const id  = req.params.id;
+        
+        const clase = await Clase.findById(id);
+        if (!clase) {
+            return res.json({ mensaje: 'Clase no encontrada' });
+        }
+        await Usuario.updateMany({ clases: id }, { $pull: { clases: id } });
+        
+        
+        res.json({ mensaje: 'Clase eliminada exitosamente' });
+    } catch (error) {
+        res.json({ mensaje: 'Error al eliminar la clase', error: error.message });
+    }
+})
+
+
 // MODIFICAR USUARIO (TAMBIEN BORRADO LÓGICO)
 router.put('/:id', async (req, res) => {
     
@@ -126,11 +166,14 @@ router.post('/reservar-clase', async (req, res) => {
         let totalMinutos = minsFin - minsInicio;
         let totalHoras = Math.floor(totalMinutos / 60);
         let minutosExtra = (totalMinutos % 60)/60;
+        let horas = totalHoras + minutosExtra;
+
+        const [profesor, alumno, instrumento] = await Promise.all([
+            Profesor.findById(idProfesor),
+            Usuario.findById(idAlumno),  
+            Instrumento.findById(idInstrumento)
+        ])
         
-        const profesor = await Profesor.findById(idProfesor);
-        // minsFin+=horaFin*60;
-        // minsInicio+=horaInicio*60;
-        // var horas = (minsFin - minsInicio) / 60
         if (!profesor) {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }
@@ -140,7 +183,7 @@ router.post('/reservar-clase', async (req, res) => {
             precio: profesor.precioHora * (totalHoras+minutosExtra),
             fechaInicio: fechaInicio,
             fechaFin: fechaFin,
-            estado: 'aceptada',
+            estado: 'pendiente',
             asistencia: false,
             alumno: idAlumno,
             profesor: idProfesor,
@@ -150,61 +193,24 @@ router.post('/reservar-clase', async (req, res) => {
         await nuevaClase.save();
         
         const claseSolicitada = nuevaClase; 
-        if (profesor) {
-            profesor.clases.push(claseSolicitada._id);
-            await profesor.save();
-        } else {
-            return res.json({ mensaje: 'Profesor no encontrado' });
-        }
         
-        const alumno = await Usuario.findById(idAlumno);
-        const instrumento = await Instrumento.findById(idInstrumento);
-        if (!alumno || !instrumento) {
-            return res.json({ mensaje: 'Alumno o instrumento no encontrado' });
-        }
-
-        const formatoFecha = (fecha) => {
-            return fecha.toLocaleString('es-ES');
-        };
+        await Promise.all([
+            Profesor.findByIdAndUpdate(idProfesor,{
+                $push: {clases: claseSolicitada._id}
+            }),
+            Usuario.findByIdAndUpdate(idAlumno, {
+                $push: {clases: claseSolicitada._id}
+            })
+        ])
         
-        
-        
-        alumno.clases.push(claseSolicitada._id);
-        await alumno.save();
-        const cuerpoCorreoProfesor = {
-            from: "TONALYA <tonalyamusica@gmail.com>",
-            subject: "Solicitud de reserva de clase",
-            to: profesor.email,
-            html: `<h1>Solicitud de reserva de clase</h1>
-            <p>Alumno: ${alumno.nombre}</p>
-            <p>Instrumento: ${instrumento.nombre}</p>
-            <p>Descripción: ${descripcion}</p>
-            <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
-            <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
-            <p>Duracion: ${totalHoras+minutosExtra} hora${totalHoras+minutosExtra > 1 ? 's' : ''}</p>
-            <p>Precio: ${claseSolicitada.precio} &euro;</p>`
-        }
-        const cuerpoCorreoAlumno = {
-            from: "TONALYA <tonalyamusica@gmail.com>",
-            subject: "Solicitud de reserva de clase exitosa",
-            to: alumno.email,
-            html: `<h1>Solicitud de reserva de clase exitosa</h1>
-            <p>Profesor: ${profesor.nombre}</p>
-            <p>Instrumento: ${instrumento.nombre}</p>
-            <p>Descripción: ${descripcion}</p>
-            <p>Fecha inicio: ${formatoFecha(fechaInicio)}</p>
-            <p>Fecha fin: ${formatoFecha(fechaFin)}</p>
-            <p>Duracion: ${totalHoras+minutosExtra} hora${totalHoras+minutosExtra > 1 ? 's' : ''}</p>
-            <p>Precio: ${claseSolicitada.precio} &euro;</p>
-            <p>En cuanto ${profesor.nombre} acepte tu solicitud, te enviaremos un correo con los detalles de la clase,<br> Gracias por utilizar Tonalya!!</p>
-            `
+        if (!alumno || !instrumento || !profesor) {
+            return res.json({ mensaje: 'Alumno o instrumento o profesor no encontrado' });
         }
 
-        await transporter.sendMail(cuerpoCorreoProfesor);
-        await transporter.sendMail(cuerpoCorreoAlumno);
+        enviarEmailsReserva(profesor, alumno, instrumento, claseSolicitada, descripcion, horas)
+    
 
-
-        res.json({ mensaje: 'Solicitud de reserva enviada con éxito' });
+        res.json({ mensaje: 'Solicitud de reserva enviada con éxito' , clase: claseSolicitada});
 
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al enviar la solicitud de reserva', error: error.message });
@@ -214,28 +220,7 @@ router.post('/reservar-clase', async (req, res) => {
 
 // PAGAR CLASE ALUMNO
 
-router.put('/pagar-clase/:id', async (req, res) => {
-    const idAlumno = limpiarParametros(req.params.id);
-    const idClasePagada = limpiarParametros(req.body.claseId);
 
-    const alumno = await Usuario.findById(idAlumno);
-    if (!alumno) {
-        return res.json({ mensaje: 'Alumno no encontrado' });
-    }
-
-    const clasePagada = await Clase.findById(idClasePagada);
-    if (!clasePagada) {
-        return res.json({ mensaje: 'Clase no encontrada' });
-    }
-
-    // ACTUALIZAR A PAGADA
-    clasePagada.estado = 'pagada';
-    await clasePagada.save();
-
-    
-
-    res.json({ mensaje: 'Clase pagada con éxito' });
-});
 
 // OBTENER TODAS LAS CLASES DE UN USUARIO (CON INSTRUMENTO)
 
@@ -270,65 +255,7 @@ router.get('/clases-instrumentos/:id', async (req, res) => {
 });
 
 
-// OBTENER INFO CLASES PENDIENTES USUARIO
-router.get('/clases-pendientes/:id', async (req, res) => {
-try {
-    const alumno = await Usuario.findById(req.params.id);
-    if (!alumno) {
-        return res.json({ mensaje: 'Alumno no encontrado' });
-    }
-    // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
-    const clases = await Clase.find({ _id: { $in: alumno.clases }, estado: 'pendiente' })
-    res.json(clases);
-    } catch (error) {
-        res.json({ mensaje: 'Error al obtener las clases pendientes del alumno', error: error.message });
-    }
-})
 
-// OBTENER INFO CLASES ACEPTADAS USUARIO
-router.get('/clases-aceptadas/:id', async (req, res) => {
-    try {
-        const alumno = await Usuario.findById(req.params.id);
-        if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado' });
-        }
-        // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
-        const clases = await Clase.find({ _id: { $in: alumno.clases } })
-        res.json(clases);
-    } catch (error) {
-        res.json({ mensaje: 'Error al obtener las clases del alumno', error: error.message });
-    }
-})
-
-// OBTENER INFO CLASES PAGADAS USUARIO
-router.get('/clases-pagadas/:id', async (req, res) => {
-    try {
-        const alumno = await Usuario.findById(req.params.id);
-        if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado' });
-        }
-        // SI HACIA UN BUCLE DEVOLVIA UN ARRAY VACIO, $IN ES EL OPERADOR DE MONGODB PARA BUSCAR ELEMENTOS EN UN ARRAY, ES COMO EL FILTER
-        const clases = await Clase.find({ _id: { $in: alumno.clases }, estado: 'pagada' })
-        res.json(clases);
-    } catch (error) {
-        res.json({ mensaje: 'Error al obtener las clases pagadas del alumno', error: error.message });
-    }
-})
-
-// OBTENER INFO CLASES COMPLETADAS USUARIO
-router.get('/clases-completadas/:id', async (req, res) => {
-    try {
-        const alumno = await Usuario.findById(req.params.id);
-        if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado' });
-        } 
-        const clases = await Clase.find({_id:  {$in: alumno.clases}, estado: 'completada'})
-        res.json(clases)
-        
-    } catch(error) {
-        res.json({ mensaje: 'Error al obtener las clases completadas del alumno', error: error.message });
-    }
-})
 
 
 
@@ -337,27 +264,21 @@ router.get('/clases-completadas/:id', async (req, res) => {
 
 
 
-// ELIMINAR CLASE USUARIO
 
-router.put('/:id/clase/:claseId', async (req, res) => {
+
+// OBTENER INSTRUMENTOS DEL USUARIO
+router.get('/:id/instrumentos', async (req, res) => {
     try {
-        const alumno = await Usuario.findOne({_id: req.params.id, activo: true});
-        if (!alumno) {
-            return res.json({ mensaje: 'Alumno no encontrado' });
+        const usuario = await Usuario.findById(req.params.id);
+        if (!usuario) {
+            return res.json({ mensaje: 'Usuario no encontrado' });
         }
-        
-        const clase = await Clase.findById({_id: req.params.claseId, estado: 'pendiente'});
-        if (!clase) {
-            return res.json({ mensaje: 'Clase no encontrada' });
-        }
-        
-        alumno.clases.pull(clase._id);
-        await alumno.save();
-        res.json({ mensaje: 'Clase eliminada exitosamente' });
+        const instrumentos  = await Instrumento.find({ _id: { $in: usuario.instrumentos } });
+        res.json({ instrumentos });
     } catch (error) {
-        res.json({ mensaje: 'Error al eliminar la clase', error: error.message });
+        res.json({ mensaje: 'Error al obtener los instrumentos del usuario', error: error.message });
     }
-});
+})
 
 // AÑADIR INSTRUMENTOS USUARIO
 
@@ -425,6 +346,11 @@ router.post('/login', async (req, res) => {
         res.json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
     }
 });
+
+
+
+
+
 
 
 
