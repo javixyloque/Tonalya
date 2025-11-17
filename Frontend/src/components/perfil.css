@@ -1,6 +1,6 @@
 .list-group-item {
     display: flex !important;
-    justify-content: space-around !important;
+    justify-content: space-between !important;
     align-items: center !important;
     padding: 10px !important;
     border-bottom: 5px solid #213448 !important;
