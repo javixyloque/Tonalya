@@ -108,7 +108,7 @@ const FormProfesor = () => {
         return (
             <div className="loader">
                     <SyncLoader color="#213448"/><br></br>
-                    <p style={{color: "#213448"}}>Registrando usuario</p>
+                    <p style={{color: "#213448"}}>Registrando profesor...</p>
             </div>
         );
     }

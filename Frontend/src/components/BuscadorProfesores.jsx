@@ -40,17 +40,17 @@ const BuscadorProfesores = () => {
             // PRO PROVINCIA E INSTRUMENTO
             if (provinciaSeleccionada && instrumentoSeleccionado) {
                 
-                url = `http://localhost:5000/profesor/profesor/${instrumentoSeleccionado}/${provinciaSeleccionada}`;
+                url = `http://localhost:5000/profesor/buscar/${instrumentoSeleccionado}/${provinciaSeleccionada}`;
 
                 // SOLO POR PROVINCIA
             } else if (provinciaSeleccionada && !instrumentoSeleccionado) {
 
-                url = `http://localhost:5000/profesor/profesor/${provinciaSeleccionada}`;
+                url = `http://localhost:5000/profesor/provincia/${provinciaSeleccionada}`;
 
                 // SOLO PRO ISNTRUMENTO
             } else if (instrumentoSeleccionado && !provinciaSeleccionada) {
             
-                url = `http://localhost:5000/profesor/${instrumentoSeleccionado}`;
+                url = `http://localhost:5000/profesor/instrumento/${instrumentoSeleccionado}`;
 
 
                 // SIN FILTROS => TODOS

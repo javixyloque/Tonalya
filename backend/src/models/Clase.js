@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-// import Usuario from './Usuario.js';
 
 const ClaseSchema = new mongoose.Schema({
     descripcion: String,
@@ -11,7 +10,6 @@ const ClaseSchema = new mongoose.Schema({
         enum: ['pendiente', 'aceptada', 'pagada', 'rechazada', "completada"]
     },
     asistencia: Boolean,
-    // completada: Boolean,
     instrumento: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Instrumento'

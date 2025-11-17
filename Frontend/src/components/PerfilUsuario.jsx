@@ -5,7 +5,7 @@ import {SyncLoader} from "react-spinners";
 import { Container, Row, Col, Form, Button, ListGroup } from 'react-bootstrap';
 import Header from "./templates/Header";
 import {arrayProvincias} from "../functions/variables.js";
-// import {Link} from "react-router-dom"
+import {Link} from "react-router-dom"
 import { codificarImagen64 } from "../functions/codificar.js";
 import "./perfil.css"
 
@@ -410,7 +410,7 @@ const PerfilUsuario = () => {
                 {/* CLASES PAGADAS  */}
                 <Row className="mb-5">
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases Pagadas (sin completar)</h3>
+                    <h3>PRÓXIMAS CLASES</h3>
                         <ListGroup>
                             {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="success">
@@ -432,8 +432,8 @@ const PerfilUsuario = () => {
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
 
+                                <Link className="btn btn-outline-success"  to={`/form-pagar/${clase._id}`}>Pagar</Link>
                                 <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}>Rechazar</Button>
-
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -443,7 +443,7 @@ const PerfilUsuario = () => {
                 {/*CLASES PENDIENTES DE ACEPTAR */}
                 <Row className="mb-5">
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases pendientes de confirmar</h3>
+                        <h3>Solicitudes</h3>
                         <ListGroup>
                             {clasesPendientes.length>0 && clasesPendientes.map((clase, index) => (
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">

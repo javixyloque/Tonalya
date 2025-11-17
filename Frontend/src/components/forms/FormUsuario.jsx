@@ -116,6 +116,8 @@ const FormUsuario = () => {
             <div className="loader">
 
             <SyncLoader size={150} color={'#213448'} loading={loading} />
+            <br></br>
+                <p style={{color: "#213448"}}>Enviando formulario...</p>
             </div>
             </>
         ) : (

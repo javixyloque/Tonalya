@@ -10,7 +10,7 @@ const Header = () => {
     return (
         <>
             {/* style={{, position: "fixed", width: "100%", height: "60px", zIndex: 1 }} */}
-            <Navbar  className="py-xs-5 py-md-0 px-3 fixed-top"  expand="lg" style={{zIndex: 50, backgroundColor: "#ECEFCA"}} >
+            <Navbar  className="py-xs-5 py-md-0 px-3 fixed-top border-bottom border-3 border-secondary"  expand="lg" style={{zIndex: 50, backgroundColor: "#ECEFCA"}} >
             
                 <Navbar.Brand href="/" ><Image height={30} src={Tipograma} alt="Tonalya" rounded></Image></Navbar.Brand>
                 <Navbar.Toggle aria-controls="navegacion" />
@@ -19,17 +19,7 @@ const Header = () => {
                         <Nav.Link href="/" style={{color: "#547792"}}>Inicio</Nav.Link>
                         <Nav.Link href="/buscador-profesores" style={{color: "#547792"}}>Encuentra tu profesor</Nav.Link>
                         
-                        {/* <NavDropdown title="Utilidades" id="dropdown" style={{color: "#547792"}}>
-                            <NavDropdown.Item href="/instrumentos" style={{color: "#213448"}}>Instrumentos</NavDropdown.Item>
-                            <NavDropdown.Item href="/" style={{color: "#547792"}}>
-                                
-                            </NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.3" style={{color: "#213448"}}>Something</NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action/3.4" style={{color: "#213448"}}>
-                                Separated link
-                            </NavDropdown.Item >
-                        </NavDropdown> */}
+                        
 
                         {/* SI ESTA LOGEADO */}
                         {logeado ? (

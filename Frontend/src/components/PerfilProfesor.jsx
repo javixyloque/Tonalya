@@ -238,12 +238,32 @@ const PerfilProfesor = () => {
         }
     };
 
+    const aceptarClase = async (claseId) => {
+        try {
+            const respuesta = await fetch(`http://localhost:5000/profesor/clase/${claseId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ estado: 'aceptada' })
+            });
+            if (respuesta.ok) {
+                alert('Clase aceptada correctamente');
+                window.location.reload();
+            } else {
+                alert('Error al aceptar la clase');
+            }
+        } catch (error) {
+            console.error('Error aceptando clase:', error);
+        }
+    }
+
     return (
         <>
         {loading ? (
             <div className="loader">
-                <SyncLoader color="#ECEFCA"/><br></br>
-                <p style={{color: "#ECEFCA"}}>Cargando perfil...</p>
+                <SyncLoader color="#213448"/><br></br>
+                <p style={{color: "#213448"}}>Cargando perfil...</p>
             </div>
         ) : (
             <>
@@ -444,12 +464,12 @@ const PerfilProfesor = () => {
 
                  <hr className="my-5" />
 
-                {/* CLASES DEL ALUMNO */}
+                {/* CLASES DEL PROFESOR */}
 
                 {/* CLASES PAGADAS  */}
                 <Row className="mb-5">
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases Pagadas (sin completar)</h3>
+                        <h3>PRÓXIMAS CLASES</h3>
                         <ListGroup>
                             {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="success">
@@ -488,6 +508,7 @@ const PerfilProfesor = () => {
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
                                     
                                 {clase.descripcion} - {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}: {new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} - <strong>{clase.instrumento.nombre}</strong>
+                                <Button variant="outline-success" onClick={() => aceptarClase(clase._id)}>Aceptar</Button>
                                 <Button variant="outline-danger" onClick={() =>rechazarClase(clase._id)}>Rechazar</Button>
 
                                 </ListGroup.Item>

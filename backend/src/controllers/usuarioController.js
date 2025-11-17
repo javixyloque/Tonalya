@@ -226,9 +226,12 @@ router.post('/reservar-clase', async (req, res) => {
 
 router.get('/clases-instrumentos/:id', async (req, res) => {
     try {
-        const usuario = await Usuario.findOne({ _id: req.params.id, activo: true })
+        const usuario = await Usuario.findOne({ _id: req.params.id, activo: true }).sort({ fechaInicio: -1 })
+        // OBTENER CLASES CON INSSTRUMENTO
             .populate({
                 path: 'clases',
+                // ORDENAR POR FECHA
+                options: { sort: { fechaInicio: 1 } },
                 populate: { 
                     path: 'instrumento'
                 }

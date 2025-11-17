@@ -7,7 +7,7 @@ import Clase from "../models/Clase.js";
 import Instrumento from "../models/Instrumento.js";
 import nodemailer from 'nodemailer';
 import { reject } from "bcrypt/promises.js";
-import { enviarEmailsRechazoProfesor } from "../biblioteca.js";
+import { enviarEmailsRechazoProfesor, enviarEmailsAceptada } from "../biblioteca.js";
 // SI NO ABIERTO, ABRIR: 
 // sudo ufw status
 // sudo ufw allow 587
@@ -81,44 +81,52 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get(('/:instrumento'), async (req, res) => {
+router.get('/instrumento/:instrumentoId', async (req, res) => {
     try {
-        const profesores = await Profesor.find({instrumentos: req.params.instrumento});
-        if (!profesores) {
-            res.json({mensaje: "No se ha encontrado ningun profesor"})
-        } else {
-            res.json(profesores);
+        const profesores = await Profesor.find({
+            instrumentos: { $in: [req.params.instrumentoId] }
+        });
+        
+        if (profesores.length === 0) {
+            return res.json({ mensaje: "No se ha encontrado ningún profesor" });
         }
+        
+        res.json(profesores);
     } catch (error) {
-        res.json({mensaje: "Error al obtener los profesores", error: error.message})
+        res.json({ mensaje: "Error al obtener los profesores", error: error.message });
     }
-})
+});
 
-router.get(('/profesor/:instrumento/:provincia'), async (req, res) => {
+router.get('/buscar/:instrumentoId/:provincia', async (req, res) => {
     try {
-        const profesores = await Profesor.find({instrumentos: req.body.instrumento, provincia: req.params.provincia});
-        if (!profesores) {
-            res.json({mensaje: "No se ha encontrado ningun profesor"})
-        } else {
-            res.json(profesores);
+        const profesores = await Profesor.find({
+            instrumentos: { $in: [req.params.instrumentoId] },
+            provincia: req.params.provincia
+        });
+        
+        if (profesores.length === 0) {
+            return res.json({ mensaje: "No se ha encontrado ningún profesor" });
         }
+        
+        res.json(profesores);
     } catch (error) {
-        res.json({mensaje: "Error al obtener los profesores", error: error.message})
+        res.json({ mensaje: "Error al obtener los profesores", error: error.message });
     }
-})
+});
 
-router.get(('/profesor/:provincia'), async (req, res) => {
+router.get('/provincia/:provincia', async (req, res) => {
     try {
-        const profesores = await Profesor.find({provincia: req.params.provincia});
-        if (!profesores) {
-            res.json({mensaje: "No se ha encontrado ningun profesor"})
-        } else {
-            res.json(profesores);
+        const profesores = await Profesor.find({ provincia: req.params.provincia });
+        
+        if (profesores.length === 0) {
+            return res.json({ mensaje: "No se ha encontrado ningún profesor" });
         }
+        
+        res.json(profesores);
     } catch (error) {
-        res.json({mensaje: "Error al obtener los profesores", error: error.message})
+        res.json({ mensaje: "Error al obtener los profesores", error: error.message });
     }
-})
+});
 
 // ACTUALIZAR DATOS PROFESOR
 
@@ -213,8 +221,11 @@ router.put('/aceptar-reserva/:id', async (req, res) => {
 router.get('/clases-instrumentos/:id', async (req, res) => {
     try {
         const profesor = await Profesor.findOne({ _id: req.params.id, activo: true })
+        //OBTENER CLASES CON INSTRUMENTO
             .populate({
                 path: 'clases',
+                //ORDENAR POR FECHA
+                options: { sort: { fechaInicio: 1 } },
                 populate: { 
                     path: 'instrumento'
                 }
@@ -258,32 +269,6 @@ router.get("/clases/:id", async (req, res) => {
 
 
 
-
-// AÑADIR CLASE PROFESOR
-router.put('/:id/clase', async (req, res) => {
-    try {
-        const idProfesor = (req.params.id);   
-        const profesor = await Profesor.findById(idProfesor);
-        if (!profesor) {
-            return res.json({ mensaje: 'Profesor no encontrado' });
-        }
-        
-        
-        const clase = await Clase.findById(req.body.claseId);
-        if (!clase) {
-            return res.json({ mensaje: 'Clase no encontrada' });
-        }
-        
-        
-        profesor.clases.push(clase._id);
-        await profesor.save();
-        
-        res.json({ mensaje: 'Clase agregada exitosamente' });
-    } catch (error) {
-        res.json({ mensaje: 'Error al agregar la clase', error: error.message });
-    }
-});
-
 // MODIFICAR CLASE
 router.put('/clase/:id', async (req, res) => {
     try {
@@ -302,7 +287,8 @@ router.put('/clase/:id', async (req, res) => {
         const mensaje = req.body.mensaje || '';
         if (tipoAccion== 'rechazada') {
             enviarEmailsRechazoProfesor(profesor, alumno, clase, instrumento, mensaje);
-        } else if (tipoAccion =='pagada') {
+        } else if (tipoAccion =='aceptada') {
+            enviarEmailsAceptada(profesor, alumno, clase, instrumento);
             // enviarEmailsReserva(profesor[0], alumno[0], clase, instrumento[0]);
         }
         res.json(clase);
