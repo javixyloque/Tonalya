@@ -39,7 +39,7 @@ const FormPagar = () => {
         }
         obtenerDatosClase();
 
-    }, [])
+    }, [ id ]);
 
     return (
         // SI LOADING SYNCLOADER, SI NO, CONTAINER CON ELEMENTOS DE LA CLASE
