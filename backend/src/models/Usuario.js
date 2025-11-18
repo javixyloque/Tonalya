@@ -56,3 +56,5 @@ usuarioSchema.plugin(mongooseBcrypt);
 // EXPORTAR USUARIO
 const Usuario = mongoose.model('Usuario', usuarioSchema);
 export default Usuario;
+
+// SI UN USUARIO TIENE CLASES ACEPTADAS, NO PUEDE BORRAR SU CUENTA

@@ -162,10 +162,10 @@ const IniciarSesion = () => {
 
                     {/* PIE => BOTONES */}
                     <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
-                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}} onClick={comprobarLogin}>
+                            <Button className='mx-2 flex-end' variant="success" onClick={comprobarLogin}>
                                 Iniciar sesión
                             </Button>
-                            <Button className='mx-2 flex-end' style={{backgroundColor: "#213448", color: "#ECEFCA", ":hover":{backgroundColor: "#94B4C1"}}} onClick={ocultarModal}>
+                            <Button className='mx-2 flex-end' variant="outline-danger" onClick={ocultarModal}>
                                 Cancelar
                             </Button>
                     </Modal.Footer>

@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import {SyncLoader} from "react-spinners";
-import { Container, Row, Col, Form, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, ListGroup, Modal, Alert } from 'react-bootstrap';
+
 import Header from "./templates/Header";
 import {arrayProvincias} from "../functions/variables.js";
 import { codificarImagen64 } from "../functions/codificar.js";
@@ -19,6 +20,19 @@ const PerfilProfesor = () => {
     const [instrumentoSeleccionado, setInstrumentoSeleccionado] = useState('');
     const provincias = arrayProvincias();
     const [imagen, setImagen] = useState(null);
+
+    const [mostrarModalAsistencia, setMostrarModalAsistencia] = useState(false);
+    const [idSeleccionada, setIdSeleccionada] = useState(null);
+    const [claseSeleccionada, setClaseSeleccionada] = useState(null);
+    const [loadingClase, setLoadingClase] = useState(false);
+    const [asistencia, setAsistencia] = useState(null);
+
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
+    const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [tipoAlerta, setTipoAlerta] = useState('success');
+    
+    const mostrarModal =( ) => setMostrarModalAsistencia(true);
+    const ocultarModal = () => setMostrarModalAsistencia(false);
 
     // CARGAR TODOS LOS DATOS DEL PROFESOR
     useEffect(() => {
@@ -48,7 +62,7 @@ const PerfilProfesor = () => {
                 ]);
                 const datosClases = clasesInstrumentos;
 
-                let clases = (datosClases.clasesConInstrumentos);
+                let clases = (datosClases.clasesProfesor);
                 // SE ME DUPLICABAN LOS DATOS, NO SE POR QUÉ, Y HE CAMBIADO LA LOGICA A ESTO
                 let tipoClases = {
                     pendiente: [],
@@ -57,6 +71,7 @@ const PerfilProfesor = () => {
                     rechazada: [],
                     completada: [],
                 }
+                console.log(clases)
                
                 clases.forEach((clase) => {
                     switch (clase.estado){
@@ -113,6 +128,27 @@ const PerfilProfesor = () => {
 
         cargarInstrumentosDisponibles();
     }, [mostrarGestionInstrumentos]);
+    
+
+    // EFECTO PARA SELECCIONAR LA CLASE QUE SE VA A COMPLETAR   
+    useEffect(() => {
+        const fetchClase = async () => {
+            try {
+                const respuesta = await fetch(`http://localhost:5000/clase/${idSeleccionada}`);
+                if (respuesta.ok) {
+                    const clase = await respuesta.json();
+                    setClaseSeleccionada(clase);
+                    setLoadingClase(false)
+                } else {
+                    console.error("Error cargando la clase seleccionada");
+                }
+            } catch(error) {
+                console.error("Error cargando la clase seleccionada", error);
+            }
+        }
+        fetchClase();
+    }, [idSeleccionada])
+
 
     const rechazarClase = async  (claseId) => {
         const mensaje = window.prompt('Explique al alumno el motivo de su rechazo');
@@ -238,6 +274,13 @@ const PerfilProfesor = () => {
         }
     };
 
+    // FUNCION PARA MOSTRAR EL MODAL DE ASISTENCIA DE LA CLASE SELECCIONADA
+    const manejarModalAsistencia = (idClase) => {
+        setLoadingClase(true);
+        setIdSeleccionada(idClase);
+        mostrarModal();
+    }
+
     const aceptarClase = async (claseId) => {
         try {
             const respuesta = await fetch(`http://localhost:5000/profesor/clase/${claseId}`, {
@@ -258,8 +301,48 @@ const PerfilProfesor = () => {
         }
     }
 
+    const actualizarAsistencia = async () => {
+        try {
+            const respuesta = await fetch(`http://localhost:5000/profesor/clase/${idSeleccionada}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ asistencia: asistencia, estado: "completada" })
+
+            });
+
+            if (respuesta.ok) {
+                const datosResp = await respuesta.json();
+                setTipoAlerta('success');
+                setMensajeAlerta(datosResp.mensaje);
+                setMostrarAlerta(true);
+                setTimeout(() => {
+                    setMostrarAlerta(false);
+                    window.location.reload();
+                }, 2000);
+            } else {
+                setTipoAlerta('danger');
+                setMensajeAlerta('Error al actualizar la asistencia');
+                setMostrarAlerta(true);
+                setTimeout(() => {
+                    setMostrarAlerta(false);    
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error('Error actualizando asistencia:', error);
+        }
+    }
+
     return (
         <>
+        {loadingClase && (
+            <div className="loader">
+                <SyncLoader color="#213448"/><br></br>
+                <p style={{color: "#213448"}}>Cargando asistencia...</p>
+            </div>
+        )}
         {loading ? (
             <div className="loader">
                 <SyncLoader color="#213448"/><br></br>
@@ -474,8 +557,10 @@ const PerfilProfesor = () => {
                             {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="success">
                                     
-                                {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
-                                {/* <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}></Button> */}
+                                <p>{clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                </p>
+                                
+                                <Button variant="outline-primary" onClick={() => manejarModalAsistencia(clase._id)}>Completada</Button>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -524,11 +609,17 @@ const PerfilProfesor = () => {
                         <h3>Clases completadas</h3>
                         <ListGroup>
                             {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
+                                clase.asistencia === true ?(
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
                                     
                                 {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
-
                                 </ListGroup.Item>
+                                ):(
+                                    <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="secondary">
+                                    
+                                {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                </ListGroup.Item>
+                                )
                             ))}
 
                         </ListGroup>
@@ -554,6 +645,59 @@ const PerfilProfesor = () => {
                 </Container>
             </>  
         )}
+
+        {claseSeleccionada && mostrarModalAsistencia && (
+            <Modal centered show={mostrarModalAsistencia} onHide={ocultarModal}>
+            <Modal.Header style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+            <Modal.Title>Asistencia de la clase</Modal.Title>
+            
+            
+            </Modal.Header>
+            <Modal.Body style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+                {mostrarAlerta && (
+                            <Alert variant={tipoAlerta} className="mb-3">
+                                {mensajeAlerta}
+                            </Alert>
+                        )}
+                <Form onSubmit={actualizarAsistencia}>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Descripcion de la clase: </Form.Label>
+                        <Form.Control
+                        type="text"
+                        placeholder="Alumnos presentes"
+                        value={claseSeleccionada.descripcion} disabled
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Día y hora: </Form.Label>
+                        <Form.Control
+                        type="text"
+                        placeholder="Alumnos presentes"
+                        value={`${new Date(claseSeleccionada.fechaInicio).toLocaleDateString()} ${new Date(claseSeleccionada.fechaInicio).getHours()}:${new Date(claseSeleccionada.fechaInicio).getMinutes() === 0 ? '00' : new Date(claseSeleccionada.fechaInicio).getMinutes()} - ${new Date(claseSeleccionada.fechaFin).getHours()}:${new Date(claseSeleccionada.fechaFin).getMinutes() === 0 ? '00' : new Date(claseSeleccionada.fechaFin).getMinutes()}`}
+                        disabled
+                        > </Form.Control>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        {/* <Form.Label>Estuvo presente el alumno?</Form.Label> */}
+                        <Form.Check
+                        type="checkbox"
+                        label="El alumno se presentó a la clase"
+                        name="presente"
+                        onChange={(e) => setAsistencia(e.target.checked)}
+                        />
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+            <Button variant="success" onClick={() => actualizarAsistencia(claseSeleccionada._id)} >Confirmar</Button>
+            <Button variant="secondary" onClick={ocultarModal}>
+                Cerrar
+            </Button>
+            
+            </Modal.Footer>
+        </Modal>
+        )}
+        
         </>
     )
 }

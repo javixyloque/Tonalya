@@ -87,7 +87,7 @@ const VerProfesor = () => {
         }
         const fechaInicio = `${fecha}T${horaInicio}`;
         const fechaFin = `${fecha}T${horaFin}`;
-        if (fechaInicio > fechaFin) {
+        if (fechaInicio >= fechaFin) {
             alert("La clase tiene que empezar antes que acabar.");
             return;
         }

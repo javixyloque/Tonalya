@@ -220,28 +220,35 @@ router.put('/aceptar-reserva/:id', async (req, res) => {
 
 router.get('/clases-instrumentos/:id', async (req, res) => {
     try {
+        // CONSULTA PRINCIPAL OBTIENE EL PROFESOR, PERO POPULATE DEVUELVE
         const profesor = await Profesor.findOne({ _id: req.params.id, activo: true })
-        //OBTENER CLASES CON INSTRUMENTO
+        //OBTENER CLASES CON INSTRUMENTO Y ALUMNO (es como el join de mongoose)
             .populate({
                 path: 'clases',
                 //ORDENAR POR FECHA
                 options: { sort: { fechaInicio: 1 } },
-                populate: { 
-                    path: 'instrumento'
-                }
-            });
+                populate: [{ 
+                        path: 'instrumento',
+                    },
+                    {
+                        path: 'alumno',
+                        select: '_id nombre email telefono'
+                    }
+                ]
+            })
+            
+           
         
-        if (!profesor || !profesor.activo) {
+        if (!profesor) {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }
+
+        const clasesProfesor = profesor.clases
         
-        const clasesConInstrumentos = profesor.clases.map(clase => ({
-            ...clase.toJSON(), 
-            instrumento: clase.instrumento
-        }));
+        
         
         res.json({
-            clasesConInstrumentos
+            clasesProfesor
         });
     } catch (error) {
         res.status(500).json({
@@ -291,7 +298,7 @@ router.put('/clase/:id', async (req, res) => {
             enviarEmailsAceptada(profesor, alumno, clase, instrumento);
             // enviarEmailsReserva(profesor[0], alumno[0], clase, instrumento[0]);
         }
-        res.json(clase);
+        res.json({mensaje: 'Clase actualizada exitosamente' ,clase: clase});
     } catch (error) {
         res.json({ mensaje: 'Error al actualizar la clase', error: error.message });
     }

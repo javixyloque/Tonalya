@@ -114,7 +114,8 @@ router.put('/profesor/:id', async (req, res) => {
         if (!profesor) {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }
-        res.json(profesor);
+        const profesores = await Profesor.find();
+        res.json({mensaje:' profesor modificado correctamente', profesores: profesores});
     } catch (error) {
         res.json({ mensaje: 'Error al actualizar el profesor', error: error.message });
     }
@@ -124,7 +125,8 @@ router.put('/profesor/:id', async (req, res) => {
 router.delete('/profesor/:id', async (req, res) => {
     try {
         await Profesor.findByIdAndDelete(req.params.id);
-        res.json({ mensaje: 'Profesor eliminado exitosamente' });
+        const profesores = await Profesor.find();
+        res.json({mensaje:' profesor eliminado correctamente', profesores: profesores});
     } catch (error) {
         res.json({ mensaje: 'Error al eliminar el profesor', error: error.message });
     }
