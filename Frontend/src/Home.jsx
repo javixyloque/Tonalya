@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import {Button, Card, Container, Row, Col, Carousel} from 'react-bootstrap'
 // import './Home.css';
 import Header from './components/templates/Header';
@@ -6,6 +5,10 @@ import Header from './components/templates/Header';
 import InstrumentosCarrusel from "./resources/images/carrusel/instrumentos-carrusel.png";
 import ViolinCarrusel from "./resources/images/carrusel/violin-carrusel.jpg"
 import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
+import profesor from "./resources/images/profesor.svg"
+// import aprender from "./resources/images/aprender.svg"
+import pianoProfe from "./resources/images/pianoProfe.svg"
+import buscarProfesores from "./resources/images/buscarProfesores.svg"
 
 // PALETA DE COLORES
 // https://colorhunt.co/palette/21344854779294b4c1ecefca
@@ -31,12 +34,12 @@ const  Home = () => {
         <Header/>
         <Container style={{minHeight: "100vh"}}>
             
-            <Row>
+            {/* <Row>
                <Col xs={12} className='mb-5 text-center' style={{color: "#213448", fontSize: "4em"}}>
-                    <h1>Bienvenido a TONALYA</h1>
+                    <h1>Bienvenido a Tonalya</h1>
                </Col>
             </Row>
-            
+             */}
 
             <Row>
                 <Col xs={0} lg={2}></Col>
@@ -81,42 +84,43 @@ const  Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} lg={6} xl={4} className='mb-3'>
-                    <Card style={{ backgroundColor: '#94B4C1' }}>
-                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2014/09/03/22/06/guitar-435094_1280.jpg" alt='Imagen Guitarra'  style={{ width: '100%', height: "auto" }} />
+                <Col xs={12} lg={6} xl={4} className='mb-3 '>
+                    <Card className='h-100 shadow-sm'>
+                        <Card.Img variant="top"  src={pianoProfe} alt='Imagen Guitarra'  style={{   maxHeight: "15rem", objectFit: "cover" }} />
                         <Card.Body>
-                            <h5>Empieza a aprender con nosotros!</h5>
-                            <div style={{display: "flex", justifyContent: "center"}}>
-                                <Button variant="outline-secondary" href="/">COMENZAR A APRENDER</Button>
+                            <h4>Aprende con nosotros</h4>
+                            <p>Regístrate, busca un profesor cerca de ti y, lo más importante ¡disfruta dando la nota como nosotros!</p>
+                            <div>
+                                <Button variant="primary" href="/">COMENZAR A APRENDER</Button>
                             </div>
                         </Card.Body>
                     </Card>
                 </Col>
 
                 <Col xs={12} lg={6} xl={4}  className='mb-3'>
-                    <Card style={{backgroundColor: '#94B4C1' }}>
-                        <Card.Img variant="top" src="https://cdn.pixabay.com/photo/2021/03/12/21/25/keys-6090560_1280.jpg" alt="Imagen Acordeón"  style={{ width: '100%', height: "auto" }} />
+                    <Card className='h-100 shadow-sm'>
+                        <Card.Img variant="top" src={profesor} alt="Imagen Acordeón"  style={{ maxHeight: "15rem", objectFit: "cover" }} />
                         <Card.Body>
-                            <h5>Date a conocer como profesor</h5>
-                            <Button style={{display: "inline-block"}} variant="secondary" href="/formprofesor" >EMPEZAR A DAR CLASE</Button>
+                            <h4>Date a conocer como profesor</h4>
+                            <p>Registrate como profesor y sírvete de Tonalya para organizar tus clases y atraer nuevos alumnos</p>
+                            <Button style={{display: "inline-block"}} variant="primary" href="/formprofesor" >DAR CLASE</Button>
                         </Card.Body>
                     </Card>
                 </Col>
 
                 <Col xs={12} lg={12} xl={4}  className='mb-3'>
-                    <Card style={{  backgroundColor: '#94B4C1' }}>
+                    <Card className='h-100 shadow-sm'>
+                        <Card.Img variant="top" src={buscarProfesores} alt="Imagen Acordeón"  style={{ maxHeight: "15rem", objectFit: "cover" }} />
                         <Card.Body>
-                            <h5>Date a conocer como profesor</h5>
-                            <Button variant="secondary" href="/formprofesor">EMPEZAR A DAR CLASE</Button>
+                            <h4>Busca profesores en tu zona</h4>
+                            <p>Descubre nuestro buscador de profesores para encontrar el profesor perfecto para ti</p>
+                            <Button variant="primary" href="/formprofesor">BUSCAR PROFESORES</Button>
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
             
            
-            <Link to="/profesores" className="btn btn-secondary">Profesores</Link>
-            <br />
-            
         </Container>
         </>
     );

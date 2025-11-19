@@ -102,14 +102,14 @@ const BuscadorProfesores = () => {
                 {/* FORMULARIO DE BÚSQUEDA */}
                 <Row className="mb-4">
                     <Col xs={12}>
-                        <Card className="shadow-sm" style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+                        <Card className="shadow-sm card-fixed" >
                             <Card.Body>
                                 <Form onSubmit={buscarProfesores}>
                                     <Row>
                                         <Col xs={12} md={4} className="mb-3">
                                             <Form.Group>
                                                 <Form.Label>Instrumento</Form.Label>
-                                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                                                <Form.Select 
                                                     value={instrumentoSeleccionado}
                                                     onChange={(e) => setInstrumentoSeleccionado(e.target.value)}
                                                 >
@@ -126,7 +126,7 @@ const BuscadorProfesores = () => {
                                         <Col xs={12} md={4} className="mb-3">
                                             <Form.Group>
                                                 <Form.Label>Provincia</Form.Label>
-                                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                                                <Form.Select 
                                                     value={provinciaSeleccionada}
                                                     onChange={(e) => setProvinciaSeleccionada(e.target.value)}
                                                 >
@@ -195,14 +195,15 @@ const BuscadorProfesores = () => {
                                 <Row>
                                     {profesores.map(profesor => (
                                         <Col xs={12} md={6} lg={4} key={profesor._id} className="mb-4">
-                                            <Card className="h-100 shadow-sm" style={{backgroundColor: "#ECEFCA"}}>
-                                                {profesor.imagen && (
-                                                    <Card.Img 
-                                                        variant="top" 
-                                                        src={profesor.imagen} 
-                                                        style={{ height: '200px', objectFit: 'cover' }}
-                                                    />
-                                                )}
+                                            <Card>
+                                                    {profesor.imagen && (
+                                                        <Card.Img 
+                                                            variant="top" 
+                                                            src={profesor.imagen} 
+                                                            style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                                        />
+                                                    )}
+                                                
                                                 <Card.Body className="d-flex flex-column">
                                                     <Card.Title>{profesor.nombre}</Card.Title>
                                                     <Card.Text className="text-muted">
@@ -221,7 +222,7 @@ const BuscadorProfesores = () => {
                                                     )}
                                                     <div className="mt-auto">
                                                         <Button 
-                                                            variant="outline-primary" 
+                                                            variant="primary" 
                                                             size="sm" 
                                                             className="w-100"
                                                             onClick={() => {
@@ -233,6 +234,7 @@ const BuscadorProfesores = () => {
                                                         </Button>
                                                     </div>
                                                 </Card.Body>
+                                            
                                             </Card>
                                         </Col>
                                     ))}

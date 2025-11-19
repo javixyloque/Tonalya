@@ -1,9 +1,6 @@
 import { useState } from "react"
-import { Modal, Form, Button, Alert, InputGroup} from "react-bootstrap"
-import {  Link } from "react-router-dom";
-import "./iniciarSesion.css";
+import { Modal, Form, Button, Alert, InputGroup, Nav} from "react-bootstrap"
 import {Eye, EyeSlash} from "react-bootstrap-icons";
-
 const IniciarSesion = () => {
     
     const [mostrar, setMostrar] = useState(false);
@@ -100,15 +97,15 @@ const IniciarSesion = () => {
     return (
         <>
 
-            <Link to="#" className='mx-2 my-2 flex-end' style={{color: "#213448", textDecoration: "none", cursor: "pointer", right: 0}} onClick={mostrarModal}> Iniciar Sesión</Link>
+            <Nav.Link href="#" className='mx-2 my-2 flex-end'  onClick={mostrarModal}> Iniciar Sesión</Nav.Link>
             <Modal centered show={mostrar} onHide={ocultarModal}>
 
             {/* CABECERO */}
-                <Modal.Header  style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+                <Modal.Header className="modal-header" >
                     <Modal.Title>Iniciar sesión</Modal.Title>
                 </Modal.Header>
                 <Form  onSubmit={comprobarLogin}>
-                    <Modal.Body style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
+                    <Modal.Body >
 
                         {mostrarAlerta && (
                             <Alert variant={tipoAlerta} className="mb-3">
@@ -119,7 +116,7 @@ const IniciarSesion = () => {
                         {/*TIPO DE USUARIO */}
                         <Form.Group className="mb-3">
                                 <Form.Label>Selecciona tipo de usuario:</Form.Label>
-                                <Form.Select style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                                <Form.Select 
                                      value={rol} 
                                      onChange={(e) => setRol(e.target.value)}>
                                     <option value="">Selecciona el tipo de usuario</option>
@@ -132,7 +129,7 @@ const IniciarSesion = () => {
                       
                         {/* EMAIL */}
                         <Form.Label>EMAIL</Form.Label>
-                        <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}} 
+                        <Form.Control className="mb-3"  
                             type="email"
                             placeholder="ejemplo@ejemplo.es"
                             required
@@ -145,14 +142,14 @@ const IniciarSesion = () => {
                         <Form.Group>
                             <Form.Label>CONTRASEÑA</Form.Label>
                             <InputGroup>
-                            <Form.Control className="mb-3" style={{color: "#213448", backgroundColor: "#ECEFCA"}}
+                            <Form.Control   
                                 type={mostrarContrasenya ? "text" : "password"}
                                 placeholder="*****"
                                 required
                                 value={contrasenya}
                                 onChange={e => setContrasenya(e.target.value)}
                             />
-                            <Button variant="outline-secondary" onClick={() => manejarMostrarContrasenya()}>
+                            <Button variant="outline-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => manejarMostrarContrasenya()}>
                                 {mostrarContrasenya ? <EyeSlash/> : <Eye/>}
                                 </Button>
                             </InputGroup>
@@ -161,11 +158,11 @@ const IniciarSesion = () => {
                     </Modal.Body>
 
                     {/* PIE => BOTONES */}
-                    <Modal.Footer style={{backgroundColor: "#213448", color: "#ECEFCA"}}>
-                            <Button className='mx-2 flex-end' variant="success" onClick={comprobarLogin}>
+                    <Modal.Footer >
+                            <Button className='mx-2 flex-end' variant="primary"  onClick={comprobarLogin}>
                                 Iniciar sesión
                             </Button>
-                            <Button className='mx-2 flex-end' variant="outline-danger" onClick={ocultarModal}>
+                            <Button className='mx-2 flex-end' variant="secondary"  onClick={ocultarModal}>
                                 Cancelar
                             </Button>
                     </Modal.Footer>

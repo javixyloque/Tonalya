@@ -12,10 +12,7 @@ text-rendering: optimizeLegibility;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#root {
-background: radial-gradient( #ECEFCA, #94B4C1);
-min-height: 100vh;
-}
+
 
 * {
 margin: 0;
@@ -24,7 +21,15 @@ padding: 0;
 
 body {
 font-family: 'Ubuntu', sans-serif;
-background-color: #213448;
+
+
+    background: radial-gradient(circle at 20% 30%, #6c63ff22 0%, transparent 50%), radial-gradient(circle at 80% 70%, #ff658422 0%, transparent 50%), #ECECFD;
+
+
+
+  min-height: 100vh;
+
+
 } 
 
 ul {
@@ -35,7 +40,7 @@ ul {
 .container {
     padding-top: 5rem !important;
     padding-bottom: 5rem !important;
-    background-color: #94B4C1;
+    /* background-color: white; */
     min-height: 100vh;
 }
 
@@ -44,16 +49,18 @@ ul {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
   
   /* transform: translate(-50%, -50%); */
-  background-color: transparent;
+  /* background-color: white; */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .loader > * {
@@ -62,10 +69,147 @@ ul {
   margin-bottom: 2em;
 }
 
-th {
-    color: #ECEFCA;
+
+
+/* ===== VARIABLES CSS ===== */
+:root {
+    min-height: 100vh;
+    /* Colores principales */
+    --bs-primary: #6C63FF;
+    --bs-secondary: #FF6584;
+    --bs-success: #4CAF50;
+    --bs-info: #36D1DC;
+    --bs-warning: #FFC107;
+    --bs-danger: #DC3545;
+    --bs-light: #F7F9FC;
+    --bs-dark: #2A2D3A;
+    
+    /* Colores adicionales */
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #2A2D3A;
+
+
+    /* COLOR DE FONDO*/
+    
 }
 
+/* ===== OVERRIDE BOOTSTRAP ===== */
+/* ===== OVERRIDE AGGRESIVO DE BOOTSTRAP ===== */
+
+/* BOTONES PRIMARIOS */
+.btn-primary {
+  background-color: #6C63FF !important;
+  border-color: #6C63FF !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #5a52e0 !important;
+  border-color: #5a52e0 !important;
+  /* transform: translateY(-1px); */
+}
+
+/* BOTONES SECUNDARIOS */
+.btn-secondary {
+  background-color: #FF6584 !important;
+  border-color: #FF6584 !important;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: #e55a78 !important;
+  border-color: #e55a78 !important;
+}
+
+/* BOTONES OUTLINE */
+.btn-outline-primary {
+  color: #6C63FF !important;
+  border-color: #6C63FF !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #6C63FF !important;
+  color: white !important;
+}
+
+.btn-outline-danger {
+  color: #DC3545 !important;
+  border-color: #DC3545 !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: #DC3545 !important;
+  color: white !important;
+}
+
+/* BOTONES INFO */
+.btn-info {
+  background-color: #36D1DC !important;
+  border-color: #36D1DC !important;
+  color: white !important;
+}
+
+/* MODAL HEADER */
+.modal-header {
+  background-color: #6C63FF !important;
+  color: white !important;
+  border-bottom: none !important;
+}
+
+.modal-title {
+  font-weight: 700 !important;
+  color: white !important;
+}
+
+
+
+.form-select:focus,
+.form-check-input:focus,
+ .form-check-label:focus,
+ .form-control:focus {
+  border-color: #6C63FF !important;
+  box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25) !important;
+}
+
+/* ALERTS */
+.alert-success {
+  background-color: rgba(76, 175, 80, 0.1) !important;
+  border-color: #4CAF50 !important;
+  color: #2A2D3A !important;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border-color: #DC3545 !important;
+  color: #2A2D3A !important;
+}
+
+.alert-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-color: #FFC107 !important;
+  color: #2A2D3A !important;
+}
+
+/* NAVBAR (por si acaso) */
+.navbar {
+  background: linear-gradient(135deg, #6C63FF 0%, #8A84FF 100%) !important;
+  box-shadow: 0 2px 15px rgba(108, 99, 255, 0.3) !important;
+}
+
+.navbar-brand, .nav-link {
+  color: white !important;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  color: #F7F9FC !important;
+}
+
+.card {
+  box-shadow: 0 2px 15px rgba(108, 99, 255, 0.3) !important;
+}
 
 
 
