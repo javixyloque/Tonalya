@@ -204,7 +204,7 @@ ul {
 }
 
 .nav-link:hover {
-  color: #F7F9FC !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .card {

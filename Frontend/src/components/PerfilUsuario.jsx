@@ -2,10 +2,9 @@
 
 import {useState, useEffect} from "react";
 import {SyncLoader} from "react-spinners";
-import { Container, Row, Col, Form, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, ListGroup, Card } from 'react-bootstrap';
 import Header from "./templates/Header";
 import {arrayProvincias} from "../functions/variables.js";
-import {Link} from "react-router-dom"
 import { codificarImagen64 } from "../functions/codificar.js";
 import "./perfil.css"
 
@@ -232,6 +231,10 @@ const PerfilUsuario = () => {
         }
     }
 
+    const pagarClase = async (idClase) => {
+        window.location.href = `/form-pagar/${idClase}`;
+    }
+
     return (
         <>
         {loading ? (
@@ -410,83 +413,114 @@ const PerfilUsuario = () => {
                 {/* CLASES PAGADAS  */}
                 <Row className="mb-5">
                     <Col xs={12} md={6} className="my-3">
-                    <h3>PRÓXIMAS CLASES</h3>
+                     <Card>
+                            <Card.Header className="text-center mx-auto w-100 rounded">
+                                <h3>Próximas clases</h3>
+                            </Card.Header>
                         <ListGroup>
                             {clasesPagadas.length>0 && clasesPagadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="success">
                                     
-                                {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
-                                {/* <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}></Button> */}
+                                <p>{clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                </p>
+                        
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
+                        </Card>
                     </Col>
 
                 {/*CLASES ACEPTADAS */}
                 
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases pendientes de pago</h3>
+                    <Card>
+                            <Card.Header className="text-center mx-auto w-100 rounded">
+                                <h3>Clases pendientes de pago</h3>
+                            </Card.Header>
                         <ListGroup>
                             {clasesAceptadas.length>0 && clasesAceptadas.map((clase, index) => (
                                 <ListGroup.Item key={index} variant="primary">
                                     
                                 {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
 
-                                <Link className="btn btn-outline-success"  to={`/form-pagar/${clase._id}`}>Pagar</Link>
+                                <Button variant="success" onClick={() => pagarClase(clase._id)}>Pagar</Button>
                                 <Button variant="outline-danger" onClick={() => rechazarClase(clase._id)}>Rechazar</Button>
+
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
+                        </Card>
                     </Col>
                 </Row>
 
                 {/*CLASES PENDIENTES DE ACEPTAR */}
-                <Row className="mb-5">
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Solicitudes</h3>
+                         <Card>
+                            <Card.Header className="text-center mx-auto w-100 rounded">
+                                <h3>Solicitudes pendientes</h3>
+                            </Card.Header>
                         <ListGroup>
                             {clasesPendientes.length>0 && clasesPendientes.map((clase, index) => (
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="warning">
                                     
                                 {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+
+                                
                                 <Button variant="outline-danger" onClick={() =>rechazarClase(clase._id)}>Rechazar</Button>
 
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
+                        </Card>
                     </Col>
-                </Row>
 
                 {/* CLASES COMPLETADAS */}
                 <Row className="mb-5" >
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases completadas</h3>
-                        <ListGroup>
-                            {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
-                                <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
-                                    
-                                {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
-                                </ListGroup.Item>
-                            ))}
+                        <Card>
+                            <Card.Header className="text-center mx-auto w-100 rounded">
+                                <h3>Clases completadas</h3>
+                            </Card.Header>
+                            <ListGroup variant="flush">
+                                {clasesCompletadas.length>0 && clasesCompletadas.map((clase, index) => (
+                                    clase.asistencia === true ?(
+                                    <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="info">
+                                        
+                                    {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                    </ListGroup.Item>
+                                    ):(
+                                        <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="secondary">
+                                        
+                                    {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                    </ListGroup.Item>
+                                    )
+                                ))}
 
-                        </ListGroup>
+                            </ListGroup>
+                        </Card>
                     </Col>
             
 
                 {/* CLASES RECHAZADAS */}
                 
                     <Col xs={12} md={6} className="my-3">
-                        <h3>Clases rechazadas</h3>
+                        <Card>
+                        <Card.Header className="text-center mx-auto w-100 rounded">
+                                <h3>Clases rechazadas</h3>
+                            </Card.Header>
                         <ListGroup>
                             {clasesRechazadas.length>0 && clasesRechazadas.map((clase, index) => (
                                 <ListGroup.Item style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} key={index} variant="danger">
-                                    {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
+                                    
+                                {clase.descripcion} <br/>{new Date(clase.fechaInicio).toLocaleDateString()}<br/>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()}  - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaInicio).getMinutes() == 0 ?"00": new Date(clase.fechaInicio).getMinutes()} <br/> <strong>{clase.instrumento.nombre}</strong>
                                 
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
+                        </Card>
                     </Col>
                 </Row>
+
 
                 {/* INSTRUMENTOS DEL ALUMNO */}
                 

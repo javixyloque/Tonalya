@@ -2,11 +2,13 @@ import {Button, Card, Container, Row, Col, Carousel} from 'react-bootstrap'
 // import './Home.css';
 import Header from './components/templates/Header';
 // import Logo from"./resources/images/tonalya_logo.png";
-import InstrumentosCarrusel from "./resources/images/carrusel/instrumentos-carrusel.png";
-import ViolinCarrusel from "./resources/images/carrusel/violin-carrusel.jpg"
-import CasetteCarrusel from "./resources/images/carrusel/casette-carrusel.jpg";
-import profesor from "./resources/images/profesor.svg"
-// import aprender from "./resources/images/aprender.svg"
+import personalizarCarrusel from "./resources/images/carrusel/personalizarCarrusel.svg";
+import organizarCarrusel from "./resources/images/carrusel/organizarCarrusel.svg";
+import cobroProfesoresCarrusel from "./resources/images/carrusel/cobroProfesoresCarrusel.svg";
+import buscarCarrusel from "./resources/images/carrusel/buscarCarrusel.svg";
+import notificacionesCarrusel from "./resources/images/carrusel/notificacionesCarrusel.svg"
+import aprenderCarrusel from "./resources/images/carrusel/aprenderCarrusel.svg";
+import profesor from "./resources/images/profesor.svg"  
 import pianoProfe from "./resources/images/pianoProfe.svg"
 import buscarProfesores from "./resources/images/buscarProfesores.svg"
 
@@ -24,6 +26,32 @@ Se prohíbe expresamente:
 */
 
 // MODAL PARA INICIAR SESION, PAGINA APARTE PARA REGISTRARSE
+const arrayCarrusel = [{ 
+        img: aprenderCarrusel, 
+        title: "¡Bienvenido a Tonalya!", 
+        text: "Siempre dando la nota" 
+    },{ 
+        img: buscarCarrusel, 
+        title: "Encuentra tu profesor", 
+        text: "Aprende interactivamente un instrumento y conviértete en un virtuoso" 
+    },{ 
+        img: notificacionesCarrusel, 
+        title: "Gestión de Clases", 
+        text: "Organiza y recibe notificaciones de tus clases" 
+    }, {
+        img: personalizarCarrusel,
+        title: "Personaliza tu perfil",
+        text: "Hazlo único para que sea reconocible para los usuarios"
+    }, {
+        img: organizarCarrusel,
+        title: "Organiza tus clases",
+        text: "Gestiona tu horario y tu perfil de forma sencilla"
+    }, {
+        img: cobroProfesoresCarrusel,
+        title: "Paga y cobra automáticamente",
+        text: "Nosotros nos ocuparemos de ello, simplemente disfruta de la música"
+    }
+]
 
 const  Home = () => {
     
@@ -45,29 +73,54 @@ const  Home = () => {
                 <Col xs={0} lg={2}></Col>
                 <Col xs={12} lg={8}>
                     {/* ZINDEX 0 PARA Q NO SE VEAN LAS FLECHAS POR ENCIMA DEL NAVBAR */}
-                    <Carousel data-bs-theme="primary" className="mb-5" style={{zIndex: 0 , backgroundColor: "#213448"}}>
-                        {/* IMAGEN CARRUSEL -> IMG. IMAGE NO FUNCIONA BIEN */}
-                        <Carousel.Item style={{}}>
-                            <img src={CasetteCarrusel} className="img-fluid w-100" alt="Logo" ></img>
-                            <Carousel.Caption>
-                                <h2>¡BIENVENIDO A TONALYA!</h2>
-                            </Carousel.Caption>
-                        </Carousel.Item>
-
-                        <Carousel.Item>
-                            <img src={InstrumentosCarrusel} className="d-block w-100" style={{height: "95%", padding: "2%"}} alt="Instrumentos" />
-                            <Carousel.Caption>
-                                <h3>Aprende con nosotros!</h3>
-                                <h4>Intentamos hacer de tu aprendizaje axlo más fácil</h4>
-                            </Carousel.Caption>
-                        </Carousel.Item>
-
-                        <Carousel.Item>
-                            <img src={ViolinCarrusel} className="d-block w-100" alt="casette" style={{height: "95%"}}/>
-                        </Carousel.Item>
-
+                   <Carousel 
+                        data-bs-theme="dark" 
+                        className="mb-5 vh-25 vh-md-50 vh-lg-75" 
+                        style={{
+                            zIndex: 0,
+                            overflow: "hidden",
+                            backgroundColor: "transparent"
+                        }}
+                    >
+                                                {arrayCarrusel.map((pestanya, index) => (
+                            <Carousel.Item key={index} style={{
+                                height: "500px", // Agregar altura fija a cada elemento
+                                overflow: "hidden" // Ocultar contenido que sobrepasa la altura fija
+                            }}>
+                                <img src={pestanya.img}  alt={`Pestaña ${index + 1}`} style={{objectFit: "cover", objectPosition: "center"}} />
+                                {/* TEXTO SOLO EN DESKTOP - usando Bootstrap responsive */}
+                                <div className="d-block" style={{
+                                    position: "absolute",
+                                    bottom: "10%",
+                                    left: 0,
+                                    right: 0
+                                }}>
+                                    <Carousel.Caption>
+                                        <h3 style={{
+                                            fontSize: "1.8rem",
+                                            fontWeight: "700",
+                                            textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
+                                            marginBottom: "0.5rem",
+                                            color: "#FF6584"
+                                        }}>
+                                            {pestanya.title}
+                                        </h3>
+                                        {pestanya.text && (
+                                            <p style={{
+                                                fontSize: "1.2rem",
+                                                textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
+                                                marginBottom: "0",
+                                                color: "#e55a78"
+                                            }}>
+                                                {pestanya.text}
+                                            </p>
+                                        )}
+                                    </Carousel.Caption>
+                                </div>
+                            </Carousel.Item>
+                        ))}
                     </Carousel>
-                </Col>
+                    </Col>
                 <Col xs={0} lg={2} className="mb-5"></Col>
                 
             </Row>

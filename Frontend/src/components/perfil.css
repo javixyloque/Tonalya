@@ -5,3 +5,50 @@
     padding: 10px !important;
     border-bottom: 5px solid #213448 !important;
 }
+
+/* TABS SOLO PARA PERFIL - DIFERENCIADOS DEL HEADER */
+.perfil-tabs {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.perfil-tabs .nav-tabs {
+    border-bottom: 2px solid #6C63FF !important;
+    margin-bottom: 20px;
+}
+
+
+.perfil-tabs .nav-link {
+    color: #2A2D3A !important;
+    background-color: #F7F9FC !important;
+    border: 1px solid #dee2e6 !important;
+    border-bottom: none !important;
+    font-weight: 600;
+    padding: 12px 24px;
+    margin-right: 5px;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.perfil-tabs .nav-link:hover {
+    color: #6C63FF !important;
+    background-color: #e8e6ff !important;
+    border-color: #6C63FF !important;
+}
+
+.perfil-tabs .nav-link.active {
+    color: white !important;
+    background-color: #6C63FF !important;
+    border-color: #6C63FF !important;
+    border-bottom: 1px solid #6C63FF !important;
+}
+
+.perfil-tabs .tab-content {
+    background-color: white;
+    border: 1px solid #6C63FF;
+    border-top: none;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 15px rgba(108, 99, 255, 0.1);
+}
