@@ -259,7 +259,13 @@ const FormProfesor = () => {
                             <Form.Group>
                                 <Form.Label><strong>Precio por hora</strong> que tendrán tus clases</Form.Label>
                                 <Form.Control
-                                    required type="number" step={1} defaultValue={10}  placeholder="Precio por hora" min={5} max={100} onChange={(e) => setPrecio(e.target.value)} />
+                                    required type="number" step={1} defaultValue={10}  placeholder="Precio por hora" min={5} max={100} onChange={(e) => setPrecio(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            enviarFormulario(e)
+                                        }
+                                    }}
+                                    />
                                 <Form.Control.Feedback type="invalid">
                                     Por favor ingresa un precio válido (entre 5 y 100 euros)
                                 </Form.Control.Feedback>

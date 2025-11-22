@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form, Alert, Modal } from "react-bootstrap";
 import Header from "./templates/Header";
@@ -80,6 +80,31 @@ const VerProfesor = () => {
         obtenerProfesor();
     }, [id]);
 
+    const horasFinDisponibles = useMemo (( ) => {
+        if (!horaInicio) return horasDia;
+        
+        const inicioIndex = horasDia.indexOf(horaInicio);
+        if (inicioIndex === -1) return horasDia;
+        
+        // Mostrar solo horas posteriores a la hora de inicio
+        return horasDia.slice(inicioIndex + 1);
+    }, [horaInicio]);
+
+
+
+    // RESETEAR HORA FIN CUANDO CAMBIA HORA INICIO
+    useEffect(() => {
+        if (horaInicio && horaFin) {
+            const inicioIndex = horasDia.indexOf(horaInicio);
+            const finIndex = horasDia.indexOf(horaFin);
+            
+            // SI HORA FIN <= HORA INICIO, RESETEAR
+            if (finIndex <= inicioIndex) {
+                setHoraFin("");
+            }
+        }
+    }, [horaInicio, horaFin]);
+
     // FUNCIÓN PARA ENVIAR LA SOLICITUD DE RESERVA
     async function enviarReserva(e) {
         
@@ -95,10 +120,7 @@ const VerProfesor = () => {
         }
         const fechaInicio = `${fecha}T${horaInicio}`;
         const fechaFin = `${fecha}T${horaFin}`;
-        if (fechaInicio >= fechaFin) {
-            alert("La clase tiene que empezar antes que acabar.");
-            return;
-        }
+        
 
         try {
             const cuerpo = JSON.stringify({
@@ -135,7 +157,7 @@ const VerProfesor = () => {
 
 
             // setFormReserva({ descripcion: "", fechaInicio: "", fechaFin: "", instrumento: "" });
-            setTimeout(() => setExito(null), 2000);
+            setTimeout(() => setExito(null), 4000);
         } catch (err) {
             setError("Error al enviar la solicitud: " + err.message);
             setTimeout(() => setError(null), 2000);
@@ -181,7 +203,7 @@ const VerProfesor = () => {
                                     variant="top"
                                     src={profesor.imagen} 
                                     alt={profesor.nombre}
-                                    style={{  objectFit: "cover" }}
+                                    style={{ maxHeight: "300px",  objectFit: "cover" }}
                                 />
                             )}
                             <Card.Body>
@@ -201,7 +223,7 @@ const VerProfesor = () => {
                                 <h6>Precio por hora de clase: <strong>{profesor.precioHora}€</strong></h6>
 
                                 <Button
-                                    variant="primary"
+                                    variant="primary" className="my-3 w-100 text-center"
                                     onClick={() =>{ 
                                         if (!sessionStorage.getItem("usuario") || sessionStorage.getItem("rol") !== "alumno") {
                                            
@@ -223,11 +245,12 @@ const VerProfesor = () => {
             )}
 
             {/* MODAL DE RESERVA */}
-            <Modal
-                show={mostrarModalReserva}
-                onHide={() => setMostrarModalReserva(false)}
-                centered
-            >
+            <Modal show={mostrarModalReserva}
+                onHide={() =>{ setMostrarModalReserva(false)
+                    setHoraInicio("");
+                    setHoraFin("");
+                }}
+                centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Solicitar clase con {profesor?.nombre}</Modal.Title>
                 </Modal.Header>
@@ -251,7 +274,7 @@ const VerProfesor = () => {
                         <Row>
                             <Form.Group className="mb-3">
                             <Form.Label>Día</Form.Label>
-                            <Form.Control type="date" min={fechaMinima} onChange={(e) => setFecha(e.target.value)} defaultValue=''>
+                            <Form.Control type="date" min={fechaMinima} onChange={(e) => setFecha(e.target.value)} defaultValue='' required>
 
                             
                             </Form.Control>
@@ -263,7 +286,9 @@ const VerProfesor = () => {
                             
                             <Col xs={12} md={6} className="mb-3">
                                 <Form.Label>Hora inicio</Form.Label>
-                                <Form.Select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)}>
+                                <Form.Select value={horaInicio} onChange={(e) => {setHoraInicio(e.target.value)
+                                    setHoraFin("")
+                                } } required>
                                     <option value="">Selecciona una hora</option>
                                     {horasDia.map((hora) => (
                                         <option key={hora} value={hora}>{hora}</option>
@@ -272,9 +297,9 @@ const VerProfesor = () => {
                             </Col>
                             <Col xs={12} md={6} className="mb-3">
                                 <Form.Label>Hora fin</Form.Label>
-                                <Form.Select value={horaFin} onChange={(e) => setHoraFin(e.target.value)}>
+                                <Form.Select value={horaFin} onChange={(e) =>{ setHoraFin(e.target.value) }} disabled={!horaInicio} required>
                                     <option value="">Selecciona una hora</option>
-                                    {horasDia.map((hora) => (
+                                    {horasFinDisponibles.map((hora) => (
                                         <option key={hora} value={hora}>{hora}</option>
                                     ))}
                                 </Form.Select>
@@ -299,15 +324,15 @@ const VerProfesor = () => {
                         </Form.Group>
 
                         <div className="text-end">
+                            <Button type="submit" className="me-2" variant="primary">
+                                Enviar solicitud
+                            </Button>
                             <Button
                                 variant="secondary"
-                                className="me-2"
+                                className=""
                                 onClick={() => setMostrarModalReserva(false)}
                             >
                                 Cancelar
-                            </Button>
-                            <Button type="submit" variant="primary">
-                                Enviar solicitud
                             </Button>
                         </div>
                     </Form>

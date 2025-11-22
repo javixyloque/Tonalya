@@ -103,7 +103,7 @@ export const emailBienvenidaProfesor = async (profesor) => {
     }
 }
 
-export const emailBienvenidaAlumno = async (alumno) => {
+export const emailBienvenidaAlumno = async (usuario) => {
     try {
         await transporter.sendMail({
             from: '"TONALYA" <tonalyamusica@gmail.com>',
@@ -132,7 +132,7 @@ export const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instru
                 subject: `Clase de ${alumno.nombre} rechazada`,
                 to: profesor.email,
                 html: `<h1>Rechazo de clase reservada</h1>
-                <p>Tu alumno <strong>${alumno.nombre}</strong> ha decidido cancelar la reserva de la clase de <strong>${instrumento}</strong> que teníais programada el ${formatoFecha(clase.fechaInicio)}, disculpa las molestias, el motivo escapa de nuestro control.</p>
+                <p>Tu alumno <strong>${alumno.nombre}</strong> ha decidido cancelar la reserva de la clase de <strong>${instrumento.nombre}</strong> que teníais programada el ${formatoFecha(clase.fechaInicio)}, disculpa las molestias, el motivo escapa de nuestro control.</p>
                 <br/><br/>
                 <p>Gracias por confiar en nosotros!</p>
                 <p>Un saludo, el equipo de TONALYA.</p>`
@@ -142,14 +142,9 @@ export const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instru
                 subject: "Clase rechazada",
                 to: alumno.email,
                 html: `<h1>Clase rechazada</h1>
-                <p>Tu clase con ${profesor.nombre} de <strong>${instrumento}</strong> del día ${formatoFecha(clase.fechaInicio)} ha sido rechazada correctamente, disculpa las molestias, esperemos que encuentres la inspiración para seguir aprendiendo.</p>
+                <p>Tu clase con ${profesor.nombre} de <strong>${instrumento.nombre}</strong> del día ${formatoFecha(clase.fechaInicio)} ha sido rechazada correctamente, disculpa las molestias, esperemos que encuentres la inspiración para seguir aprendiendo.</p>
                 <br/><br/>
-                <p>Ticket: <br/>
-                - Profesor: ${clase.profesor}<br/> 
-                - Alumno: ${clase.alumno} <br/> 
-                - Instrumento: ${clase.instrumento} 
-                - Horario: ${clase.fechaInicio} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
-                - Subtotal: ${clase.precio*1.07}€<br/><br/></p>
+                
                 <p>Gracias por confiar en nosotros!</p>
                 <p>Un saludo, el equipo de TONALYA!</p>`
             })
@@ -166,36 +161,38 @@ export const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) =
     try {
         const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
         
+        const precio = clase?.precio || profesor?.precioHora || 0;
+        const precioConIVA = (precio * 1.07).toFixed(2);
+        const precioFormateado = precio.toFixed(2);
         await Promise.all([
             transporter.sendMail({
                 from: "TONALYA <tonalyamusica@gmail.com>",
-                subject: "Solicitud de reserva de clase",
+                subject: "Clase pagada",
                 to: profesor.email,
-                html: `<h1>Solicitud de reserva de clase</h1>
+                html: `<h1>Clase de tu alumno pagada</h1>
                 <p>Alumno: ${alumno.nombre}</p>
                 <p>Instrumento: ${instrumento.nombre}</p>
-                <p>Descripción: ${descripcion}</p>
+                <p>Descripción: ${clase.descripcion}</p>
                 <p>Fecha inicio: ${formatoFecha(clase.fechaInicio)}</p>
                 <p>Fecha fin: ${formatoFecha(clase.fechaFin)}</p>
-                <p>Duración: ${horas.toFixed(2)} hora${horas !== 1 ? 's' : ''}</p>
-                <p>Precio: ${clase.precio.toFixed(2)} €</p>
+                <p>Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}</p>
+                <p>Precio: ${precioFormateado} €</p>
                 <br/><br/>
                 <p>Gracias por confiar en nosotros!</p>
                 <p>Un saludo, el equipo de TONALYA!</p>`
             }),
             transporter.sendMail({
                 from: "TONALYA <tonalyamusica@gmail.com>",
-                subject: "Solicitud de reserva de clase exitosa",
+                subject: "Clase pagada",
                 to: alumno.email,
-                html: `<h1>Solicitud de reserva de clase exitosa</h1>
-                <p>Profesor: ${profesor.nombre}</p>
-                <p>Instrumento: ${instrumento.nombre}</p>
-                <p>Descripción: ${descripcion}</p>
-                <p>Fecha inicio: ${formatoFecha(clase.fechaInicio)}</p>
-                <p>Fecha fin: ${formatoFecha(clase.fechaFin)}</p>
-                <p>Duración: ${horas.toFixed(2)} hora${horas !== 1 ? 's' : ''}</p>
-                <p>Precio: ${clase.precio.toFixed(2)} €</p>
-                <p>En cuanto ${profesor.nombre} acepte tu solicitud, te enviaremos un correo con los detalles</p>
+                html: `<h1>Clase pagada con éxito</h1>
+                <p>Esperemos que disfrutes de tu clase con ${profesor.nombre}!</p><br/><br/>
+                <p>Ticket: <br/>
+                - Profesor: ${profesor.nombre}<br/> 
+                - Alumno: ${alumno.nombre} <br/> 
+                - Instrumento: ${instrumento.nombre} 
+                - Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
+                - Subtotal: ${precioConIVA}€<br/><br/></p>
                 <br/><br/>
                 <p>Gracias por confiar en nosotros!</p>
                 <p>Un saludo, el equipo de TONALYA.</p>`
@@ -236,10 +233,12 @@ export const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
             html: `<h1>Solicitud de reserva de clase aceptada, ya puedes abonar el importe</h1>
             <p>Hola ${alumno.nombre}! Nos complace comunicarte que <strong>${profesor.nombre}</strong> ha decidido aceptar tu solicitud de clase de ${instrumento.nombre}. Cuando quieras puedes abonar el importe para asegurar tu asistencia, recuerda hacerlo cuanto antes! si no lo haces, el profesor podrá rechazar tu solicitud.</p>
             <br><br>
-            <p>Descripción: ${clase.descripcion}</p>
-            <p>Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() > 0 ? clase.fechaFin.getMinutes() : '00'}</p>
-            <p>Precio: ${clase.precio.toFixed(2)}€</p>
-            <br/><br/>
+            <p>Ticket: <br/>
+                - Profesor: ${profesor.nombre}<br/> 
+                - Alumno: ${alumno.nombre} <br/> 
+                - Instrumento: ${instrumento.nombre} 
+                - Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
+                - Subtotal: ${(clase.precio*1.07).toFixed(2)}€<br/><br/></p>
             <p>Gracias por confiar en nosotros!</p>
             <p>Un saludo, el equipo de TONALYA.</p>`
         })

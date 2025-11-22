@@ -58,7 +58,7 @@ const FormPagar = () => {
                     <Container>
                         <Row>
                             <Col xs={0} md={3}></Col>
-                            <Col xs={12} md={6} style={{backgroundColor: "#ECEFCA", color: "#213448", padding: "20px", borderRadius: "10px"}}>
+                            <Col xs={12} md={6} >
                             {/* Título de la clase */}
                             <h1>Clase de {instrumento.nombre}</h1>
                             
@@ -73,7 +73,7 @@ const FormPagar = () => {
                             {/* Fecha y hora de la clase */}
                             <p>
                                 {new Date(clase.fechaInicio).getDate()}/{new Date(clase.fechaInicio).getMonth()}/{new Date(clase.fechaInicio).getFullYear()} - 
-                                <strong>De {new Date(clase.fechaInicio).getHours()}:00 a {new Date(clase.fechaFin).getHours()}:00</strong>
+                                <strong> de {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() > 0 ? new Date(clase.fechaInicio).getMinutes() : '00'} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() > 0 ? new Date(clase.fechaFin).getMinutes() : '00'}</strong>
                             </p>
                             
                             {/* Descripción de la clase */}

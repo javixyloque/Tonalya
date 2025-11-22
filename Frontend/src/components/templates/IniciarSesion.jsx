@@ -148,6 +148,11 @@ const IniciarSesion = () => {
                                 required
                                 value={contrasenya}
                                 onChange={e => setContrasenya(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        comprobarLogin(e);
+                                    }
+                                }}
                             />
                             <Button variant="outline-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => manejarMostrarContrasenya()}>
                                 {mostrarContrasenya ? <EyeSlash/> : <Eye/>}

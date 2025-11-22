@@ -68,6 +68,7 @@ const main  = async () => {
         }
     ));
 
+    // DEBUG CONSULTAS => PRUEBA PSEUDODESPLIEGUE PARA CONEXIÓN BASE DE DATOS (NO FUNCIONÓ)
     app.use((req, res, next) => {
         console.log('Solicitud recibida:', req.method, req.url);
         next();
@@ -150,7 +151,7 @@ const main  = async () => {
             try {
                 await adminUser.save();
                 console.log({ mensaje: 'Admin creado exitosamente' });
-            } catch (err) {
+            } catch (err) {cd
                 console.error('Error al crear el admin');
             }
         } else {

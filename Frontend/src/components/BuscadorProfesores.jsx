@@ -194,8 +194,8 @@ const BuscadorProfesores = () => {
 
                                 <Row>
                                     {profesores.map(profesor => (
-                                        <Col xs={12} md={6} lg={4} key={profesor._id} className="mb-4">
-                                            <Card>
+                                        <Col xs={12} sm={6} lg={4} xl={3} key={profesor._id} className="mb-4">
+                                            <Card className="shadow-md card-fixed">
                                                     {profesor.imagen && (
                                                         <Card.Img 
                                                             variant="top" 
@@ -215,7 +215,7 @@ const BuscadorProfesores = () => {
                                                     {profesor.bio && (
                                                         <Card.Text className="flex-grow-1">
                                                             {profesor.bio.length > 100 
-                                                                ? `${profesor.bio.substring(0, 100)}...` 
+                                                                ? `${profesor.bio.substring(0, 50)}...` 
                                                                 : profesor.bio
                                                             }
                                                         </Card.Text>

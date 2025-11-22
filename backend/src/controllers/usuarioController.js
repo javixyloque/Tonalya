@@ -5,7 +5,7 @@ import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Instrumento from "../models/Instrumento.js";
 import Clase from "../models/Clase.js";
-import { enviarEmailsReserva, enviarEmailsRechazoUsuario, emailBienvenidaAlumno } from "../biblioteca.js";
+import { enviarEmailsReserva, enviarEmailsRechazoUsuario, emailBienvenidaAlumno, enviarEmailsPagada} from "../biblioteca.js";
 // SHARP => LIMITAR RESOLUCION IMAGEN
 // import sharp from "sharp"
 import nodemailer from 'nodemailer';
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
         const email  = req.body.email;
         const usuarioExistente = await Usuario.findOne({ "email": email });
 
-        if (usuarioExistente != null) {
+        if (usuarioExistente) {
             return res.status(401).json({ mensaje: 'El correo electrónico ya está en uso' });
             
         }
@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
         await usuario.save();
         
         emailBienvenidaAlumno(usuario);
-        res.json({ mensaje: 'Usuario creado exitosamente'});
+        res.status(201).json({ mensaje: 'Usuario creado exitosamente'});
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al crear el usuario', error: error.message });
     }
@@ -73,17 +73,17 @@ router.put('/clase/:id', async (req, res) => {
             Instrumento.findById(clase.instrumento)
         ])
         if (!clase) {
-            return res.json({ mensaje: 'Clase no encontrada' });
+            return res.status(404).json({ mensaje: 'Clase no encontrada' });
         }
         const tipoAccion = req.body.estado;
         if (tipoAccion== 'rechazada') {
             enviarEmailsRechazoUsuario(profesor, alumno, clase, instrumento);
         } else if (tipoAccion =='pagada') {
-            enviarEmailsReserva(profesor, alumno, clase, instrumento);
+            enviarEmailsPagada(profesor, alumno, clase, instrumento);
         }
-        res.json(clase);
+        res.status(200).json(clase);
     } catch (error) {
-        res.json({ mensaje: 'Error al actualizar la clase', error: error.message });
+        res.status(500).json({ mensaje: 'Error al actualizar la clase', error: error.message });
     }
 });
 
@@ -269,9 +269,9 @@ router.get('/:id/instrumentos', async (req, res) => {
             return res.json({ mensaje: 'Usuario no encontrado' });
         }
         const instrumentos  = await Instrumento.find({ _id: { $in: usuario.instrumentos } });
-        res.json({ instrumentos });
+        res.status(200).json({ instrumentos });
     } catch (error) {
-        res.json({ mensaje: 'Error al obtener los instrumentos del usuario', error: error.message });
+        res.status(500).json({ mensaje: 'Error al obtener los instrumentos del usuario', error: error.message });
     }
 })
 
@@ -294,10 +294,10 @@ router.post('/:id/instrumento', async (req, res) => {
         usuario.instrumentos.push(idInstrumento);
         await usuario.save();
         
-        res.json({ mensaje: 'Instrumento agregado exitosamente', usuario: usuario });
+        res.status(200).json({ mensaje: 'Instrumento agregado exitosamente', usuario: usuario });
     } catch (error) {
-        res.json({ mensaje: 'Error al agregar el instrumento', error: error.message });
-    }
+        res.status(500).json({ mensaje: 'Error al agregar el instrumento', error: error.message });
+    } 
 });
 
 // ELIMINAR INSTRUMENTO USUARIO

@@ -292,7 +292,6 @@ router.put('/clase/:id', async (req, res) => {
             enviarEmailsRechazoProfesor(profesor, alumno, clase, instrumento, mensaje);
         } else if (tipoAccion =='aceptada') {
             enviarEmailsAceptada(profesor, alumno, clase, instrumento);
-            // enviarEmailsReserva(profesor[0], alumno[0], clase, instrumento[0]);
         }
         res.json({mensaje: 'Clase actualizada exitosamente' ,clase: clase});
     } catch (error) {

@@ -115,14 +115,14 @@ const FormUsuario = () => {
             
             const objetoRespuesta = await response.json();
 
-            if (objetoRespuesta.ok) {
+            if (response.ok) {
                 setMensajeAlerta(objetoRespuesta.mensaje)
                 setTipoAlerta('success');
                 setAlerta(true);
                 setTimeout(() => {
                     setAlerta(false);
                     window.location.href = '/';
-                }, 3000)
+                }, 2000)
                 
             } else {
                 setMensajeAlerta(objetoRespuesta.mensaje)
@@ -251,7 +251,13 @@ const FormUsuario = () => {
 
                             <Form.Group as={Col} md={12} className="mb-4">
                                 <Form.Label>¿Cuál es tu <strong>instrumento</strong> favorito?</Form.Label>
-                                <Form.Select value={instrumentoP} onChange={(e) => setInstrumentoP(e.target.value)}>
+                                <Form.Select value={instrumentoP} onChange={(e) => setInstrumentoP(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            enviarFormulario(e)
+                                        }
+                                    }}
+                                    >
                                     {instrumentos.map((instrumento, index) => (
                                         <option key={index} value={instrumento._id}>{instrumento.nombre}</option>
                                     ))}
