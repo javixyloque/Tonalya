@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import {SyncLoader} from "react-spinners";
-import { Container, Row, Col, Form, Button, ListGroup, Modal, Alert, Card, Tabs, Tab } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, ListGroup, Modal, Alert, Card, Tabs, Tab, Table } from 'react-bootstrap';
+import { CheckSquareFill, XSquareFill } from "react-bootstrap-icons";
 
 import Header from "./templates/Header";
 import {arrayProvincias} from "../functions/variables.js";
@@ -26,7 +27,7 @@ const PerfilProfesor = () => {
     const [loadingClase, setLoadingClase] = useState(false);
     const [asistencia, setAsistencia] = useState(null);
 
-    const [mostrarAlerta, setMostrarAlerta] = useState(false);
+    const [alerta, setAlerta] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
     const [tipoAlerta, setTipoAlerta] = useState('success');
     
@@ -89,6 +90,7 @@ const PerfilProfesor = () => {
                             break;
                     } 
                 })
+                console.log(clases);
 
                 setClasesPendientes(tipoClases.pendiente);
                 setClasesAceptadas(tipoClases.aceptada);
@@ -206,7 +208,13 @@ const PerfilProfesor = () => {
                 const profesorActualizado = await respuesta.json();
                 setProfesor(profesorActualizado);
                 sessionStorage.setItem('profesor', profesorActualizado.nombre);
-                alert('Perfil actualizado correctamente');
+                setMensajeAlerta("Perfil actualizado correctamente");
+                setTipoAlerta('success');
+                setAlerta(true);
+                setTimeout(() => {
+                    setAlerta(false);
+                }, 2000);
+                
             } else {
                 alert('Error al actualizar el perfil');
             }
@@ -260,9 +268,20 @@ const PerfilProfesor = () => {
 
             if (respuesta.ok) {
                 setInstrumentos(prev => prev.filter(instr => instr._id !== instrumentoId));
-                alert('Instrumento eliminado correctamente');
+                setAlerta(true);
+                setMensajeAlerta("Instrumento eliminado correctamente");
+                setTipoAlerta('success');
+                setTimeout(() => {
+                    setAlerta(false);
+                }, 2000);
+                
             } else {
-                alert('Error al eliminar el instrumento');
+                setAlerta(true);
+                setTipoAlerta('danger');
+                setMensajeAlerta('Error al eliminar el instrumento');
+                setTimeout(() => {
+                    setAlerta(false);
+                }, 2000)
             }
         } catch (error) {
             console.error('Error eliminando instrumento:', error);
@@ -311,17 +330,17 @@ const PerfilProfesor = () => {
                 const datosResp = await respuesta.json();
                 setTipoAlerta('success');
                 setMensajeAlerta(datosResp.mensaje);
-                setMostrarAlerta(true);
+                setAlerta(true);
                 setTimeout(() => {
-                    setMostrarAlerta(false);
+                    setAlerta(false);
                     window.location.reload();
                 }, 2000);
             } else {
                 setTipoAlerta('danger');
                 setMensajeAlerta('Error al actualizar la asistencia');
-                setMostrarAlerta(true);
+                setAlerta(true);
                 setTimeout(() => {
-                    setMostrarAlerta(false);    
+                    setAlerta(false);    
                 }, 2000);
             }
         } catch (error) {
@@ -334,7 +353,7 @@ const PerfilProfesor = () => {
         {loadingClase && (
             <div className="loader">
                 <SyncLoader color="#213448"/><br></br>
-                <p style={{color: "#213448"}}>Cargando asistencia...</p>
+                <p style={{color: "#213448"}}>Cargando...</p>
             </div>
         )}
         {loading ? (
@@ -348,7 +367,7 @@ const PerfilProfesor = () => {
                 <Container className="mt-4">
                     <Row className="mb-4">
                         <Col xs={12}>
-                            <h1>Perfil de {profesor?.nombre}</h1>
+                            <h1 className="text-center">Perfil de {profesor?.nombre}</h1>
                         </Col>
                     </Row>
 
@@ -460,8 +479,13 @@ const PerfilProfesor = () => {
                                                 </Form.Group>
                                             </Col>
                                         </Row>
+                                        {alerta && (
+                                            <Alert variant={tipoAlerta} className="my-3">
+                                                {mensajeAlerta}
+                                            </Alert>
+                                        )}
 
-                                        <Button variant="primary" type="submit" className="mt-3 ">
+                                        <Button variant="primary" type="submit" className="my-3  mx-auto d-block">
                                             Guardar cambios
                                         </Button>
                                     </Form>
@@ -548,110 +572,202 @@ const PerfilProfesor = () => {
                                 <Card.Body>
                                     <Row>
                                         {/* CLASES PAGADAS */}
-                                        <Col xs={12} md={6} className="my-3">
+                                        <Col xs={12}  className="my-3">
                                             <Card>
                                                 <Card.Header className="text-center bg-success text-white">
                                                     <h5>Próximas clases</h5>
                                                 </Card.Header>
-                                                <ListGroup variant="flush">
-                                                    {clasesPagadas.length > 0 ? clasesPagadas.map((clase, index) => (
-                                                        <ListGroup.Item key={index}>
-                                                            <p><strong>{clase.descripcion}</strong></p>
-                                                            <small>
-                                                                {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() === 0 ? '00' : new Date(clase.fechaInicio).getMinutes()} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() === 0 ? '00' : new Date(clase.fechaFin).getMinutes()}
-                                                            </small>
-                                                            <br/>
-                                                            <strong>{clase.instrumento.nombre}</strong>
-                                                            <br/>
+                                                <Card.Body className="table-responsive">
+                                                {clasesPagadas.length > 0 ? (
+                                                <Table className="table-striped border-secondary align-middle">
+                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                        <tr>
+                                                            <th>Clase</th>
+                                                            <th>Alumno</th>
+                                                            <th>Teléfono</th>
+                                                            <th>Fecha</th>
+                                                            <th>Instrumento</th>
+                                                            <th>Horas</th>
+                                                            <th>Completar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {clasesPagadas.map((clase, index) => (
+                                                        
+                                                        <tr key={index}>
+                                                            <td>{clase.descripcion}</td>
+                                                            <td>{clase.alumno[0].nombre}</td>
+                                                            <td>{clase.alumno[0].telefono}</td>
+                                                            <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
+                                                            <td>{clase.instrumento.nombre}</td>
+                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>
                                                             <Button variant="outline-primary" size="sm" onClick={() => manejarModalAsistencia(clase._id)}>
                                                                 Completada
                                                             </Button>
-                                                        </ListGroup.Item>
-                                                    )) : <ListGroup.Item>No hay clases próximas</ListGroup.Item>}
-                                                </ListGroup>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                        </tbody>
+                                                    </Table>
+                                                    ) : <ListGroup.Item>No hay clases próximas</ListGroup.Item>}
+
+                                                    </Card.Body>
                                             </Card>
                                         </Col>
 
                                         {/* CLASES ACEPTADAS */}
-                                        <Col xs={12} md={6} className="my-3">
+                                        <Col xs={12} xl={6} className="my-3">
                                             <Card>
                                                 <Card.Header className="text-center bg-primary text-white">
                                                     <h5>Clases pendientes de pago</h5>
                                                 </Card.Header>
-                                                <ListGroup variant="flush">
-                                                    {clasesAceptadas.length > 0 ? clasesAceptadas.map((clase, index) => (
-                                                        <ListGroup.Item key={index}>
-                                                            <p><strong>{clase.descripcion}</strong></p>
-                                                            <small>
-                                                                {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() === 0 ? '00' : new Date(clase.fechaInicio).getMinutes()} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() === 0 ? '00' : new Date(clase.fechaFin).getMinutes()}
-                                                            </small>
-                                                            <br/>
-                                                            <strong>{clase.instrumento.nombre}</strong>
-                                                            <br/>
+
+                                                <Card.Body className="table-responsive h-25">
+                                                {clasesAceptadas.length > 0 ? (
+                                                <Table className="table-striped border-secondary align-middle">
+                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                        <tr>
+                                                            <th>Clase</th>
+                                                            <th>Alumno</th>
+                                                            <th>Fecha</th>
+                                                            <th>Instrumento</th>
+                                                            <th>Horas</th>
+                                                            <th>Completar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {clasesAceptadas.map((clase, index) => (
+                                                        <tr key={index}>
+                                                            <td>{clase.descripcion}</td>
+                                                            <td>{clase.alumno[0].nombre}</td>
+                                                            <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
+                                                            <td>{clase.instrumento.nombre}</td>
+                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>
                                                             <Button variant="outline-danger" size="sm" onClick={() => rechazarClase(clase._id)}>
                                                                 Rechazar
                                                             </Button>
-                                                        </ListGroup.Item>
-                                                    )) : <ListGroup.Item>No hay clases pendientes de pago</ListGroup.Item>}
-                                                </ListGroup>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                        </tbody>
+                                                    </Table>
+                                                    ) : <ListGroup.Item>No hay clases pendientes de pago</ListGroup.Item>}
+
+                                                    </Card.Body>
+                                                
                                             </Card>
                                         </Col>
 
                                         {/* CLASES PENDIENTES */}
-                                        <Col xs={12} md={6} className="my-3">
+                                        <Col xs={12} xl={6} className="my-3">
                                             <Card>
                                                 <Card.Header className="text-center bg-warning text-dark">
                                                     <h5>Solicitudes pendientes</h5>
                                                 </Card.Header>
-                                                <ListGroup variant="flush">
-                                                    {clasesPendientes.length > 0 ? clasesPendientes.map((clase, index) => (
-                                                        <ListGroup.Item key={index}>
-                                                            <p><strong>{clase.descripcion}</strong></p>
-                                                            <small>
-                                                                {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() === 0 ? '00' : new Date(clase.fechaInicio).getMinutes()} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() === 0 ? '00' : new Date(clase.fechaFin).getMinutes()}
-                                                            </small>
-                                                            <br/>
-                                                            <strong>{clase.instrumento.nombre}</strong>
-                                                            <br/>
-                                                            <div className="d-flex gap-2 mt-2">
-                                                                <Button variant="outline-success" size="sm" onClick={() => aceptarClase(clase._id)}>
+
+                                                <Card.Body className="table-responsive h-25">
+                                                {clasesPendientes.length > 0 ? (
+                                                <Table className="table-striped border-secondary align-middle">
+                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                        <tr>
+                                                            <th>Clase</th>
+                                                            <th>Alumno</th>
+                                                            <th>Fecha</th>
+                                                            <th>Instrumento</th>
+                                                            <th>Horas</th>
+                                                            <th>Aceptar</th>
+                                                            <th>Rechazar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {clasesPendientes.map((clase, index) => (
+                                                        <tr key={index}>
+                                                            <td>{clase.descripcion}</td>
+                                                            <td>{clase.alumno[0].nombre}</td>
+                                                            <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
+                                                            <td>{clase.instrumento.nombre}</td>
+                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>
+                                                            <Button variant="outline-success" size="sm" onClick={() => aceptarClase(clase._id)}>
                                                                     Aceptar
                                                                 </Button>
+                                                            </td>
+                                                            <td>
                                                                 <Button variant="outline-danger" size="sm" onClick={() => rechazarClase(clase._id)}>
                                                                     Rechazar
                                                                 </Button>
-                                                            </div>
-                                                        </ListGroup.Item>
-                                                    )) : <ListGroup.Item>No hay solicitudes pendientes</ListGroup.Item>}
-                                                </ListGroup>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                        </tbody>
+                                                    </Table>
+                                                    ) : <ListGroup.Item>No hay solicitudes nuevas</ListGroup.Item>}
+
+                                                    </Card.Body>
+
+
                                             </Card>
                                         </Col>
 
                                         {/* CLASES COMPLETADAS */}
-                                        <Col xs={12} md={6} className="my-3">
+                                        <Col xs={12} className="my-3">
                                             <Card>
                                                 <Card.Header className="text-center bg-light text-dark">
                                                     <h5>Clases completadas</h5>
                                                 </Card.Header>
-                                                <ListGroup variant="flush">
-                                                    {clasesCompletadas.length > 0 ? clasesCompletadas.map((clase, index) => (
-                                                        <ListGroup.Item key={index} className={clase.estado == "completada" ? 'bg-light' : 'bg-danger'}>
-                                                            <p><strong>{clase.descripcion}</strong></p>
-                                                            <small>
-                                                                {new Date(clase.fechaInicio).toLocaleDateString()} - {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() === 0 ? '00' : new Date(clase.fechaInicio).getMinutes()} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() === 0 ? '00' : new Date(clase.fechaFin).getMinutes()}
-                                                            </small>
-                                                            <br/>
-                                                            <strong>{clase.instrumento.nombre}</strong>
-                                                            <br/>
-                                                            {clase.estado == "completada" && clase.asistencia && (
-                                                                <small className={clase.asistencia ? 'text-success' : 'text-danger'}>
-                                                                {clase.asistencia ? 'Asistió' : 'No asistió'}
-                                                            </small>
-                                                            )}
+
+                                                <Card.Body className="table-responsive h-25">
+                                                {clasesCompletadas.length > 0 ? (
+                                                <Table className="table-striped border-secondary align-middle">
+                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                        <tr>
+                                                            <th>Clase</th>
+                                                            <th>Alumno</th>
+                                                            <th>Fecha</th>
+                                                            <th>Instrumento</th>
+                                                            <th>Horas</th>
+                                                            <th>Asistió</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {clasesCompletadas.map((clase, index) => (
+                                                        clase.estado=== 'completada' ? (
+                                                            <tr key={index} className="table-success">
+                                                                <td>{clase.descripcion}</td>
+                                                                <td>{clase.alumno[0].nombre}</td>
+                                                                <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
+                                                                <td>{clase.instrumento.nombre}</td>
+                                                                <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                                <td>
+                                                                    {clase.asistencia ? (
+                                                                        <CheckSquareFill className="text-success"/>
+                                                                    ): (
+                                                                        <XSquareFill className="text-danger"/>
+                                                                    )}
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                        ): (
+                                                            <tr key={index} className="table-danger">
+                                                            <td>{clase.descripcion}</td>
+                                                            <td>{clase.alumno[0].nombre}</td>
+                                                            <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
+                                                            <td>{clase.instrumento.nombre}</td>
+                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>Rechazada</td>
                                                             
-                                                        </ListGroup.Item>
-                                                    )) : <ListGroup.Item>No hay clases completadas</ListGroup.Item>}
-                                                </ListGroup>
+                                                        </tr>
+                                                        )
+                                                        
+                                                    ))}
+                                                        </tbody>
+                                                    </Table>
+                                                    ) : <ListGroup.Item>No hay clases completadas</ListGroup.Item>}
+
+                                                    </Card.Body>
+
                                             </Card>
                                         </Col>
                                     </Row>
@@ -670,7 +786,7 @@ const PerfilProfesor = () => {
                     <Modal.Title>Asistencia de la clase</Modal.Title>
                 </Modal.Header>
                 <Modal.Body >
-                    {mostrarAlerta && (
+                    {alerta && (
                         <Alert variant={tipoAlerta} className="mb-3">
                             {mensajeAlerta}
                         </Alert>

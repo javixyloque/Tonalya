@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { SyncLoader } from "react-spinners";
-import { useNavigate } from 'react-router-dom';
 import { codificarImagen64 } from "../../functions/codificar.js";
-import { Container, Row, Col, Button, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Form, Alert, InputGroup } from "react-bootstrap";
+import {Eye, EyeSlash} from 'react-bootstrap-icons';
 // import "./formalumno.css";
 import Header from "../templates/Header.jsx";
 import {arrayProvincias} from "../../functions/variables.js";
@@ -14,18 +14,37 @@ const FormUsuario = () => {
     if (sessionStorage.getItem('usuario')) {
         window.location.href = "/";
     }
-    const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
     const [telefono, setTelefono] = useState('');
     const [contrasenya, setContrasenya] = useState('');
+    const [contrasenyaValida, setContrasenyaValida] = useState(false);
     const [imagen, setImagen] = useState(null);
     const [provincia, setProvincia] = useState('');
     const [instrumentoP, setInstrumentoP] = useState('');
     const [instrumentos, setInstrumentos] = useState([]);
     const [loading, setLoading] = useState(true);
     const provincias = arrayProvincias();
+    const [mostrarContrasenya, setMostrarContrasenya] = useState(false);    
+    const [alerta, setAlerta] = useState(false);
+    const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [tipoAlerta, setTipoAlerta] = useState('success');
+    
+    const manejarMostrarContrasenya = () => {
+        setMostrarContrasenya(!mostrarContrasenya);
+    }   
+
+    const verificarContrasenya = (password) => {
+        // ESTA ME LA HA HECHO EL CHATGPT PORQUE NUNCA HE ENTENDIDO Y CREO QUE NUNCA LO VOY A ENTENDER
+        const patron = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        return patron.test(password);
+    }
+    const manejarCambioContrasenya = (event) => {
+        const contrasenya = event.target.value;
+        setContrasenya(contrasenya);
+        setContrasenyaValida(verificarContrasenya(contrasenya));
+    };
 
     useEffect(() => {
         const fetchInstrumentos = async () => {
@@ -46,9 +65,18 @@ const FormUsuario = () => {
     }, []);
 
     const enviarFormulario = async (event) => {
+        if (!contrasenyaValida) {
+            setAlerta(true);
+            setTipoAlerta('danger');
+            setMensajeAlerta('La contraseña debe tener al menos 8 caracteres, una letra y un número');
+            setTimeout(() => {
+                setAlerta(false);
+            }, 2000);
+            return;
+        }
         event.preventDefault();
         const formulario = event.currentTarget;
-        setLoading(true)
+        // setLoading(true)
 
         // VALIDAR EL FORMULARIO 
         if (formulario.checkValidity() === false) {
@@ -86,19 +114,25 @@ const FormUsuario = () => {
             });
             
             const objetoRespuesta = await response.json();
-            if (objetoRespuesta.mensaje == "El correo electrónico ya está en uso") {
-                alert(objetoRespuesta.mensaje)
-                setLoading(false);
-            } else {
 
-                if (objetoRespuesta.mensaje) {
-                    alert(objetoRespuesta.mensaje);
-                    navigate('/', {replace: true});
+            if (objetoRespuesta.ok) {
+                setMensajeAlerta(objetoRespuesta.mensaje)
+                setTipoAlerta('success');
+                setAlerta(true);
+                setTimeout(() => {
+                    setAlerta(false);
+                    window.location.href = '/';
+                }, 3000)
                 
-                }
-                setLoading(false);
-                
+            } else {
+                setMensajeAlerta(objetoRespuesta.mensaje)
+                setTipoAlerta('danger');
+                setAlerta(true);
+                setTimeout(() => {
+                    setAlerta(false);
+                }, 2000);
             }
+        
         } catch (error) {
             console.error('Error de red:', error);
         }
@@ -115,13 +149,13 @@ const FormUsuario = () => {
             <Header/>
             <div className="loader">
 
-            <SyncLoader size={150} color={'#213448'} loading={loading} />
-            <br></br>
-                <p style={{color: "#213448"}}>Enviando formulario...</p>
+                <SyncLoader color={'#213448'} loading={loading} />
+                <p style={{color: "#213448"}}>Cargando...</p>
             </div>
             </>
         ) : (
-
+            <>
+            <Header/>
             <Container style={{ maxWidth: "80vw" }}>
                 <Row className="mb-5">
                     <Col xs={12}>
@@ -132,11 +166,11 @@ const FormUsuario = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={0} md={4}></Col>
-                    <Col xs={12} md={4}>
+                    <Col xs={0} sm={2} md={3} xl={4}></Col>
+                    <Col xs={12} sm={8} md={6} xl={4}>
                         <Form noValidate validated={validated} onSubmit={enviarFormulario}>
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>Dinos tu <strong>NOMBRE COMPLETO</strong>, aquel por el que quieras que te reconozcan tus profesores:</Form.Label>
+                                <Form.Label>Dinos tu <strong>nombre completo</strong>, aquel por el que quieras que te reconozcan:</Form.Label>
                                 <Form.Control
                                     required
                                     type="text"
@@ -150,7 +184,7 @@ const FormUsuario = () => {
                             </Form.Group>
 
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>Dinos tu <strong>EMAIL</strong>, para que los profesores puedan contactarte:</Form.Label>
+                                <Form.Label>Dinos tu <strong>email</strong>, para que los profesores puedan contactarte:</Form.Label>
                                 <Form.Control
                                     required
                                     type="email"
@@ -164,7 +198,7 @@ const FormUsuario = () => {
                             </Form.Group>
 
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>Dinos tu <strong>TELÉFONO</strong>, para que los profesores puedan contactarte:</Form.Label>
+                                <Form.Label>Dinos tu <strong>teléfono</strong>, para que los profesores puedan contactarte:</Form.Label>
                                 <Form.Control
                                     required
                                     type="tel"
@@ -177,31 +211,37 @@ const FormUsuario = () => {
                                 </Form.Control.Feedback>
                             </Form.Group>
 
-                            <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>Dinos tu <strong>CONTRASEÑA</strong>, para que puedas acceder a tus clases:</Form.Label>
-                                <Form.Control
-                                    required
-                                    type="password"
-                                    placeholder="Contraseña"
-                                    value={contrasenya}
-                                    onChange={(e) => setContrasenya(e.target.value)}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Por favor ingresa una contraseña válida
-                                </Form.Control.Feedback>
+                            <Form.Group as={Col} md={12} className="mb-4" >
+                                <Form.Label><strong>Contraseña</strong><br /><em>(Mínimo 8 caracteres, una letra y un número)</em></Form.Label>
+                                <InputGroup>
+                                <Form.Control required type={mostrarContrasenya ? "text" : "password"} placeholder="******"  value={contrasenya} onChange={manejarCambioContrasenya} 
+                                    isInvalid={contrasenya && !contrasenyaValida}
+                                    isValid={contrasenyaValida} />
+                                    <Button variant="outline-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => manejarMostrarContrasenya()}>
+                                        {mostrarContrasenya ? <EyeSlash/> : <Eye/>}
+                                        </Button>
+                                        </InputGroup>
+
+                                    {contrasenya && !contrasenyaValida && (
+                                        <span className="text-danger ms-2">Formato Incorrecto</span>
+                                    )}
+                                    {contrasenyaValida && (
+                                        <span className="text-success ms-2">Formato Correcto</span>
+                                    )}
+                                
                             </Form.Group>
 
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>Sube tu <strong>FOTO</strong>, para que los profesores puedan conocerte:</Form.Label>
+                                <Form.Label>Sube tu <strong>foto</strong><br /><em>(No te preocupes, no tienes por qué hacerlo ahora)</em></Form.Label>
                                 <Form.Control
                                     type="file"
-                                    accept=".jpg, .png"
+                                    accept=".jpg, .png, .jpeg"
                                     onChange={(e) => setImagen(e.target.files[0])}
                                 />
                             </Form.Group>
 
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>¿En qué <strong>PROVINCIA</strong> estás ubicado?</Form.Label>
+                                <Form.Label>¿En qué <strong>provincia</strong> estás ubicado?</Form.Label>
                                 <Form.Select value={provincia} onChange={(e) => setProvincia(e.target.value)}>
                                     {provincias.map((provincia, index) => (
                                         <option key={index} value={provincia}>{provincia}</option>
@@ -210,7 +250,7 @@ const FormUsuario = () => {
                             </Form.Group>
 
                             <Form.Group as={Col} md={12} className="mb-4">
-                                <Form.Label>¿Cuál es tu <strong>INSTRUMENTO</strong> favorito?</Form.Label>
+                                <Form.Label>¿Cuál es tu <strong>instrumento</strong> favorito?</Form.Label>
                                 <Form.Select value={instrumentoP} onChange={(e) => setInstrumentoP(e.target.value)}>
                                     {instrumentos.map((instrumento, index) => (
                                         <option key={index} value={instrumento._id}>{instrumento.nombre}</option>
@@ -218,17 +258,20 @@ const FormUsuario = () => {
                                 </Form.Select>
                             </Form.Group>
 
+                            {alerta && <Alert style={{transition: "all 0.5s ease-in-out"}} variant={tipoAlerta} className="my-4">{mensajeAlerta}</Alert>}
+
                             <Col xs={12} style={{display: "flex", justifyContent: "center"}}>
-                                <Button variant="outline-dark" type="submit" className="mt-4">
+                                <Button variant="primary" type="submit" className="mt-4">
                                     ¡Crear cuenta!
                                 </Button>
                             </Col>
                             
                         </Form>
                     </Col>
-                    <Col xs={0} md={4}></Col>
+                    <Col xs={0} sm={2} md={3} xl={4}></Col>
                 </Row>
             </Container>
+            </>
         )
         }
             

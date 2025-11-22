@@ -7,7 +7,7 @@ import Clase from "../models/Clase.js";
 import Instrumento from "../models/Instrumento.js";
 import nodemailer from 'nodemailer';
 import { reject } from "bcrypt/promises.js";
-import { enviarEmailsRechazoProfesor, enviarEmailsAceptada } from "../biblioteca.js";
+import { enviarEmailsRechazoProfesor, enviarEmailsAceptada, emailBienvenidaProfesor } from "../biblioteca.js";
 // SI NO ABIERTO, ABRIR: 
 // sudo ufw status
 // sudo ufw allow 587
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
         
         const profesor = new Profesor({
             nombre: req.body.nombre,
-            bio: req.body.bio,
+            bio: '' ,
             email: req.body.email,
             telefono: req.body.telefono,
             password: req.body.password,
@@ -43,16 +43,12 @@ router.post('/', async (req, res) => {
            
         await profesor.save();
 
-        const cuerpoCorreo = {
-            from: '"TONALYA" <tonalyamusica@gmail.com>',
-            to: profesor.email,
-            subject: 'Bienvenido a TONALYA',
-            html: `<h1>Gracias por registrarte en TONALYA, ${profesor.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p>`
-        };
-
-        const respuestaCorreo = await transporter.sendMail(cuerpoCorreo);
         
-        res.json({ mensaje: 'Profesor creado exitosamente', correo: respuestaCorreo });
+        emailBienvenidaProfesor(profesor);
+
+        // const respuestaCorreo = await transporter.sendMail(cuerpoCorreo);
+        
+        res.json({ mensaje: 'Profesor creado exitosamente' });
     } catch (error) {
         res.json({ mensaje: 'Error al crear el profesor', error: error.message });
     }
@@ -323,11 +319,11 @@ router.post('/login', async (req, res) => {
         }
         
         // SESIONES HAY QUE HACERLAS EN FRONT
-        res.json({ mensaje: 'Iniciaste sesión exitosamente', email: profesor.email, id: profesor._id ,nombre: profesor.nombre });
+        res.status(200).json({ mensaje: 'Iniciaste sesión exitosamente', email: profesor.email, id: profesor._id ,nombre: profesor.nombre });
         // sessionStorage.setItem('usuarioId', profesor._id);
         
     } catch (error) {
-        res.json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
+        res.status(500).json({ mensaje: 'Error al iniciar sesión como profesor', error: error.message });
     }
 });
 

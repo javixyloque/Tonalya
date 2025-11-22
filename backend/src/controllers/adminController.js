@@ -94,6 +94,15 @@ router.delete('/usuario/:id', async (req, res) => {
     }
 });
 
+router.delete ('/usuarios', async (req, res) => {
+    try {
+        await Usuario.deleteMany({});
+        res.json({ mensaje: 'Usuarios eliminados exitosamente' });
+    } catch (error) {
+        res.json({ mensaje: 'Error al eliminar los usuarios', error: error.message });
+    }
+})
+
 // OBTENER DATOS DE TODOS LOS PROFESORES (ORDEN ALFABETICO POR NOMBRE)
 router.get('/profesores', async (req, res) => {
     try {

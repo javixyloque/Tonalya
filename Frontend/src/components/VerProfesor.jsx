@@ -26,7 +26,15 @@ const VerProfesor = () => {
     
     const horasDia = ["08:00","08:30", "09:00","09:30", "10:00","10:30", "11:00","11:30", "12:00","12:30", "13:00","13:30", "14:00","14:30", "15:00","15:30", "16:00","16:30", "17:00","17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00","21:30", "22:00"];
 
-   
+   // ESTADO SPARA LA FECHA
+
+    const [fechaMinima, setFechaMinima] = useState(null);
+
+    useEffect (() => {
+        const minimo = new Date();
+        minimo.setDate(minimo.getDate() + 1);
+        setFechaMinima(minimo.toISOString().split('T')[0]);
+    }, []) 
 
 
     // ESTADOS DE USUARIO
@@ -173,7 +181,7 @@ const VerProfesor = () => {
                                     variant="top"
                                     src={profesor.imagen} 
                                     alt={profesor.nombre}
-                                    style={{ maxHeight: "300px", objectFit: "cover" }}
+                                    style={{  objectFit: "cover" }}
                                 />
                             )}
                             <Card.Body>
@@ -233,6 +241,7 @@ const VerProfesor = () => {
                                 rows={3}
                                 placeholder="Describe brevemente la clase que deseas..."
                                 value={descripcion}
+                                maxLength={80}
                                 onChange={(e) =>setDescripcion(e.target.value)}
                                 required
                             />
@@ -242,9 +251,9 @@ const VerProfesor = () => {
                         <Row>
                             <Form.Group className="mb-3">
                             <Form.Label>Día</Form.Label>
-                            <Form.Control type="date" onChange={(e) => setFecha(e.target.value)} defaultValue=''>
+                            <Form.Control type="date" min={fechaMinima} onChange={(e) => setFecha(e.target.value)} defaultValue=''>
 
-
+                            
                             </Form.Control>
                             </Form.Group>
                         </Row>

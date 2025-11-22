@@ -27,8 +27,8 @@ const Registrarse = () => {
                 <Row>
                     <Col xs={12} lg={2}></Col>
                     <Col xs={12} lg={8} className="d-flex justify-content-evenly">
-                        <Link to="/formprofesor" className="btn btn-dark" >Enseñar</Link>
-                        <Link to="/formusuario" className="btn btn-light" >Aprender</Link>
+                        <Link to="/formprofesor" className="btn btn-primary" >Enseñar</Link>
+                        <Link to="/formusuario" className="btn btn-info text-black" >Aprender</Link>
                     </Col>
                     <Col xs={12} lg={2}></Col>
                 </Row>

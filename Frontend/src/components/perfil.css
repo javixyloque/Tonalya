@@ -52,3 +52,10 @@
     border-radius: 0 0 8px 8px;
     box-shadow: 0 4px 15px rgba(108, 99, 255, 0.1);
 }
+
+.bg-primary {
+    background-color: #6C63FF !important;
+}
+.bg-secondary {
+    background-color: #FF6584 !important;
+}

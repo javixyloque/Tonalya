@@ -65,7 +65,13 @@ const main  = async () => {
         // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
-    }));
+        }
+    ));
+
+    app.use((req, res, next) => {
+        console.log('Solicitud recibida:', req.method, req.url);
+        next();
+    });
 
 
 // MONGOOSE => CONECTAR A MONGODB

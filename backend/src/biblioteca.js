@@ -3,7 +3,7 @@ import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js"; 
 import nodemailer from 'nodemailer';
 
-const insertarInstrumentos = async (req, res) => {
+export const insertarInstrumentos = async (req, res) => {
     try{
         const instrumentos = await Instrumento.find({});
         if (!instrumentos) {
@@ -15,6 +15,8 @@ const insertarInstrumentos = async (req, res) => {
         res.status(500).json({error: "Ocurrió un error"});
     }
 }
+
+// PARA ENVIAR LOS EMAILS => PASS ES CONTRASEÑA DE APLICACIÓN GOOGLE
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -36,9 +38,8 @@ const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
  * @param {*} descripcion 
  * @param {*} horas 
  */
-const enviarEmailsReserva = async (profesor, alumno, instrumento, clase, descripcion, horas) => {
+export const enviarEmailsReserva = async (profesor, alumno, instrumento, clase, descripcion, horas) => {
     try {
-        const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
         
         await Promise.all([
             transporter.sendMail({
@@ -83,9 +84,45 @@ const enviarEmailsReserva = async (profesor, alumno, instrumento, clase, descrip
     }
 }
 
+//funcion que envia email de bienvenida a profesor al registrarse e incita a modificar su perfil para escribir su bio
+export const emailBienvenidaProfesor = async (profesor) => {
+    try {
+        await transporter.sendMail({
+            from: "TONALYA <tonalyamusica@gmail.com>",
+            subject: "Bienvenido a TONALYA",
+            to: profesor.email,
+            html: `<h1>¡Bienvenido a TONALYA!</h1>
+            <p>¡Gracias por unirte a nuestra comunidad de músicos!</p>
+            <p>Es todo un placer contar contigo entre nosotros, ${profesor.nombre}. Si acceder a tu perfil y editar tu biografía, añadir o eliminar instrumentos, y cambiar tu foto de perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>. Recuerda que en tu perfil también estarán los detalles de tus clases.</p>
+            <p>Mucho ánimo y a por ello!</p>
+            <p>Un saludo, el equipo de TONALYA.</p>`
+        });
+        console.log('Email de bienvenida enviado exitosamente');
+    } catch (emailError) {
+        console.error('Error enviando email de bienvenida:', emailError);
+    }
+}
+
+export const emailBienvenidaAlumno = async (alumno) => {
+    try {
+        await transporter.sendMail({
+            from: '"TONALYA" <tonalyamusica@gmail.com>',
+            to: usuario.email,
+            subject: `Bienvenido a TONALYA, ${usuario.nombre}`,
+            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>
+            <p>Gracias por confiar en nosotros!</p>
+            <p>Un saludo, el equipo de TONALYA.</p>
+            </p>`
+        })
+        console.log('Email de bienvenida enviado exitosamente');
+    } catch (emailError) {
+        console.error('Error enviando email de bienvenida:', emailError);
+    }
+}
+
 
 // funcion que envia emails de rechazo de clase cuando la rechaza un usuario
-const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instrumento) => {
+export const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instrumento) => {
     try {
         
         
@@ -125,7 +162,7 @@ const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instrumento) 
 }
 
 
-const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) => {
+export const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) => {
     try {
         const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
         
@@ -172,7 +209,7 @@ const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) => {
     }
 }
 
-const enviarEmailsRechazoProfesor = (profesor, alumno, clase, instrumento, mensaje) => {
+export const enviarEmailsRechazoProfesor = (profesor, alumno, clase, instrumento, mensaje) => {
     try {
         transporter.sendMail({
             from: "TONALYA <tonalyamusica@gmail.com>",
@@ -190,7 +227,7 @@ const enviarEmailsRechazoProfesor = (profesor, alumno, clase, instrumento, mensa
     }
 }
 
-const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
+export const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
     try {
         transporter.sendMail({
             from: "TONALYA <tonalyamusica@gmail.com>",
@@ -211,5 +248,3 @@ const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
     }
 }
 
-
-export {insertarInstrumentos, enviarEmailsReserva, enviarEmailsRechazoUsuario, enviarEmailsPagada, enviarEmailsRechazoProfesor, enviarEmailsAceptada};

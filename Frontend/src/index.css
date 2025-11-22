@@ -93,8 +93,9 @@ ul {
     
 }
 
-/* ===== OVERRIDE BOOTSTRAP ===== */
-/* ===== OVERRIDE AGGRESIVO DE BOOTSTRAP ===== */
+
+
+/* HE TENIDO QUE HACER LOS ESTILOS ASÍ PORQUE CON LAS VARIABLES NO SE ME SOBREESCRIBÍAN LOS COLORES ORIGINALES DE BOOTSTRAP*/
 
 /* BOTONES PRIMARIOS */
 .btn-primary {
@@ -123,13 +124,26 @@ ul {
   border-color: #e55a78 !important;
 }
 
+.btn-info {
+  background-color: #36D1DC !important;
+  border-color: #36D1DC !important;
+  font-weight: 600;
+}
+
+.btn-info:hover {
+  background-color: #30c4d0 !important;
+  border-color: #30c4d0 !important;
+}
+
 /* BOTONES OUTLINE */
 .btn-outline-primary {
   color: #6C63FF !important;
   border-color: #6C63FF !important;
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
   background-color: #6C63FF !important;
   color: white !important;
 }

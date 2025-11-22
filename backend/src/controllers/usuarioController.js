@@ -5,7 +5,7 @@ import Usuario from "../models/Usuario.js";
 import Profesor from "../models/Profesor.js";
 import Instrumento from "../models/Instrumento.js";
 import Clase from "../models/Clase.js";
-import { enviarEmailsReserva, enviarEmailsRechazoUsuario } from "../biblioteca.js";
+import { enviarEmailsReserva, enviarEmailsRechazoUsuario, emailBienvenidaAlumno } from "../biblioteca.js";
 // SHARP => LIMITAR RESOLUCION IMAGEN
 // import sharp from "sharp"
 import nodemailer from 'nodemailer';
@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
         const usuarioExistente = await Usuario.findOne({ "email": email });
 
         if (usuarioExistente != null) {
-            return res.json({ mensaje: 'El correo electrónico ya está en uso' });
+            return res.status(401).json({ mensaje: 'El correo electrónico ya está en uso' });
             
         }
         const usuario = new Usuario({
@@ -40,19 +40,11 @@ router.post('/', async (req, res) => {
             activo: true
         });
         await usuario.save();
-        if (!usuario) {
-            return res.json({ mensaje: 'Usuario no encontrado' });
-        }
-        const cuerpoCorreo = {
-            from: '"TONALYA" <tonalyamusica@gmail.com>',
-            to: usuario.email,
-            subject: `Bienvenido a TONALYA, ${usuario.nombre}`,
-            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a></p>`
-        };
-        const respuestaCorreo = await transporter.sendMail(cuerpoCorreo);
-        res.json({ mensaje: 'Usuario creado exitosamente', correo: respuestaCorreo });
+        
+        emailBienvenidaAlumno(usuario);
+        res.json({ mensaje: 'Usuario creado exitosamente'});
     } catch (error) {
-        res.json({ mensaje: 'Error al crear el usuario', error: error.message });
+        res.status(500).json({ mensaje: 'Error al crear el usuario', error: error.message });
     }
 });
 
@@ -226,29 +218,29 @@ router.post('/reservar-clase', async (req, res) => {
 
 router.get('/clases-instrumentos/:id', async (req, res) => {
     try {
-        const usuario = await Usuario.findOne({ _id: req.params.id, activo: true }).sort({ fechaInicio: -1 })
+        const usuario = await Usuario.findOne({ _id: req.params.id, activo: true })
         // OBTENER CLASES CON INSSTRUMENTO
             .populate({
                 path: 'clases',
-                // ORDENAR POR FECHA
+                //ORDENAR POR FECHA
                 options: { sort: { fechaInicio: 1 } },
-                populate: { 
-                    path: 'instrumento'
-                }
-            });
+                populate: [{ 
+                        path: 'instrumento',
+                    },
+                    {
+                        path: 'profesor',
+                        select: '_id nombre'
+                    }
+                ]
+            })
         
         if (!usuario || !usuario.activo) {
             return res.json({ mensaje: 'Usuario no encontrado' });
         }
         
-        const clasesConInstrumentos = usuario.clases.map(clase => ({
-            ...clase.toJSON(), 
-            instrumento: clase.instrumento
-        }));
+        const clasesUsuario = usuario.clases;
         
-        res.json({
-            clasesConInstrumentos
-        });
+        res.json({ clasesUsuario });
     } catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener las clases con instrumentos del usuario',

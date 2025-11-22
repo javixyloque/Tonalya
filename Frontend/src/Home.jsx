@@ -88,10 +88,10 @@ const  Home = () => {
                                 overflow: "hidden" // Ocultar contenido que sobrepasa la altura fija
                             }}>
                                 <img src={pestanya.img}  alt={`Pestaña ${index + 1}`} style={{objectFit: "cover", objectPosition: "center"}} />
-                                {/* TEXTO SOLO EN DESKTOP - usando Bootstrap responsive */}
+                                {/* TEXTO SOLO EN DPANTALLAS GRANDES */}
                                 <div className="d-block" style={{
                                     position: "absolute",
-                                    bottom: "10%",
+                                    bottom: "0.4em",
                                     left: 0,
                                     right: 0
                                 }}>
@@ -144,7 +144,7 @@ const  Home = () => {
                             <h4>Aprende con nosotros</h4>
                             <p>Regístrate, busca un profesor cerca de ti y, lo más importante ¡disfruta dando la nota como nosotros!</p>
                             <div>
-                                <Button variant="primary" href="/">COMENZAR A APRENDER</Button>
+                                <Button variant="primary" href="/formusuario">COMENZAR A APRENDER</Button>
                             </div>
                         </Card.Body>
                     </Card>
@@ -167,7 +167,7 @@ const  Home = () => {
                         <Card.Body>
                             <h4>Busca profesores en tu zona</h4>
                             <p>Descubre nuestro buscador de profesores para encontrar el profesor perfecto para ti</p>
-                            <Button variant="primary" href="/formprofesor">BUSCAR PROFESORES</Button>
+                            <Button variant="primary" href="/buscador-profesores">BUSCAR PROFESORES</Button>
                         </Card.Body>
                     </Card>
                 </Col>
