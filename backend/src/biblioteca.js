@@ -3,6 +3,8 @@ import Instrumento from "./models/Instrumento.js";
 import arrInstrumentos from "./bdInstrumentos.js"; 
 import nodemailer from 'nodemailer';
 
+// BIBLIOTECA DE FUNCIONES => INSERTAR INSTRUMENTOS Y ENVIAR CORREOS
+
 export const insertarInstrumentos = async (req, res) => {
     try{
         const instrumentos = await Instrumento.find({});
@@ -27,17 +29,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// FUNCION AUXILIAR PARA FORMATEAR LA FECHA (DD/MM/AAAA)
 const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
 
-/**
- * Función para enviar emails cuando un usuario hace una peticion de reserva de clase a un profesor
- * @param {*} profesor 
- * @param {*} alumno 
- * @param {*} instrumento 
- * @param {*} clase 
- * @param {*} descripcion 
- * @param {*} horas 
- */
+
 export const enviarEmailsReserva = async (profesor, alumno, instrumento, clase, descripcion, horas) => {
     try {
         
@@ -103,6 +98,8 @@ export const emailBienvenidaProfesor = async (profesor) => {
     }
 }
 
+
+// funcion que envia el email de bienvenida al alumno que se registra 
 export const emailBienvenidaAlumno = async (usuario) => {
     try {
         await transporter.sendMail({
@@ -156,12 +153,12 @@ export const enviarEmailsRechazoUsuario = async (profesor, alumno, clase, instru
     }
 }
 
-
+// funcion que  envia emailk cuando se paga una clase
 export const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) => {
     try {
         const formatoFecha = (fecha) => fecha.toLocaleString('es-ES');
         
-        const precio = clase?.precio || profesor?.precioHora || 0;
+        const precio = clase?.precio || 0;
         const precioConIVA = (precio * 1.07).toFixed(2);
         const precioFormateado = precio.toFixed(2);
         await Promise.all([
@@ -176,7 +173,7 @@ export const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) =
                 <p>Fecha inicio: ${formatoFecha(clase.fechaInicio)}</p>
                 <p>Fecha fin: ${formatoFecha(clase.fechaFin)}</p>
                 <p>Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}</p>
-                <p>Precio: ${precioFormateado} €</p>
+                <p>Importe: ${precioFormateado} €</p>
                 <br/><br/>
                 <p>Gracias por confiar en nosotros!</p>
                 <p>Un saludo, el equipo de TONALYA!</p>`
@@ -206,6 +203,7 @@ export const enviarEmailsPagada = async (profesor, alumno, clase, instrumento) =
     }
 }
 
+// funcion que envia un email cuando se rechaza una clase  
 export const enviarEmailsRechazoProfesor = (profesor, alumno, clase, instrumento, mensaje) => {
     try {
         transporter.sendMail({
@@ -236,7 +234,7 @@ export const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
             <p>Ticket: <br/>
                 - Profesor: ${profesor.nombre}<br/> 
                 - Alumno: ${alumno.nombre} <br/> 
-                - Instrumento: ${instrumento.nombre} 
+                - Instrumento: ${instrumento.nombre} <br/>
                 - Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
                 - Subtotal: ${(clase.precio*1.07).toFixed(2)}€<br/><br/></p>
             <p>Gracias por confiar en nosotros!</p>

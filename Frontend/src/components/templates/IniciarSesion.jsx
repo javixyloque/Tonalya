@@ -138,7 +138,7 @@ const IniciarSesion = () => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
 
-                        {/* CONTRASENYA */}
+                        {/* CONTRASEÑA  => INPUTGROUP PARA EL BOTON DE MOSTRAR */}
                         <Form.Group>
                             <Form.Label>CONTRASEÑA</Form.Label>
                             <InputGroup>

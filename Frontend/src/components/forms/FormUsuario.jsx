@@ -36,7 +36,7 @@ const FormUsuario = () => {
     }   
 
     const verificarContrasenya = (password) => {
-        // ESTA ME LA HA HECHO EL CHATGPT PORQUE NUNCA HE ENTENDIDO Y CREO QUE NUNCA LO VOY A ENTENDER
+        // ESTA EXPRESIÓN ME LA HA HECHO EL CHATGPT PORQUE NUNCA HE ENTENDIDO CÓMO FUNCIONAN Y CREO QUE NUNCA LO VOY A ENTENDER
         const patron = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         return patron.test(password);
     }

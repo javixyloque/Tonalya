@@ -2,11 +2,16 @@
 import { useState, useEffect } from "react";
 import { SyncLoader } from "react-spinners";
 import {useParams} from "react-router-dom";
+import { Alert } from "react-bootstrap";
 
 const PagarClase = () => {
     const { id } = useParams();
     console.log(id)
     const [loading, setLoading] = useState(true);
+    const [alerta, setAlerta] = useState(false);
+    const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [tipoAlerta, setTipoAlerta] = useState('success');
+
 
     useEffect(() => {
         if (!sessionStorage.getItem('id') || sessionStorage.getItem('rol') !== "alumno") {
@@ -25,11 +30,14 @@ const PagarClase = () => {
                 })
                 
                 if (clasePagada.ok) {
+                    setLoading(false);
+                    setMensajeAlerta('Clase pagada correctamente');
+                    setTipoAlerta('success');
+                    setAlerta(true);
                     setTimeout(() => {
-                        setLoading(false);
-                        alert('Clase pagada correctamente');
+                        setAlerta(false);
                         window.location.href ='/perfil-usuario'
-                    }, 1000);
+                    }, 2500);
                 }
 
             } catch (error) {
@@ -47,6 +55,9 @@ const PagarClase = () => {
                     <SyncLoader color="#213448"/><br></br>
                     <p style={{color: "#213448"}}>Procesando pago...</p>
                 </div>
+            )}
+            {alerta && (
+                <Alert variant={tipoAlerta}>{mensajeAlerta}</Alert>
             )}
         </>
     )

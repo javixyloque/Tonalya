@@ -1,0 +1,73 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+actor "Usuario No Registrado" as UNR
+actor "Usuario Registrado" as UR
+actor Profesor
+actor Administrador
+actor "Sistema de Pago" as Pago
+
+rectangle "Plataforma de Clases" {
+
+  (Ver página de inicio) as UC_Inicio
+  (Buscar profesores) as UC_Buscar
+  (Ver perfil de profesor) as UC_VerProfesor
+
+  (Reservar clase) as UC_Reservar
+  (Cancelar reserva) as UC_Cancelar
+  (Pagar clase) as UC_Pagar
+  (Ver estado de clases) as UC_EstadoClases
+
+  (Aceptar o rechazar reserva) as UC_Aceptar
+  (Gestionar clases) as UC_GestionClases
+  (Editar perfil de profesor) as UC_EditarPerfil
+
+  (Gestionar usuarios) as UC_AdminUsuarios
+  (Gestionar profesores) as UC_AdminProfesores
+
+
+  ' USUARIOS NO REGISTRADOS
+  UNR --> UC_Inicio
+  UNR --> UC_Buscar
+  UNR --> UC_VerProfesor
+
+
+  ' USUARIOS REGISTRADOS
+  UR --> UC_Inicio
+  UR --> UC_Buscar
+  UR --> UC_VerProfesor
+  UR --> UC_Reservar
+  UR --> UC_Cancelar
+  UR --> UC_EstadoClases
+  UR --> UC_Pagar
+
+
+  ' PROFESORES
+  Profesor --> UC_Aceptar
+  Profesor --> UC_GestionClases
+  Profesor --> UC_EditarPerfil
+  Profesor --> UC_EstadoClases
+
+
+  ' ADMINISTRADOR
+  Administrador --> UC_AdminUsuarios
+  Administrador --> UC_AdminProfesores
+
+
+  ' Pago externo
+  UC_Pagar --> Pago : Procesar pago
+
+
+  ' Dependencias y reglas
+  UC_Pagar .u.> UC_Reservar : <<requiere reserva aceptada>>
+  UC_Cancelar .u.> UC_Reservar : <<permitido si NO está pagada>>
+  UC_Aceptar .u.> UC_Reservar : <<requiere reserva>>
+  UC_EstadoClases .u.> UC_Reservar : <<consulta estado>>
+
+
+  ' Regla de irreversibilidad
+  UC_Cancelar .d.> UC_Pagar : <<prohibido si pagada>>
+
+}
+@enduml

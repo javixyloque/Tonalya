@@ -3,7 +3,7 @@ import {SyncLoader} from "react-spinners"
 import { codificarImagen64 } from "../../functions/codificar.js";
 import {Container, Row, Col, Button, Form, Alert, InputGroup} from "react-bootstrap"
 import {Eye, EyeSlash} from 'react-bootstrap-icons';
-import "./formprofesor.css";
+// import "./formprofesor.css";
 import Header from "../templates/Header.jsx";
 import { arrayProvincias } from "../../functions/variables.js";
 

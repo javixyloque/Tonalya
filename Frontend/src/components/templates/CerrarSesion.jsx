@@ -10,7 +10,7 @@ const CerrarSesion = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            // SIN REPLACE USA HISTORIAL DE NAVEGACION => RUTA ACTUAL
+            // VOLVER A INICIO
             window.location.href = "/";
             setLoading(false);
         }, 1000)

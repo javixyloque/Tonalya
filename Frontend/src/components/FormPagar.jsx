@@ -59,10 +59,10 @@ const FormPagar = () => {
                         <Row>
                             <Col xs={0} md={3}></Col>
                             <Col xs={12} md={6} >
-                            {/* Título de la clase */}
+                            {/* TÍTULO (INSTRUMENTO)*/}
                             <h1>Clase de {instrumento.nombre}</h1>
                             
-                            {/* Detalles de la clase */}
+                            {/* ALUMNO Y PROFESOR */}
                             <dl>
                                 <dt>Profesor:</dt>
                                 <dd>{profesor.nombre}</dd>
@@ -70,24 +70,24 @@ const FormPagar = () => {
                                 <dd>{alumno.nombre}</dd>
                             </dl>
                             
-                            {/* Fecha y hora de la clase */}
+                            {/* FECHA Y HORA */}
                             <p>
                                 {new Date(clase.fechaInicio).getDate()}/{new Date(clase.fechaInicio).getMonth()}/{new Date(clase.fechaInicio).getFullYear()} - 
                                 <strong> de {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() > 0 ? new Date(clase.fechaInicio).getMinutes() : '00'} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() > 0 ? new Date(clase.fechaFin).getMinutes() : '00'}</strong>
                             </p>
                             
-                            {/* Descripción de la clase */}
+                            {/* DESCRIPCION */}
                             <p>{clase.descripcion}</p>
                             
-                            {/* Precio y comisión */}
+                            {/* IMPORTE TOTAL DESGLOSADO */}
                             <dl style={{textAlign: "right"}}>
                                 <dt>Precio:</dt>
                                 <dd>{clase.precio.toFixed(2)}€</dd>
-                                <dt>Comisión de TONALYA:</dt>
+                                <dt>Comisión de Tonalya:</dt>
                                 <dd>{(clase.precio * 0.07).toFixed(2)}€</dd>
                             </dl>
                             <hr />
-                            {/* Total a pagar */}
+                            {/* TOTAL =>    con espacioes en blacno para que no quede feo */}
                             <h2 style={{textAlign: "right"}} >Total a pagar:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {(clase.precio * 1.07).toFixed(2)}€</h2>
                             <Link className="btn btn-primary w-100 mt-3"  to={`/pagar-clase/${clase._id}`}>Pagar</Link>
                             </Col>

@@ -37,6 +37,7 @@ ul {
     margin:auto;
 }
 
+/* MARGEN AUTOMÁTICO PARA EL CONTAINER (PRESENTE EN TODOS LOS COMPONENTES [si no me falla la memoria])*/
 .container {
     padding-top: 5rem !important;
     padding-bottom: 5rem !important;
@@ -44,6 +45,8 @@ ul {
     min-height: 100vh;
 }
 
+
+/* PARA EL SPINNER */
 .loader {
   display: flex;
   align-items: center;
@@ -71,10 +74,9 @@ ul {
 
 
 
-/* ===== VARIABLES CSS ===== */
+/* CAMBIAR VARIABLES DE BOOTSRAP (ME HA DADO MUCHOS PROBLEKMAS Y LO HE DEJADO ABAJO SOBREESCRITO PARA LAS COSAS QUE USO */
 :root {
     min-height: 100vh;
-    /* Colores principales */
     --bs-primary: #6C63FF;
     --bs-secondary: #FF6584;
     --bs-success: #4CAF50;
@@ -83,13 +85,8 @@ ul {
     --bs-danger: #DC3545;
     --bs-light: #F7F9FC;
     --bs-dark: #2A2D3A;
-    
-    /* Colores adicionales */
     --bs-body-bg: #ffffff;
     --bs-body-color: #2A2D3A;
-
-
-    /* COLOR DE FONDO*/
     
 }
 

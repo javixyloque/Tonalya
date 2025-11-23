@@ -26,7 +26,7 @@ const VerProfesor = () => {
     
     const horasDia = ["08:00","08:30", "09:00","09:30", "10:00","10:30", "11:00","11:30", "12:00","12:30", "13:00","13:30", "14:00","14:30", "15:00","15:30", "16:00","16:30", "17:00","17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00","21:30", "22:00"];
 
-   // ESTADO SPARA LA FECHA
+   // ESTADO SPARA LA FECHA (MOSTRAR SOLO A PARTIR DE LA HORA SELECCIONADA COMO INICIO)
 
     const [fechaMinima, setFechaMinima] = useState(null);
 
@@ -80,13 +80,14 @@ const VerProfesor = () => {
         obtenerProfesor();
     }, [id]);
 
+    //MEMO => HORAS FIN DISPONIBLES (SE GUARDA POR PRIMERA VEZ Y LUEGO SE COMPARA CON LAS POSTERIORES)
     const horasFinDisponibles = useMemo (( ) => {
         if (!horaInicio) return horasDia;
         
         const inicioIndex = horasDia.indexOf(horaInicio);
         if (inicioIndex === -1) return horasDia;
         
-        // Mostrar solo horas posteriores a la hora de inicio
+        // SOLO HORAS SIGUIENTES
         return horasDia.slice(inicioIndex + 1);
     }, [horaInicio]);
 
@@ -98,7 +99,7 @@ const VerProfesor = () => {
             const inicioIndex = horasDia.indexOf(horaInicio);
             const finIndex = horasDia.indexOf(horaFin);
             
-            // SI HORA FIN <= HORA INICIO, RESETEAR
+            // SI HORA FIN <= HORA INICIO, RESETEAR (POR SI ACASO SOLO / LO TENIA ANTES Y NO VIENE MAL AHORA)
             if (finIndex <= inicioIndex) {
                 setHoraFin("");
             }
@@ -189,9 +190,8 @@ const VerProfesor = () => {
         <>
         <Header/>
         <Container  >
-            {/* ALERTAS DE ERROR O ÉXITO */}
-            {error && <Alert variant="danger">{error}</Alert>}
-            {exito && <Alert variant="success">{exito}</Alert>}
+            
+            
 
             {/* INFORMACIÓN DEL PROFESOR */}
             {profesor && (
@@ -239,6 +239,10 @@ const VerProfesor = () => {
                                     Solicitar clase
                                 </Button>
                             </Card.Body>
+
+                            {/* ALERTAS DE ERROR O ÉXITO */}
+                            {error && <Alert className="m-3" variant="danger">{error}</Alert>}
+                            {exito && <Alert className="m-3" variant="success">{exito}</Alert>}
                         </Card>
                     </Col>
                 </Row>

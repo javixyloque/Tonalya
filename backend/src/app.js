@@ -69,13 +69,14 @@ const main  = async () => {
     ));
 
     // DEBUG CONSULTAS => PRUEBA PSEUDODESPLIEGUE PARA CONEXIÓN BASE DE DATOS (NO FUNCIONÓ)
+    // CADA PETICION QUE SE REALICE A LA APLICACIÓN SACARÁ UN MENSAJE EN CONSOLA
     app.use((req, res, next) => {
         console.log('Solicitud recibida:', req.method, req.url);
         next();
     });
 
 
-// MONGOOSE => CONECTAR A MONGODB
+// MONGOOSE => CONECTAR A LA BD DE MONGODB
     mongoose.connect('mongodb://127.0.0.1:27017/Tonalya', {})
     .then(() => {
         console.log('Conectado a MongoDB');
@@ -98,7 +99,7 @@ const main  = async () => {
     })
 
 
-    // EXPRESS ROUTER PARA PETICIONES A LOS MODELOS (SINO TENIA 600 LINEAS)
+    // EXPRESS ROUTER PARA PETICIONES A LOS CONTROLADORES (SINO TENIA 1200 LINEAS DE ARCHIVO)
 
     app.use('/usuario', usuarioRouter);
 
@@ -111,7 +112,7 @@ const main  = async () => {
     
     
     
-    
+    // PETICIONES INSTRUMENTOS (SON PETICIONES SENCILLAS Y NO VI NECESARIO HACER OTRO CONTROLADOR)
     //  OBTENER INSTRUMENTOS
     app.get('/instrumentos', async (req,res) => {
         try{

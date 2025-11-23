@@ -13,7 +13,6 @@ import pianoProfe from "./resources/images/pianoProfe.svg"
 import buscarProfesores from "./resources/images/buscarProfesores.svg"
 
 // PALETA DE COLORES
-// https://colorhunt.co/palette/21344854779294b4c1ecefca
 
 /*
 Copyright (c) [2025] [Tonalya]. Todos los derechos reservados.
@@ -62,13 +61,7 @@ const  Home = () => {
         <Header/>
         <Container style={{minHeight: "100vh"}}>
             
-            {/* <Row>
-               <Col xs={12} className='mb-5 text-center' style={{color: "#213448", fontSize: "4em"}}>
-                    <h1>Bienvenido a Tonalya</h1>
-               </Col>
-            </Row>
-             */}
-
+           
             <Row>
                 <Col xs={0} lg={2}></Col>
                 <Col xs={12} lg={8}>

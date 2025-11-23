@@ -58,6 +58,7 @@ const BuscadorProfesores = () => {
                 url = 'http://localhost:5000/profesor';
             }
 
+            // MÁS SENCILLO PETICION => 
             const respuesta = await fetch(url);
             const datos = await respuesta.json();
             
