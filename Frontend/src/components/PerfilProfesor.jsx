@@ -577,10 +577,11 @@ const PerfilProfesor = () => {
                                                 <Card.Header className="text-center bg-success text-white">
                                                     <h5>Próximas clases</h5>
                                                 </Card.Header>
-                                                <Card.Body className="table-responsive">
+                                                <Card.Body>
                                                 {clasesPagadas.length > 0 ? (
-                                                <Table className="table-striped border-secondary align-middle">
-                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                 <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover>
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
                                                             <th>Clase</th>
                                                             <th>Alumno</th>
@@ -610,6 +611,7 @@ const PerfilProfesor = () => {
                                                     ))}
                                                         </tbody>
                                                     </Table>
+                                                    </div>
                                                     ) : <ListGroup.Item>No hay clases próximas</ListGroup.Item>}
 
                                                     </Card.Body>
@@ -623,10 +625,11 @@ const PerfilProfesor = () => {
                                                     <h5>Clases pendientes de pago</h5>
                                                 </Card.Header>
 
-                                                <Card.Body className="table-responsive h-25">
+                                                <Card.Body>
                                                 {clasesAceptadas.length > 0 ? (
-                                                <Table className="table-striped border-secondary align-middle">
-                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                 <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover>
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
                                                             <th>Clase</th>
                                                             <th>Alumno</th>
@@ -653,6 +656,7 @@ const PerfilProfesor = () => {
                                                     ))}
                                                         </tbody>
                                                     </Table>
+                                                    </div>
                                                     ) : <ListGroup.Item>No hay clases pendientes de pago</ListGroup.Item>}
 
                                                     </Card.Body>
@@ -667,10 +671,11 @@ const PerfilProfesor = () => {
                                                     <h5>Solicitudes pendientes</h5>
                                                 </Card.Header>
 
-                                                <Card.Body className="table-responsive h-25">
+                                                <Card.Body>
                                                 {clasesPendientes.length > 0 ? (
-                                                <Table className="table-striped border-secondary align-middle">
-                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                 <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover>
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
                                                             <th>Clase</th>
                                                             <th>Alumno</th>
@@ -703,6 +708,7 @@ const PerfilProfesor = () => {
                                                     ))}
                                                         </tbody>
                                                     </Table>
+                                                    </div>
                                                     ) : <ListGroup.Item>No hay solicitudes nuevas</ListGroup.Item>}
 
                                                     </Card.Body>
@@ -718,10 +724,11 @@ const PerfilProfesor = () => {
                                                     <h5>Clases completadas</h5>
                                                 </Card.Header>
 
-                                                <Card.Body className="table-responsive h-25">
+                                                <Card.Body>
                                                 {clasesCompletadas.length > 0 ? (
-                                                <Table className="table-striped border-secondary align-middle">
-                                                    <thead style={{position: 'sticky', top: 0}}>
+                                                 <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover>
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
                                                             <th>Clase</th>
                                                             <th>Alumno</th>
@@ -764,6 +771,7 @@ const PerfilProfesor = () => {
                                                     ))}
                                                         </tbody>
                                                     </Table>
+                                                    </div>
                                                     ) : <ListGroup.Item>No hay clases completadas</ListGroup.Item>}
 
                                                     </Card.Body>

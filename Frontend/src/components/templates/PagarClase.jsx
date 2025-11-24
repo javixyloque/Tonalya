@@ -4,6 +4,7 @@ import { SyncLoader } from "react-spinners";
 import {useParams} from "react-router-dom";
 import { Alert } from "react-bootstrap";
 
+// PANTALLA DE CARGA PARA PAGAR (SIMULACIÓN) Y ENVIAR EMAILS CON LA PETICIÓN
 const PagarClase = () => {
     const { id } = useParams();
     console.log(id)

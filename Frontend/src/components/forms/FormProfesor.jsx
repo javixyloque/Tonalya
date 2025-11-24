@@ -133,7 +133,8 @@ const FormProfesor = () => {
                     }, 4000);
                     setTimeout(() => {
                         setLoading(false);
-                        window.location.href = '/';
+                        window.location.assign('/');
+                        
                     }, 1000)
                 }
             } else {

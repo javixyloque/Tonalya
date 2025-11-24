@@ -9,7 +9,7 @@ import CerrarSesion from './components/templates/CerrarSesion.jsx';
 import PerfilProfesor from './components/PerfilProfesor.jsx';
 import PerfilUsuario from './components/PerfilUsuario.jsx';
 import BuscadorProfesores from './components/BuscadorProfesores.jsx';
-// import PerfilAdmin from './components/PerfilAdmin.jsx';
+import PerfilAdmin from './components/PerfilAdmin.jsx';
 import VerProfesor from './components/VerProfesor.jsx';
 import FormPagar from './components/FormPagar.jsx';
 import PagarClase from './components/templates/PagarClase.jsx';
@@ -31,7 +31,7 @@ const App = () => {
                 <Route path="/perfil-profesor" element={<PerfilProfesor/>} />
                 <Route path="/perfil-usuario" element={<PerfilUsuario/>} />
                 <Route path="/buscador-profesores" element={<BuscadorProfesores/>} />
-                {/* <Route path="/perfil-admin" element={<PerfilAdmin/>}/> */}
+                <Route path="/perfil-admin" element={<PerfilAdmin/>}/>
                 <Route path="/ver-profesor/:id" element={<VerProfesor/>}/>
                 <Route path="/form-pagar/:id" element={<FormPagar/>} />
                 <Route path="/pagar-clase/:id" element={<PagarClase/>}/>

@@ -103,6 +103,39 @@ router.delete ('/usuarios', async (req, res) => {
     }
 })
 
+
+router.get('/profesores-completos', async (req, res) => {
+  try {
+    // DEVOLVER PROFESORES CON SUS INSTRUMENTOS Y Nº CLASES COMPLETADAS QUE TIENEN (CERTIFICADO DE FIABILIDAD[PARA MÍ LO SERÍA, VAYA])
+    const profesores = await Profesor.find().sort({ nombre: 1 }).populate({
+        path: 'instrumentos',
+        select: ['nombre', 'familia']
+    }).populate({
+        path: "clases",
+        select: "estado"
+    })      
+
+    res.json(profesores);
+  } catch (error) {
+    res.json({ mensaje: 'Error al obtener los datos de los profesores', error: error.message });
+  }
+});
+
+router.get("/usuarios-completos", async (req, res) => {
+  try {
+    const usuarios = await Usuario.find().sort({ nombre: 1 }).populate({
+        path: "instrumentos",
+        select: "nombre familia",
+    }).populate({
+        path: "clases",
+        select: "estado"
+    })
+    res.json(usuarios);
+  } catch (error) {
+    res.json({ mensaje: "Error al obtener los datos de los usuarios", error: error.message });
+  }
+});
+
 // OBTENER DATOS DE TODOS LOS PROFESORES (ORDEN ALFABETICO POR NOMBRE)
 router.get('/profesores', async (req, res) => {
     try {

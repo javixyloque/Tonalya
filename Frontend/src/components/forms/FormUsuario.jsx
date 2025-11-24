@@ -12,7 +12,7 @@ import {arrayProvincias} from "../../functions/variables.js";
 
 const FormUsuario = () => {
     if (sessionStorage.getItem('usuario')) {
-        window.location.href = "/";
+        window.location.assign("/");
     }
     const [validated, setValidated] = useState(false);
     const [nombre, setNombre] = useState('');
@@ -121,7 +121,7 @@ const FormUsuario = () => {
                 setAlerta(true);
                 setTimeout(() => {
                     setAlerta(false);
-                    window.location.href = '/';
+                    window.location.assign('/');
                 }, 2000)
                 
             } else {

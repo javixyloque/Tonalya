@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
         
         const profesor = new Profesor({
             nombre: req.body.nombre,
-            bio: '' ,
+            bio: req.body.bio || '' ,
             email: req.body.email,
             telefono: req.body.telefono,
             password: req.body.password,
@@ -239,6 +239,7 @@ router.get('/clases-instrumentos/:id', async (req, res) => {
             return res.json({ mensaje: 'Profesor no encontrado' });
         }
 
+        // SOLO DEVOLVER CLASES
         const clasesProfesor = profesor.clases
         
         

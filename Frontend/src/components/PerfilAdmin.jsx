@@ -1,583 +1,803 @@
-import { useEffect, useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Tabs,
-  Tab,
-  Table,
-  Dropdown,
-  Modal,
-  Form,
-  Spinner,
-  Alert,
-  InputGroup,
-  Accordion,
-  Card,
-} from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { SyncLoader } from "react-spinners";
+import { Container, Row, Col, Form, Button, Modal, Alert, Card, Tabs, Tab, Table, Badge } from 'react-bootstrap';
+import {  PencilFill, TrashFill, EyeFill, EyeSlashFill } from "react-bootstrap-icons";
 
 import Header from "./templates/Header";
+import { arrayProvincias } from "../functions/variables.js";
+import { codificarImagen64 } from "../functions/codificar.js";
 
-
-/**
- * PANEL DE ADMINISTRACIÓN
- * - PERFIL DEL ADMIN
- * - CONTROL SOBRE USURAIOS, PROFESORES Y INSTRUMENTOS
- *  
- */
-
-const PerfilAdmin = () =>  {
-    if (!sessionStorage.getItem("usuario") || sessionStorage.getItem('rol')!='admin') {
-        window.location.href = "/";
-    }
-    // BASE URL DEL ENDPOINT ADMIN (PUERTO 5000)
-    const baseApi = "http://localhost:5000/admin";
-
-    
+const PerfilAdmin = () => {
+    const [loading, setLoading] = useState(true);
     const [usuarios, setUsuarios] = useState([]);
     const [profesores, setProfesores] = useState([]);
-    const [instrumentos, setInstrumentos] = useState([]);
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+    const [profesorSeleccionado, setProfesorSeleccionado] = useState(null);
+    const [mostrarModalUsuario, setMostrarModalUsuario] = useState(false);
+    const [mostrarModalProfesor, setMostrarModalProfesor] = useState(false);
+    const [modoEdicion, setModoEdicion] = useState(false);
 
-    const [cargando, setCargando] = useState(false);
-    const [error, setError] = useState(null);
-    // TABLA DEL ACORDEON ACTIVA
-    const [tabActiva, setTabActiva] = useState("usuarios");
+    
+    const [alerta, setAlerta] = useState(false);
+    const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [tipoAlerta, setTipoAlerta] = useState('success');
+    
+    const provincias = arrayProvincias();
+    const [imagenUsuario, setImagenUsuario] = useState(null);
+    const [imagenProfesor, setImagenProfesor] = useState(null);
 
-    // ESTADOS PARA ORDENAR
-    const [claveOrden, setClaveOrden] = useState("nombre"); 
-    const [direccionOrden, setDireccionOrden] = useState("asc"); 
-
-    // ESTADOS PARA MODALES
-    const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
-    const [objetivoEditar, setObjetivoEditar] = useState(null); // { tipo: 'usuario'|'profesor'|'instrumento', datos: {} }
-
-    const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
-    const [objetivoEliminar, setObjetivoEliminar] = useState(null);
-
-    const [formInstrumento, setFormInstrumento] = useState({ nombre: "", familia: "" });
-    const [mostrandoAlerta, setMostrandoAlerta] = useState(null); // texto de aviso temporal
-
-    // FUNCIÓN AUXILIAR PARA ORDENAR LISTAS (CLIENT-SIDE)
-        function ordenarLista(lista) {
-            const clave = claveOrden;
-            const dir = direccionOrden === "asc" ? 1 : -1;
-            return [...lista].sort((a, b) => {
-            const va = ((a[clave] || "") + "").toString().toLowerCase();
-            const vb = ((b[clave] || "") + "").toString().toLowerCase();
-            if (va < vb) {
-                return -1 * dir;
-            } 
-            if (va > vb){ 
-                return 1 * dir
-            };
-            return 0;
-            });
-        }
-
-        // CADA VEZ QUE CAMBIA EL ORDEN SE MANTIENE EN EL ESTADO
-        function toggleOrden(nuevaClave) {
-            if (claveOrden === nuevaClave) {
-                setDireccionOrden(direccionOrden === "asc" ? "desc" : "asc");
-            } else {
-                setClaveOrden(nuevaClave);
-                setDireccionOrden("asc");
-            }
-        }
-
+    // CARGAR TODOS LOS DATOS
     useEffect(() => {
-        async function obtenerDatosIniciales() {
-        setCargando(true);
-        setError(null);
-        try {
-            // OBTENER USUARIOS, PROFESORES E INSTRUMENTOS EN PARALELO
-            const [resUsuarios, resProfesores, resInstrumentos] = await Promise.all([
-                fetch(`${baseApi}/usuarios`, { 
-                    method: "GET" ,
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                }),
-                fetch(`${baseApi}/profesores`, { 
-                        method: "GET" ,
-                        headers: {
-                            "Content-Type": "application/json",
-                        }
-                    }),
-                fetch(`${baseApi}/instrumentos`, { 
-                        method: "GET" ,
-                        headers: {
-                            "Content-Type": "application/json",
-                        }
-                    }),
-            ]);
-
-            // LEER JSON (SI HAY ERROR EN STATUS, INTENTAR LEER MENSAJE)
-            const datosUsuarios = resUsuarios.ok ? await resUsuarios.json() : await resUsuarios.json();
-            const datosProfesores = resProfesores.ok ? await resProfesores.json() : await resProfesores.json();
-            const datosInstrumentos = resInstrumentos.ok ? await resInstrumentos.json() : await resInstrumentos.json();
-
-            // ACTUALIZAR ESTADOS (COMPROBANDO QUE SON ARRAYS)
-            setUsuarios(Array.isArray(datosUsuarios) ? datosUsuarios : []);
-            setProfesores(Array.isArray(datosProfesores) ? datosProfesores : []);
-            setInstrumentos(Array.isArray(datosInstrumentos) ? datosInstrumentos : []);
-        } catch (err) {
-            setError("Error al cargar datos: " + (err.message || err));
-        } finally {
-            setCargando(false);
-        }
-        }
-
-        // LLAMADA INICIAL
-        obtenerDatosIniciales();
-
-    }, []); 
-
-    // FUNCIONES DE REFRESCO / CRUD (DEFINIDAS FUERA PARA SER REUSADAS)
-    async function refrescarDatos() {
-        setCargando(true);
-        setError(null);
-        try {
-        const [rU, rP, rI] = await Promise.all([
-            fetch(`${baseApi}/usuarios`),
-            fetch(`${baseApi}/profesores`),
-            fetch(`${baseApi}/instrumentos`),
-        ]);
-        const dU = await rU.json();
-        const dP = await rP.json();
-        const dI = await rI.json();
-        setUsuarios(Array.isArray(dU) ? dU : []);
-        setProfesores(Array.isArray(dP) ? dP : []);
-        setInstrumentos(Array.isArray(dI) ? dI : []);
-        } catch (err) {
-        setError("Error al refrescar datos: " + (err.message || err));
-        } finally {
-        setCargando(false);
-        }
-    }
-
-    // ELIMINAR RECURSO (USUARIO/PROFESOR/INSTRUMENTO)
-        async function eliminarRecurso() {
-        if (!objetivoEliminar) return;
-        setCargando(true);
-        setError(null);
-        try {
-            const { tipo, datos } = objetivoEliminar;
-            let url = baseApi;
-            if (tipo === "usuario") url += `/usuario/${datos._id}`;
-            if (tipo === "profesor") url += `/profesor/${datos._id}`;
-            if (tipo === "instrumento") url += `/instrumento/${datos._id}`;
-
-            const res = await fetch(url, { method: "DELETE" });
-            if (!res.ok) {
-                const cuerpo = await res.json().catch(() => ({}));
-                throw new Error(cuerpo.mensaje || "Error al eliminar");
+        async function cargarDatos() {
+            if (!sessionStorage.getItem('usuario') || sessionStorage.getItem('rol') !== "admin") {
+                window.location.href = '/';
+                return;
             }
-            setMostrandoAlerta(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado correctamente`);
 
-            setTimeout(() => {
-                setMostrandoAlerta(null)
-            }, 2500);
-
-            setMostrarModalEliminar(false);
-            setObjetivoEliminar(null);
-            await refrescarDatos();
-        } catch (err) {
-            setError("Error al eliminar: " + (err.message || err));
-        } finally {
-            setCargando(false);
-        }
-        }
-
-    // ABRIR MODAL DE EDICIÓN
-    function abrirModalEditar(tipo, datos) {
-        // COPIA PARA EVITAR MUTACIONES DIRECTAS
-        setObjetivoEditar({ tipo, datos: { ...datos } });
-        if (tipo === "instrumento") {
-        setFormInstrumento({ nombre: datos.nombre || "", familia: datos.familia || "" });
-        }
-        setMostrarModalEditar(true);
-    }
-
-    // GUARDAR CAMBIOS (USUARIO / PROFESOR / INSTRUMENTO)
-    async function guardarCambios() {
-            if (!objetivoEditar) return;
-            setCargando(true);
-            setError(null);
             try {
-            const { tipo, datos } = objetivoEditar;
-            if (tipo === "usuario") {
-                const res = await fetch(`${baseApi}/usuario/${datos._id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datos),
-                });
-                if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.mensaje || "Error al actualizar usuario");
-                }
-            } else if (tipo === "profesor") {
-                const res = await fetch(`${baseApi}/profesor/${datos._id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datos),
-                });
-                if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.mensaje || "Error al actualizar profesor");
-                }
-            } else if (tipo === "instrumento") {
-                // USAMOS formInstrumento PARA ACTUALIZAR
-                const res = await fetch(`${baseApi}/instrumento/${datos._id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formInstrumento),
-                });
-                if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.mensaje || "Error al actualizar instrumento");
-                }
-            }
-            setMostrarModalEditar(false);
-            setObjetivoEditar(null);
-            setMostrandoAlerta("Guardado correctamente");
-            setTimeout(() => setMostrandoAlerta(null), 2000);
-            await refrescarDatos();
-            } catch (err) {
-            setError("Error al guardar cambios: " + (err.message || err));
+                const [usuariosResp, profesoresResp] = await Promise.all([
+                    fetch('http://localhost:5000/admin/usuarios-completos').then(res => res.json()),
+                    fetch('http://localhost:5000/admin/profesores-completos').then(res => res.json())
+                ]);
+
+                setUsuarios(usuariosResp);
+                setProfesores(profesoresResp);
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                mostrarAlerta('Error al cargar los datos', 'danger');
             } finally {
-            setCargando(false);
+                setLoading(false);
             }
-    }
+        }
 
-    // AÑADIR NUEVO INSTRUMENTO
-    async function anadirInstrumento(e) {
-        e.preventDefault();
-        setCargando(true);
-        setError(null);
+        cargarDatos();
+    }, []);
+
+    const mostrarAlerta = (mensaje, tipo = 'success') => {
+        setMensajeAlerta(mensaje);
+        setTipoAlerta(tipo);
+        setAlerta(true);
+        setTimeout(() => setAlerta(false), 3000);
+    };
+
+    // FUNCIONES PARA USUARIOS
+    const abrirModalUsuario = (usuario = null) => {
+        if (usuario) {
+            // SI USUARIO => EDITAR
+            setUsuarioSeleccionado({ 
+                _id: usuario._id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                telefono: usuario.telefono,
+                provincia: usuario.provincia,
+                activo: usuario.activo
+            });
+            setModoEdicion(true);
+        } else {
+            // SI NO USUARIO => CREAR (POST)
+            setUsuarioSeleccionado({
+                nombre: '',
+                email: '',
+                telefono: '',
+                provincia: '',
+                activo: true
+            });
+            setModoEdicion(false);
+        }
+        setMostrarModalUsuario(true);
+        setImagenUsuario(null);
+    };
+
+    const cerrarModalUsuario = () => {
+        setMostrarModalUsuario(false);
+        setUsuarioSeleccionado(null);
+    };
+
+    const guardarUsuario = async () => {
         try {
-        const res = await fetch(`${baseApi}/instrumento`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formInstrumento),
-        });
-        if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            throw new Error(body.mensaje || "Error al crear instrumento");
+            const datosActualizados = {
+                nombre: usuarioSeleccionado.nombre,
+                email: usuarioSeleccionado.email,
+                telefono: usuarioSeleccionado.telefono,
+                provincia: usuarioSeleccionado.provincia,
+                activo: usuarioSeleccionado.activo
+            };
+
+            if (imagenUsuario) {
+                const imagenCodificada = await codificarImagen64(imagenUsuario);
+                datosActualizados.imagen = imagenCodificada;
+            }
+
+            let url;
+            let method;
+            
+            if (modoEdicion) {
+                url = 'http://localhost:5000/admin/usuario/' + usuarioSeleccionado._id;
+                method = 'PUT';
+            } else {
+                url = 'http://localhost:5000/admin/usuario';
+                method = 'POST';
+            }
+
+            const respuesta = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosActualizados)
+            });
+
+            if (respuesta.ok) {
+                mostrarAlerta(modoEdicion ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
+                
+                
+                const respuestaUsuarios = await fetch('http://localhost:5000/admin/usuarios-completos');
+                const usuariosActualizados = await respuestaUsuarios.json();
+                setUsuarios(usuariosActualizados);
+                
+                cerrarModalUsuario();
+            } else {
+                mostrarAlerta('Error al guardar el usuario', 'danger');
+            }
+        } catch (error) {
+            console.error('Error guardando usuario:', error);
+            mostrarAlerta('Error al guardar el usuario', 'danger');
         }
-        setFormInstrumento({ nombre: "", familia: "" });
-        setMostrandoAlerta("Instrumento creado");
-        setTimeout(() => setMostrandoAlerta(null), 2000);
-        await refrescarDatos();
-        } catch (err) {
-        setError("Error al crear instrumento: " + (err.message || err));
-        } finally {
-        setCargando(false);
+    };
+
+    const eliminarUsuario = async (id, definitivo = false) => {
+        let mensaje;
+        if (definitivo) {
+            mensaje = '¿Estás seguro de que quieres eliminar definitivamente este usuario? Esta acción no se puede deshacer.';
+        } else {
+            mensaje = '¿Estás seguro de que quieres desactivar este usuario?';
         }
-    }
 
-    // RENDER: LISTA DE USUARIOS
-    function ListaUsuarios() {
-        const listaOrdenada = ordenarLista(usuarios);
-        return (
-        <>
-        <Container>
-            <Row className="mb-3 align-items-center">
-            <Col xs={12} md={6}>
-                <h5>Usuarios ({listaOrdenada.length})</h5>
-            </Col>
-            <Col xs={12} md={6} className="text-md-end">
-                <InputGroup style={{ maxWidth: 360 }}>
-                <Dropdown onSelect={(k) => toggleOrden(k)}>
-                    <Dropdown.Toggle variant="outline-secondary" id="orden-usuarios">
-                    ORDENAR: {claveOrden.toUpperCase()} ({direccionOrden})
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                    <Dropdown.Item eventKey="nombre">Nombre</Dropdown.Item>
-                    <Dropdown.Item eventKey="provincia">Provincia</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-                <Button variant="outline-secondary" onClick={refrescarDatos} className="ms-2">
-                    REFRESCAR
-                </Button>
-                </InputGroup>
-            </Col>
-            </Row>
+        if (!confirm(mensaje)){
+            return;
+        };
 
-            <Table responsive bordered hover size="sm" >
-            <thead >
-                <tr>
-                <th style={{backgroundColor: "#ECEFCA"}}>Nombre</th>
-                <th style={{backgroundColor: "#ECEFCA"}}>Email</th>
-                <th style={{backgroundColor: "#ECEFCA"}}>Teléfono</th>
-                <th style={{backgroundColor: "#ECEFCA"}}>Provincia</th>
-                <th style={{backgroundColor: "#ECEFCA"}}>Instrumentos</th>
-                <th style={{backgroundColor: "#ECEFCA"}}>Acciones</th>
-                </tr>
-            </thead>
-            <tbody >
-                {listaOrdenada.map((usuario) => (
-                <tr key={usuario._id}>
-                    <td>{usuario.nombre}</td>
-                    <td>{usuario.email}</td>
-                    <td>{usuario.telefono}</td>
-                    <td>{usuario.provincia}</td>
-                    <td>{Array.isArray(usuario.instrumentos) ? usuario.instrumentos.join(", ") : ""}</td>
-                    <td style={{ minWidth: 180 }}>
-                    <Button size="sm" className="me-2" onClick={() => abrirModalEditar("usuario", usuario)}>
-                        Editar
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => { setObjetivoEliminar({ tipo: "usuario", datos: usuario }); setMostrarModalEliminar(true); }}>
-                        Eliminar
-                    </Button>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </Table>
-            </Container>
-        </>
-        );
-    }
+        try {
+            if (definitivo) {
+                await fetch('http://localhost:5000/admin/usuario/' + id, { 
+                    method: 'DELETE' 
+                });
+                mostrarAlerta('Usuario eliminado definitivamente');
+            } else {
+                await fetch('http://localhost:5000/admin/usuario/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activo: false })
+                });
+                mostrarAlerta('Usuario desactivado correctamente');
+            }
 
-    // RENDER: LISTA DE PROFESORES
-    function ListaProfesores() {
-        const listaOrdenada = ordenarLista(profesores);
-        return (
-        <>
-            <Container>
-            <Row className="mb-3 align-items-center">
-            <Col xs={12} md={6}>
-                <h5>Profesores ({listaOrdenada.length})</h5>
-            </Col>
-            <Col xs={12} md={6} className="text-md-end">
-                <InputGroup style={{ maxWidth: 360 }}>
-                <Dropdown onSelect={(k) => toggleOrden(k)}>
-                    <Dropdown.Toggle variant="outline-secondary" id="orden-profesores">
-                    ORDENAR: {claveOrden.toUpperCase()} ({direccionOrden})
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                    <Dropdown.Item eventKey="nombre">Nombre</Dropdown.Item>
-                    <Dropdown.Item eventKey="provincia">Provincia</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-                <Button variant="outline-secondary" onClick={refrescarDatos} className="ms-2">
-                    REFRESCAR
-                </Button>
-                </InputGroup>
-            </Col>
-            </Row>
+            
+            const respuestaUsuarios = await fetch('http://localhost:5000/admin/usuarios-completos');
+            const usuariosActualizados = await respuestaUsuarios.json();
+            setUsuarios(usuariosActualizados);
+        } catch (error) {
+            console.error('Error eliminando usuario:', error);
+            mostrarAlerta('Error al eliminar el usuario', 'danger');
+        }
+    };
 
-            <Table responsive bordered hover size="sm">
-            <thead>
-                <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Provincia</th>
-                <th>Precio / h</th>
-                <th>Instrumentos</th>
-                <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {listaOrdenada.map((p) => (
-                <tr key={p._id}>
-                    <td>{p.nombre}</td>
-                    <td>{p.email}</td>
-                    <td>{p.provincia}</td>
-                    <td>{p.precioHora}</td>
-                    <td>{Array.isArray(p.instrumentos) ? p.instrumentos.join(", ") : ""}</td>
-                    <td style={{ minWidth: 180 }}>
-                    <Button size="sm" className="me-2" onClick={() => abrirModalEditar("profesor", p)}>
-                        Editar
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => { setObjetivoEliminar({ tipo: "profesor", datos: p }); setMostrarModalEliminar(true); }}>
-                        Eliminar
-                    </Button>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </Table>
-            </Container>
-        </>
-        );
-    }
+    const activarUsuario = async (id) => {
+        try {
+            await fetch(`http://localhost:5000/admin/usuario/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activo: true })
+            });
+            
+            mostrarAlerta('Usuario activado correctamente');
+            
+            
+            const usuariosActualizados = await fetch('http://localhost:5000/admin/usuarios-completos').then(res => res.json());
+            setUsuarios(usuariosActualizados);
+        } catch (error) {
+            console.error('Error activando usuario:', error);
+            mostrarAlerta('Error al activar el usuario', 'danger');
+        }
+    };
 
-    // RENDER: LISTA DE INSTRUMENTOS
-    function ListaInstrumentos() {
-        return (
-        <>
-        <Container>
-            <Row className="mb-3 align-items-center">
-            <Col xs={12} md={6}>
-                <h5>Instrumentos ({instrumentos.length})</h5>
-            </Col>
-            <Col xs={12} md={6} className="text-md-end">
-                <Form onSubmit={anadirInstrumento} className="d-flex justify-content-end">
-                <InputGroup style={{ maxWidth: 560 }}>
-                    <Form.Control
-                    placeholder="Nombre"
-                    value={formInstrumento.nombre}
-                    onChange={(e) => setFormInstrumento({ ...formInstrumento, nombre: e.target.value })}
-                    required
-                    />
-                    <Form.Control
-                    placeholder="Familia"
-                    value={formInstrumento.familia}
-                    onChange={(e) => setFormInstrumento({ ...formInstrumento, familia: e.target.value })}
-                    required
-                    />
-                    <Button type="submit">Añadir</Button>
-                </InputGroup>
-                </Form>
-            </Col>
-            </Row>
+    // PRFOESORES
 
-            <Accordion>
-            {instrumentos.map((inst) => (
-                <Card key={inst._id} className="mb-2">
-                <Accordion.Item eventKey={inst._id}>
-                    <Accordion.Header>{inst.nombre} — {inst.familia}</Accordion.Header>
-                    <Accordion.Body>
-                    <Row>
-                        <Col md={8}>
-                        <p><strong>Nombre:</strong> {inst.nombre}</p>
-                        <p><strong>Familia:</strong> {inst.familia}</p>
-                        </Col>
-                        <Col md={4} className="text-md-end">
-                        <Button size="sm" className="me-2" onClick={() => abrirModalEditar("instrumento", inst)}>Editar</Button>
-                        <Button size="sm" variant="danger" onClick={() => { setObjetivoEliminar({ tipo: "instrumento", datos: inst }); setMostrarModalEliminar(true); }}>
-                            Eliminar
-                        </Button>
-                        </Col>
-                    </Row>
-                    </Accordion.Body>
-                </Accordion.Item>
-                </Card>
-            ))}
-            </Accordion>
-            </Container>
-        </>
-        );
-    }
+
+    const abrirModalProfesor = (profesor = null) => {
+        if (profesor) {
+            // SI PROFSEOR => EDITAR
+            setProfesorSeleccionado({
+                _id: profesor._id,
+                nombre: profesor.nombre,
+                email: profesor.email,
+                telefono: profesor.telefono,
+                provincia: profesor.provincia,
+                bio: profesor.bio,
+                precioHora: profesor.precioHora,
+                activo: profesor.activo
+            });
+            setModoEdicion(true);
+        } else {
+            // SI NO PROFESOR => CREAR
+            setProfesorSeleccionado({
+                nombre: '',
+                email: '',
+                telefono: '',
+                provincia: '',
+                bio: '',
+                precioHora: 0,
+                activo: true
+            });
+            setModoEdicion(false);
+        }
+        setMostrarModalProfesor(true);
+        setImagenProfesor(null);
+    };
+
+    const cerrarModalProfesor = () => {
+        setMostrarModalProfesor(false);
+        setProfesorSeleccionado(null);
+    };
+
+    const guardarProfesor = async () => {
+        try {
+            const datosActualizados = {
+                nombre: profesorSeleccionado.nombre,
+                email: profesorSeleccionado.email,
+                telefono: profesorSeleccionado.telefono,
+                provincia: profesorSeleccionado.provincia,
+                bio: profesorSeleccionado.bio,
+                precioHora: profesorSeleccionado.precioHora,
+                activo: profesorSeleccionado.activo
+            };
+
+            if (imagenProfesor) {
+                const imagenCodificada = await codificarImagen64(imagenProfesor);
+                datosActualizados.imagen = imagenCodificada;
+            }
+
+            let url;
+            let method;
+            
+            if (modoEdicion) {
+                url = 'http://localhost:5000/admin/profesor/' + profesorSeleccionado._id;
+                method = 'PUT';
+            } else {
+                url = 'http://localhost:5000/admin/profesor';
+                method = 'POST';
+            }
+
+            const respuesta = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosActualizados)
+            });
+
+            if (respuesta.ok) {
+                mostrarAlerta(modoEdicion ? 'Profesor actualizado correctamente' : 'Profesor creado correctamente');
+                
+                
+                const respuestaProfesores = await fetch('http://localhost:5000/admin/profesores-completos');
+                const profesoresActualizados = await respuestaProfesores.json();
+                setProfesores(profesoresActualizados);
+                
+                cerrarModalProfesor();
+            } else {
+                mostrarAlerta('Error al guardar el profesor', 'danger');
+            }
+        } catch (error) {
+            console.error('Error guardando profesor:', error);
+            mostrarAlerta('Error al guardar el profesor', 'danger');
+        }
+    };
+
+    const eliminarProfesor = async (id, definitivo = false) => {
+        try {
+            // DEFINITIVO => BOOLEANO PASADO COMO PARAMETRO EN LA FUNCIÓN DE LOS BOTONES
+            if (definitivo) {
+                const decision = confirm('¿Estás seguro de que quieres eliminar definitivamente este profesor para siempre? Esta acción no se puede deshacer.');
+                if (!decision) {
+                    return;
+                }
+
+                await fetch(`http://localhost:5000/admin/profesor/${id}`, { method: 'DELETE' });
+                mostrarAlerta('Profesor eliminado definitivamente');
+            } else {
+                const decision = confirm('¿Estás seguro de que quieres desactivar este profesor?');
+                if (!decision) {
+                    return;
+                }
+
+                await fetch(`http://localhost:5000/admin/profesor/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activo: false })
+                });
+                mostrarAlerta('Profesor desactivado correctamente');
+            }
+
+            // RECARGAR PRFOESORES
+            const profesoresActualizados = await fetch('http://localhost:5000/admin/profesores-completos').then(res => res.json());
+            setProfesores(profesoresActualizados);
+        } catch (error) {
+            console.error('Error eliminando profesor:', error);
+            mostrarAlerta('Error al eliminar el profesor', 'danger');
+        }
+    };
+
+    const activarProfesor = async (id) => {
+        try {
+            await fetch(`http://localhost:5000/admin/profesor/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activo: true })
+            });
+            
+            mostrarAlerta('Profesor activado correctamente');
+            
+            // Recargar lista
+            const profesoresActualizados = await fetch('http://localhost:5000/admin/profesores-completos').then(res => res.json());
+            setProfesores(profesoresActualizados);
+        } catch (error) {
+            console.error('Error activando profesor:', error);
+            mostrarAlerta('Error al activar el profesor', 'danger');
+        }
+    };
+
+    // FUNCIÓN PARA CONTAR CLASES COMPLETADAS
+    const contarClasesCompletadas = (clases) => {
+        return clases ? clases.filter(clase => clase.estado === 'completada').length : 0;
+    };
 
     return (
-        <Container >
-            <Header/>
-        <Row>
-            <Col>
-            <h3>Panel de Administración</h3>
-            <p className="text-muted">Gestiona usuarios, profesores e instrumentos.</p>
-            </Col>
-        </Row>
+        <>
+            {loading ? (
+                <div className="loader">
+                    <SyncLoader color="#213448"/><br/>
+                    <p style={{color: "#213448"}}>Cargando panel de administración...</p>
+                </div>
+            ) : (
+                <>
+                    <Header/>
+                    <Container className="mt-4">
+                        <Row className="mb-4">
+                            <Col xs={12}>
+                                <h1 className="text-center">Panel de Administración</h1>
+                                <p className="text-center text-muted">Gestiona usuarios y profesores del sistema</p>
+                            </Col>
+                        </Row>
 
-        {error && (
-            <Row className="mb-3">
-            <Col><Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert></Col>
-            </Row>
-        )}
+                        {alerta && (
+                            <Alert variant={tipoAlerta} className="my-3">
+                                {mensajeAlerta}
+                            </Alert>
+                        )}
 
-        {mostrandoAlerta && (
-            <Row className="mb-3">
-            <Col><Alert variant="success">{mostrandoAlerta}</Alert></Col>
-            </Row>
-        )}
+                        <Tabs defaultActiveKey="usuarios" className="mb-4 perfil-tabs">
 
-        <Row className="mb-3">
-            <Col>
-            <Tabs activeKey={tabActiva} onSelect={(k) => setTabActiva(k)} className="mb-3">
-                <Tab eventKey="usuarios" title="Usuarios">
-                {cargando ? <Spinner animation="border" /> : <ListaUsuarios />}
-                </Tab>
-                <Tab eventKey="profesores" title="Profesores">
-                {cargando ? <Spinner animation="border" /> : <ListaProfesores />}
-                </Tab>
-                <Tab eventKey="instrumentos" title="Instrumentos">
-                {cargando ? <Spinner animation="border" /> : <ListaInstrumentos />}
-                </Tab>
-            </Tabs>
-            </Col>
-        </Row>
 
-        {/* MODAL EDITAR */}
-            <Modal show={mostrarModalEditar} onHide={() => { setMostrarModalEditar(false); setObjetivoEditar(null); }} centered>
-                <Modal.Header closeButton>
-                <Modal.Title>EDITAR {objetivoEditar?.tipo?.toUpperCase()}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                {objetivoEditar && objetivoEditar.tipo === "usuario" && (
-                    <Form>
-                    <Form.Group className="mb-2">
-                        <Form.Label>NOMBRE</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.nombre || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, nombre: e.target.value } }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>EMAIL</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.email || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, email: e.target.value } }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>PROVINCIA</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.provincia || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, provincia: e.target.value } }))} />
-                    </Form.Group>
-                    </Form>
-                )}
+                            {/*  USUARIOS */}
 
-                {objetivoEditar && objetivoEditar.tipo === "profesor" && (
-                    <Form>
-                    <Form.Group className="mb-2">
-                        <Form.Label>NOMBRE</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.nombre || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, nombre: e.target.value } }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>EMAIL</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.email || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, email: e.target.value } }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>PROVINCIA</Form.Label>
-                        <Form.Control value={objetivoEditar.datos.provincia || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, provincia: e.target.value } }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>PRECIO POR HORA</Form.Label>
-                        <Form.Control type="number" value={objetivoEditar.datos.precioHora || ""} onChange={(e) => setObjetivoEditar(prev => ({ ...prev, datos: { ...prev.datos, precioHora: e.target.value } }))} />
-                    </Form.Group>
-                    </Form>
-                )}
+                            <Tab eventKey="usuarios" title={`Usuarios (${usuarios.length})`}>
+                                <Card>
+                                    <Card.Header className="d-flex justify-content-between align-items-center">
+                                        <h4 className="mb-0">Gestión de Usuarios</h4>
+                                        
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover  >
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                    <tr>
+                                                        <th>Estado</th>
+                                                        <th>Nombre</th>
+                                                        <th>Email</th>
+                                                        <th>Teléfono</th>
+                                                        <th>Provincia</th>
+                                                        <th>Instrumentos</th>
+                                                        <th>Clases Completadas</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {usuarios.map(usuario => (
+                                                        <tr key={usuario._id} className={!usuario.activo ? 'table-secondary' : ''}>
+                                                            <td>
+                                                                <Badge bg={usuario.activo ? "success" : "secondary"}>
+                                                                    {usuario.activo ? "Activo" : "Inactivo"}
+                                                                </Badge>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex align-items-center">
+                                                                    {usuario.imagen && (
+                                                                        <img 
+                                                                            src={usuario.imagen} 
+                                                                            className="rounded-circle me-2" 
+                                                                            alt="Avatar" 
+                                                                            style={{ width: '30px', height: '30px' }} 
+                                                                        />
+                                                                    )}
+                                                                    {usuario.nombre}
+                                                                </div>
+                                                            </td>
+                                                            <td>{usuario.email}</td>
+                                                            <td>{usuario.telefono}</td>
+                                                            <td>{usuario.provincia}</td>
+                                                            <td>{usuario.instrumentos ? usuario.instrumentos.length : 0}</td>
+                                                            <td>{contarClasesCompletadas(usuario.clases)}</td>
+                                                            <td>
+                                                                <div className="d-flex gap-1">
+                                                                    <Button  variant="outline-primary" size="sm"
+                                                                        onClick={() => abrirModalUsuario(usuario)}>
+                                                                        <PencilFill/>
+                                                                    </Button>
+                                                                    {usuario.activo ? (
+                                                                        <Button   variant="outline-warning" size="sm"  onClick={() => eliminarUsuario (usuario._id, false)}>
+                                                                            <EyeSlashFill/>
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button 
+                                                                            variant="outline-success" 
+                                                                            size="sm"
+                                                                            onClick={() => activarUsuario(usuario._id)}
+                                                                        >
+                                                                            <EyeFill/>
+                                                                        </Button>
+                                                                    )}
+                                                                    <Button 
+                                                                        variant="secondary" 
+                                                                        size="sm"
+                                                                        onClick={() => eliminarUsuario(usuario._id, true)}
+                                                                    >
+                                                                        <TrashFill/>
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </Table>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Tab>
 
-                {objetivoEditar?.tipo === "instrumento" && (
-                    <Form>
-                    <Form.Group className="mb-2">
-                        <Form.Label>NOMBRE</Form.Label>
-                        <Form.Control value={formInstrumento.nombre} onChange={(e) => setFormInstrumento(prev => ({ ...prev, nombre: e.target.value }))} />
-                    </Form.Group>
-                    <Form.Group className="mb-2">
-                        <Form.Label>FAMILIA</Form.Label>
-                        <Form.Control value={formInstrumento.familia} onChange={(e) => setFormInstrumento(prev => ({ ...prev, familia: e.target.value }))} />
-                    </Form.Group>
-                    </Form>
-                )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => { setMostrarModalEditar(false); setObjetivoEditar(null); }}>CANCELAR</Button>
-                    <Button variant="primary" onClick={guardarCambios}>GUARDAR</Button>
-                </Modal.Footer>
-            </Modal>
+                            {/* PESTAÑA PROFESORES */}
+                            <Tab eventKey="profesores" title={`Profesores (${profesores.length})`}>
+                                <Card>
+                                    <Card.Header className="d-flex justify-content-between align-items-center">
+                                        <h4 className="mb-0">Gestión de Profesores</h4>
+                                        
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <div className="table-responsive" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+                                            <Table striped bordered hover>
+                                                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                    <tr>
+                                                        <th>Estado</th>
+                                                        <th>Nombre</th>
+                                                        <th>Email</th>
+                                                        <th>Teléfono</th>
+                                                        <th>Provincia</th>
+                                                        <th>Precio/Hora</th>
+                                                        <th>Instrumentos</th>
+                                                        <th>Clases Completadas</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {profesores.map(profesor => (
+                                                        <tr key={profesor._id} className={!profesor.activo ? 'table-secondary' : ''}>
+                                                            <td>
+                                                                <Badge bg={profesor.activo ? "success" : "secondary"}>
+                                                                    {profesor.activo ? "Activo" : "Inactivo"}
+                                                                </Badge>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex align-items-center">
+                                                                    {profesor.imagen && (
+                                                                        <img 
+                                                                            src={profesor.imagen} 
+                                                                            className="rounded-circle me-2" 
+                                                                            alt="Avatar" 
+                                                                            style={{ width: '30px', height: '30px' }} 
+                                                                        />
+                                                                    )}
+                                                                    {profesor.nombre}
+                                                                </div>
+                                                            </td>
+                                                            <td>{profesor.email}</td>
+                                                            <td>{profesor.telefono}</td>
+                                                            <td>{profesor.provincia}</td>
+                                                            <td>{profesor.precioHora}€</td>
+                                                            {/* BUCLE MOSTRAR INSTRUMENTOS */}
+                                                            <td>{profesor.instrumentos ? profesor.instrumentos.length : 0}</td>
+                                                            <td>{contarClasesCompletadas(profesor.clases)}</td>
+                                                            <td>
+                                                                <div className="d-flex gap-1">
+                                                                    <Button 
+                                                                        variant="outline-primary" 
+                                                                        size="sm"
+                                                                        onClick={() => abrirModalProfesor(profesor)}
+                                                                    >
+                                                                        <PencilFill/>
+                                                                    </Button>
+                                                                    {profesor.activo ? (
+                                                                        <Button 
+                                                                            variant="outline-warning" 
+                                                                            size="sm"
+                                                                            onClick={() => eliminarProfesor(profesor._id, false)}
+                                                                        >
+                                                                            <EyeSlashFill/>
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button 
+                                                                            variant="outline-success" 
+                                                                            size="sm"
+                                                                            onClick={() => activarProfesor(profesor._id)}
+                                                                        >
+                                                                            <EyeFill/>
+                                                                        </Button>
+                                                                    )}
+                                                                    <Button 
+                                                                        variant="secondary" 
+                                                                        size="sm"
+                                                                        onClick={() => eliminarProfesor(profesor._id, true)}
+                                                                    >
+                                                                        <TrashFill/>
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </Table>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Tab>
+                        </Tabs>
+                    </Container>
 
-        {/* MODAL ELIMINAR */}
-        <Modal show={mostrarModalEliminar} onHide={() => { setMostrarModalEliminar(false); setObjetivoEliminar(null); }} centered>
-            <Modal.Header closeButton>
-            <Modal.Title>CONFIRMAR ELIMINACIÓN</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-            ¿Seguro que deseas eliminar {objetivoEliminar?.tipo} <strong>{objetivoEliminar?.datos?.nombre || objetivoEliminar?.datos?.email}</strong>? Esta acción es irreversible.
-            </Modal.Body>
-            <Modal.Footer>
-            <Button variant="secondary" onClick={() => { setMostrarModalEliminar(false); setObjetivoEliminar(null); }}>CANCELAR</Button>
-            <Button variant="danger" onClick={eliminarRecurso}>ELIMINAR</Button>
-            </Modal.Footer>
-        </Modal>
-        </Container>
+                    {/* MODAL USUARIO */}
+                    <Modal show={mostrarModalUsuario} onHide={cerrarModalUsuario} size="lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Editar Usuario</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {usuarioSeleccionado && (
+                                <Form>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Nombre </Form.Label>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    value={usuarioSeleccionado.nombre}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, nombre: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Email </Form.Label>
+                                                <Form.Control 
+                                                    type="email" 
+                                                    value={usuarioSeleccionado.email}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, email: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Teléfono </Form.Label>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    value={usuarioSeleccionado.telefono}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, telefono: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Provincia </Form.Label>
+                                                <Form.Select 
+                                                    value={usuarioSeleccionado.provincia}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, provincia: e.target.value})}
+                                                    required
+                                                >
+                                                    <option value="">Selecciona una provincia</option>
+                                                    {provincias.map((provincia, index) => (
+                                                        <option key={index} value={provincia}>{provincia}</option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        {/* {ME SALIA EL HASH} */}
+                                        {/* <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Contraseña {modoEdicion ? '(dejar en blanco para no cambiar)' : '*'}</Form.Label>
+                                                <Form.Control 
+                                                    type="password" 
+                                                    value={usuarioSeleccionado.password || ''}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, password: e.target.value})}
+                                                    required={!modoEdicion}
+                                                />
+                                            </Form.Group>
+                                        </Col> */}
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Estado</Form.Label>
+                                                <Form.Check 
+                                                    type="switch"
+                                                    label="Usuario activo"
+                                                    checked={usuarioSeleccionado.activo}
+                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, activo: e.target.checked})}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Imagen de perfil</Form.Label>
+                                        <Form.Control 
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => setImagenUsuario(e.target.files[0])}
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={cerrarModalUsuario}>
+                                Cancelar
+                            </Button>
+                            <Button variant="primary" onClick={guardarUsuario}>
+                                {modoEdicion ? 'Actualizar' : 'Crear'} Usuario
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
+                    {/* MODAL PROFESOR */}
+                    <Modal show={mostrarModalProfesor} onHide={cerrarModalProfesor} size="lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title>{modoEdicion ? 'Editar Profesor' : 'Nuevo Profesor'}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {profesorSeleccionado && (
+                                <Form>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Nombr </Form.Label>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    value={profesorSeleccionado.nombre}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, nombre: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Emai </Form.Label>
+                                                <Form.Control 
+                                                    type="email" 
+                                                    value={profesorSeleccionado.email}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, email: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Teléfono </Form.Label>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    value={profesorSeleccionado.telefono}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, telefono: e.target.value})}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Provincia </Form.Label>
+                                                <Form.Select 
+                                                    value={profesorSeleccionado.provincia}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, provincia: e.target.value})}
+                                                    required
+                                                >
+                                                    <option value="">Selecciona una provincia</option>
+                                                    {provincias.map((provincia, index) => (
+                                                        <option key={index} value={provincia}>{provincia}</option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Precio por Hora (€) </Form.Label>
+                                                <Form.Control 
+                                                    required type="number" step={1} defaultValue={10}  placeholder="Precio por hora" min={5} max={100}
+                                                    value={profesorSeleccionado.precioHora}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, precioHora: parseFloat(e.target.value)})}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+
+                                        {/* {ME SALIA EL HASH} */}
+                                        {/* <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Contraseña {modoEdicion ? '(dejar en blanco para no cambiar)' : '*'}</Form.Label>
+                                                <Form.Control 
+                                                    type="password" 
+                                                    value={profesorSeleccionado.password || ''}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, password: e.target.value})}
+                                                    required={!modoEdicion}
+                                                />
+                                            </Form.Group>
+                                        </Col> */}
+                                    </Row>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Biografía</Form.Label>
+                                        <Form.Control 
+                                            as="textarea" 
+                                            rows={3}
+                                            value={profesorSeleccionado.bio || ''}
+                                            onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, bio: e.target.value})}
+                                            placeholder="Biografía del profesor..."
+                                        />
+                                    </Form.Group>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Estado</Form.Label>
+                                                <Form.Check 
+                                                    type="switch"
+                                                    label="Profesor activo"
+                                                    checked={profesorSeleccionado.activo}
+                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, activo: e.target.checked})}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Imagen de perfil</Form.Label>
+                                                <Form.Control 
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => setImagenProfesor(e.target.files[0])}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={cerrarModalProfesor}>
+                                Cancelar
+                            </Button>
+                            <Button variant="primary" onClick={guardarProfesor}>
+                                {modoEdicion ? 'Actualizar' : 'Crear'} Profesor
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            )}
+        </>
     );
-}
+};
 
-export default PerfilAdmin
+export default PerfilAdmin;
