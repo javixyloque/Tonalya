@@ -255,7 +255,7 @@ const VerProfesor = () => {
                     setHoraFin("");
                 }}
                 centered>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Solicitar clase con {profesor?.nombre}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

@@ -1,6 +1,6 @@
 import {Nav, Navbar, Image} from "react-bootstrap"
 // LOGO
-import Tipograma from "../../resources/images/tonalya_tipograma.png";
+import Tipograma from "../../resources/images/logotonalya.svg";
 import "./dropdown.css"
 import IniciarSesion from "./IniciarSesion.jsx"
 const Header = () => {

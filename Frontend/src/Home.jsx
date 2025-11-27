@@ -6,7 +6,7 @@ import personalizarCarrusel from "./resources/images/carrusel/personalizarCarrus
 import organizarCarrusel from "./resources/images/carrusel/organizarCarrusel.svg";
 import cobroProfesoresCarrusel from "./resources/images/carrusel/cobroProfesoresCarrusel.svg";
 import buscarCarrusel from "./resources/images/carrusel/buscarCarrusel.svg";
-import notificacionesCarrusel from "./resources/images/carrusel/notificacionesCarrusel.svg"
+// import notificacionesCarrusel from "./resources/images/carrusel/notificacionesCarrusel.svg"
 import aprenderCarrusel from "./resources/images/carrusel/aprenderCarrusel.svg";
 import profesor from "./resources/images/profesor.svg"  
 import pianoProfe from "./resources/images/pianoProfe.svg"
@@ -24,6 +24,8 @@ Se prohíbe expresamente:
 - Integración en otros productos comerciales"
 */
 
+// HACER LO DE VER PERFIL EN UNA PAGINA APARTE EN EL ADMIN
+
 // MODAL PARA INICIAR SESION, PAGINA APARTE PARA REGISTRARSE
 const arrayCarrusel = [{ 
         img: aprenderCarrusel, 
@@ -33,11 +35,13 @@ const arrayCarrusel = [{
         img: buscarCarrusel, 
         title: "Encuentra tu profesor", 
         text: "Aprende interactivamente un instrumento y conviértete en un virtuoso" 
-    },{ 
-        img: notificacionesCarrusel, 
-        title: "Gestión de Clases", 
-        text: "Organiza y recibe notificaciones de tus clases" 
-    }, {
+    }
+    // ,{ 
+    //     img: notificacionesCarrusel, 
+    //     title: "Gestión de Clases", 
+    //     text: "Organiza y recibe notificaciones de tus clases" 
+    // }
+    , {
         img: personalizarCarrusel,
         title: "Personaliza tu perfil",
         text: "Hazlo único para que sea reconocible para los usuarios"
@@ -66,44 +70,47 @@ const  Home = () => {
                 <Col xs={0} lg={2}></Col>
                 <Col xs={12} lg={8}>
                     {/* ZINDEX 0 PARA Q NO SE VEAN LAS FLECHAS POR ENCIMA DEL NAVBAR */}
-                   <Carousel 
-                        data-bs-theme="dark" 
-                        className="mb-5 vh-25 vh-md-50 vh-lg-75" 
-                        style={{
-                            zIndex: 0,
-                            overflow: "hidden",
-                            backgroundColor: "transparent"
-                        }}
-                    >
-                                                {arrayCarrusel.map((pestanya, index) => (
+                   <Carousel data-bs-theme="dark" className="mb-5 vh-25 vh-md-50 vh-lg-75" 
+                        style={{zIndex: 0,overflow: "hidden",
+                            backgroundColor: "rgba(108, 99, 255, 0.25)", 
+                            borderRadius: "30px", 
+                        }}>
+                        {arrayCarrusel.map((pestanya, index) => (
                             <Carousel.Item key={index} style={{
                                 height: "500px", // Agregar altura fija a cada elemento
                                 overflow: "hidden" // Ocultar contenido que sobrepasa la altura fija
                             }}>
                                 <img src={pestanya.img}  alt={`Pestaña ${index + 1}`} style={{objectFit: "cover", objectPosition: "center"}} />
-                                {/* TEXTO SOLO EN DPANTALLAS GRANDES */}
+                                {/* ESTILOS PARA EL TEXTO*/}
                                 <div className="d-block" style={{
                                     position: "absolute",
                                     bottom: "0.4em",
                                     left: 0,
-                                    right: 0
+                                    right: 0,
                                 }}>
-                                    <Carousel.Caption>
+                                    <Carousel.Caption style={{
+                                        backgroundColor: "rgba(108, 99, 255, 0.25)",
+                                        borderRadius: "10px", 
+                                        backdropFilter: "blur(10px)"
+                                    }}>
                                         <h3 style={{
                                             fontSize: "1.8rem",
-                                            fontWeight: "700",
-                                            textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
+                                            fontWeight: "900",
+                                            textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
                                             marginBottom: "0.5rem",
-                                            color: "#FF6584"
+                                            color: "#FF6584",
+                                            //  backdropFilter: "blur(5px)"
                                         }}>
                                             {pestanya.title}
                                         </h3>
                                         {pestanya.text && (
                                             <p style={{
                                                 fontSize: "1.2rem",
-                                                textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
+                                                textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
                                                 marginBottom: "0",
-                                                color: "#e55a78"
+                                                fontWeight: "600",
+                                                color: "#FF6584",
+                                                
                                             }}>
                                                 {pestanya.text}
                                             </p>

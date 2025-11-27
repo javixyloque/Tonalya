@@ -62,11 +62,13 @@ const main  = async () => {
     
     app.use(cors( {
         origin: 'http://localhost:5173',
-        // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         }
     ));
+
+
+    // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
 
     // DEBUG CONSULTAS => PRUEBA PSEUDODESPLIEGUE PARA CONEXIÓN BASE DE DATOS (NO FUNCIONÓ)
     // CADA PETICION QUE SE REALICE A LA APLICACIÓN SACARÁ UN MENSAJE EN CONSOLA

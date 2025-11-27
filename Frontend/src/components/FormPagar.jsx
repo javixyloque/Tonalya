@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { SyncLoader } from "react-spinners";
-import {Container, Row, Col} from "react-bootstrap";
+import {Container, Row, Col, Card} from "react-bootstrap";
 import Header from "./templates/Header";
 
 const FormPagar = () => {
@@ -59,6 +59,9 @@ const FormPagar = () => {
                         <Row>
                             <Col xs={0} md={3}></Col>
                             <Col xs={12} md={6} >
+                            <Card>
+                                <Card.Header></Card.Header>
+                            </Card>
                             {/* TÍTULO (INSTRUMENTO)*/}
                             <h1>Clase de {instrumento.nombre}</h1>
                             
