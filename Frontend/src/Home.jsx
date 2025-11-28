@@ -89,7 +89,7 @@ const  Home = () => {
                                     right: 0,
                                 }}>
                                     <Carousel.Caption style={{
-                                        backgroundColor: "rgba(108, 99, 255, 0.25)",
+                                        backgroundColor: "rgba(108, 99, 255, 0.1)",
                                         borderRadius: "10px", 
                                         backdropFilter: "blur(10px)"
                                     }}>

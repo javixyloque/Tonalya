@@ -138,6 +138,10 @@ ul {
   border-color: #6C63FF !important;
 }
 
+.bg-primary {
+  background-color: #6C63FF !important;
+}
+
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary:active {

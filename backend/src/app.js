@@ -61,13 +61,14 @@ const main  = async () => {
     //CORS => SOLICITUDES DESDE EL CLIENTE, LIMITAMOS LAS OPCIONES A LO QUE VAMOS A UTILIZAR
     
     app.use(cors( {
-        origin: 'http://localhost:5173',
+        origin: "*" ,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
         }
     ));
 
-
+// ['http://localhost:5173', 'http://localhost:4173']
     // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
 
     // DEBUG CONSULTAS => PRUEBA PSEUDODESPLIEGUE PARA CONEXIÓN BASE DE DATOS (NO FUNCIONÓ)

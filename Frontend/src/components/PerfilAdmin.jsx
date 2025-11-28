@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { SyncLoader } from "react-spinners";
-import { Container, Row, Col, Form, Button, Modal, Alert, Card, Tabs, Tab, Table, Badge } from 'react-bootstrap';
-import {  PencilFill, TrashFill, EyeFill, EyeSlashFill } from "react-bootstrap-icons";
+import { Container, Row, Col, Form, Button, Modal, Alert, Card, Tabs, Tab, Table, Badge, } from 'react-bootstrap';
+import {  PencilFill, TrashFill, EyeFill, EyeSlashFill, PersonLinesFill } from "react-bootstrap-icons";
 
 import Header from "./templates/Header";
 import { arrayProvincias } from "../functions/variables.js";
@@ -25,6 +25,24 @@ const PerfilAdmin = () => {
     const provincias = arrayProvincias();
     const [imagenUsuario, setImagenUsuario] = useState(null);
     const [imagenProfesor, setImagenProfesor] = useState(null);
+
+    const [mostrarModalVerUsuario, setMostrarModalVerUsuario] = useState(false);
+    const [mostrarModalVerProfesor, setMostrarModalVerProfesor] = useState(false);
+
+    const abrirModalVerUsuario = async (id) => {
+        const usuario = await fetch(`http://localhost:5000/admin/usuario-completo/${id}`).then(res => res.json());
+        setUsuarioSeleccionado(usuario);
+        setMostrarModalVerUsuario(true);
+
+    }
+    const abrirModalVerProfesor = async(id) => {
+        const profesor = await fetch(`http://localhost:5000/admin/profesor-completo/${id}`).then(res => res.json());
+        setProfesorSeleccionado(profesor);
+        setMostrarModalVerProfesor(true);
+    }
+
+
+
 
     // CARGAR TODOS LOS DATOS
     useEffect(() => {
@@ -74,7 +92,7 @@ const PerfilAdmin = () => {
             });
             setModoEdicion(true);
         } else {
-            // SI NO USUARIO => CREAR (POST)
+            // SI NO USUARIO => CREAR (POST) => PODER AÑADIR USUARIOS A POSTERIORI EL ADMIN, CON LOS PROFESORES LO HE HECHO IGUAL
             setUsuarioSeleccionado({
                 nombre: '',
                 email: '',
@@ -426,6 +444,9 @@ const PerfilAdmin = () => {
                                                             <td>{contarClasesCompletadas(usuario.clases)}</td>
                                                             <td>
                                                                 <div className="d-flex gap-1">
+                                                                    <Button variant="outline-info" size="sm" onClick={() => abrirModalVerUsuario (usuario._id) }>
+                                                                        <PersonLinesFill/>
+                                                                    </Button>
                                                                     <Button  variant="outline-primary" size="sm"
                                                                         onClick={() => abrirModalUsuario(usuario)}>
                                                                         <PencilFill/>
@@ -514,6 +535,9 @@ const PerfilAdmin = () => {
                                                             <td>{contarClasesCompletadas(profesor.clases)}</td>
                                                             <td>
                                                                 <div className="d-flex gap-1">
+                                                                    <Button variant="outline-info" size="sm" onClick={() => abrirModalVerProfesor(profesor._id)}>
+                                                                        <PersonLinesFill/>
+                                                                    </Button>
                                                                     <Button 
                                                                         variant="outline-primary" 
                                                                         size="sm"
@@ -619,50 +643,174 @@ const PerfilAdmin = () => {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        {/* {ME SALIA EL HASH} */}
-                                        {/* <Col xs={12} md={6}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Contraseña {modoEdicion ? '(dejar en blanco para no cambiar)' : '*'}</Form.Label>
-                                                <Form.Control 
-                                                    type="password" 
-                                                    value={usuarioSeleccionado.password || ''}
-                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, password: e.target.value})}
-                                                    required={!modoEdicion}
-                                                />
-                                            </Form.Group>
-                                        </Col> */}
+                                        
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Estado</Form.Label>
-                                                <Form.Check 
-                                                    type="switch"
-                                                    label="Usuario activo"
-                                                    checked={usuarioSeleccionado.activo}
-                                                    onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, activo: e.target.checked})}
-                                                />
+                                                <Form.Check type="switch" label="Usuario activo" checked={usuarioSeleccionado.activo} onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, activo: e.target.checked})} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Imagen de perfil</Form.Label>
-                                        <Form.Control 
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => setImagenUsuario(e.target.files[0])}
-                                        />
+                                        <Form.Control type="file" accept="image/*" onChange={(e) => setImagenUsuario(e.target.files[0])} />
                                     </Form.Group>
                                 </Form>
                             )}
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={cerrarModalUsuario}>
-                                Cancelar
-                            </Button>
+                            {/* ESTE MODAL SIRVE PARA ACTUALIZAR Y PARA AÑADIR */}
                             <Button variant="primary" onClick={guardarUsuario}>
                                 {modoEdicion ? 'Actualizar' : 'Crear'} Usuario
                             </Button>
+                            <Button variant="secondary" onClick={cerrarModalUsuario}>
+                                Cancelar
+                            </Button>
                         </Modal.Footer>
                     </Modal>
+
+
+                    {/* MODAL VER USUARIO  */}
+
+                    <Modal show={mostrarModalVerUsuario} onHide={() => setMostrarModalVerUsuario(false)} size="lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Perfil de {usuarioSeleccionado &&usuarioSeleccionado.nombre}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {usuarioSeleccionado && (
+                                <Form>
+                                    <Row>
+                                        {/* IMAGEN SI HAY */}
+                                    
+                                        <Row className="mb-3">
+                                            
+                                            <Col xs={12} md={4}>
+                                            
+                                            <Form.Group className="mb-3">
+                                                {usuarioSeleccionado.imagen ? (
+                                                    <div className="text-center">
+                                                        <img 
+                                                            src={usuarioSeleccionado.imagen} 
+                                                            alt="Perfil" 
+                                                            style={{ 
+                                                                maxWidth: '150px', 
+                                                                maxHeight: '150px',
+                                                                borderRadius: '8px',
+                                                                objectFit: 'cover'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-muted">
+                                                        <div style={{
+                                                            width: '150px',
+                                                            height: '150px',
+                                                            borderRadius: '8px',
+                                                            backgroundColor: '#f8f9fa',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            margin: '0 auto'
+                                                        }}>
+                                                            Sin imagen
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </Form.Group>
+                                            </Col>
+                                            <Col xs={12} md={2}></Col>
+                                            <Col xs={12} md={6}> 
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label><strong>Instrumentos</strong></Form.Label>
+                                                        {usuarioSeleccionado.instrumentos && usuarioSeleccionado.instrumentos.length > 0 ? (
+                                                            <div>
+                                                                {usuarioSeleccionado.instrumentos.map((instrumento, index) => (
+                                                                    <Badge key={index} bg="primary" className="me-2 mb-2">
+                                                                        {instrumento.nombre} ({instrumento.familia})
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <Form.Text className="text-muted">No tiene instrumentos asignados</Form.Text>
+                                                        )}
+                                                    </Form.Group>
+
+                                    {/* CLASES TOTALES */}
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label><strong>Clases Asignadas</strong></Form.Label>
+                                                        <div>
+                                                            {usuarioSeleccionado.clases && usuarioSeleccionado.clases.length > 0 ? (
+                                                                <Badge bg="info" >
+                                                                    {usuarioSeleccionado.clases.length} clase(s) totales
+                                                                </Badge>
+                                                            ) : (
+                                                                <Form.Text className="text-muted">No tiene clases asignadas</Form.Text>
+                                                            )}
+                                                        </div>
+                                                    </Form.Group>
+                                            
+                                            </Col>
+                                        </Row>
+                                    
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label><strong>Nombre</strong></Form.Label>
+                                                <Form.Control type="text" value={usuarioSeleccionado.nombre} disabled />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label><strong>Email</strong></Form.Label>
+                                                <Form.Control type="email" value={usuarioSeleccionado.email} disabled />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label><strong>Teléfono</strong></Form.Label>
+                                                <Form.Control  type="text" value={usuarioSeleccionado.telefono} disabled  />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label><strong>Provincia</strong></Form.Label>
+                                                <Form.Control type="text" value={usuarioSeleccionado.provincia} disabled />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label><strong>Estado</strong></Form.Label>
+                                                <div className="mt-2">
+                                                    <Badge bg={usuarioSeleccionado.activo ? "success" : "danger"}>
+                                                        {usuarioSeleccionado.activo ? "Activo" : "Inactivo"}
+                                                    </Badge>
+                                                </div>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    
+                                    
+
+                                    
+                                </Form>
+                            )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setMostrarModalVerUsuario(false)}>
+                                Cerrar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
+
+
+
+
+
+
 
                     {/* MODAL PROFESOR */}
                     <Modal show={mostrarModalProfesor} onHide={cerrarModalProfesor} size="lg">
@@ -736,18 +884,7 @@ const PerfilAdmin = () => {
                                             </Form.Group>
                                         </Col>
 
-                                        {/* {ME SALIA EL HASH} */}
-                                        {/* <Col xs={12} md={6}>
-                                            <Form.Group className="mb-3">
-                                                <Form.Label>Contraseña {modoEdicion ? '(dejar en blanco para no cambiar)' : '*'}</Form.Label>
-                                                <Form.Control 
-                                                    type="password" 
-                                                    value={profesorSeleccionado.password || ''}
-                                                    onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, password: e.target.value})}
-                                                    required={!modoEdicion}
-                                                />
-                                            </Form.Group>
-                                        </Col> */}
+                                        
                                     </Row>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Biografía</Form.Label>
@@ -786,14 +923,186 @@ const PerfilAdmin = () => {
                             )}
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={cerrarModalProfesor}>
-                                Cancelar
-                            </Button>
+                            {/* IGUAL QUE EL DE USUARIO, SIRVE PARA CREAR Y PARA ACTUALIZAR (TENDRÍA QUE CAMBIAR PAR DE COSAS) */}
                             <Button variant="primary" onClick={guardarProfesor}>
                                 {modoEdicion ? 'Actualizar' : 'Crear'} Profesor
                             </Button>
+                            <Button variant="secondary" onClick={cerrarModalProfesor}>
+                                Cancelar
+                            </Button>
                         </Modal.Footer>
                     </Modal>
+
+
+
+
+                    {/* MODAL VER PROFESIR
+ */}
+        <Modal show={mostrarModalVerProfesor} onHide={() => setMostrarModalVerProfesor(false)} size="lg">
+        <Modal.Header closeButton>
+            <Modal.Title>Perfil de {profesorSeleccionado && profesorSeleccionado.nombre}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {profesorSeleccionado && (
+            <Form>
+                {/* Imagen y datos principales en la misma fila */}
+                <Row className="mb-4">
+                    <Col xs={12} md={4}>
+                        {profesorSeleccionado.imagen ? (
+                            <div className="text-center">
+                                <img 
+                                    src={profesorSeleccionado.imagen} 
+                                    alt="Perfil" 
+                                    style={{ 
+                                        maxWidth: '150px', 
+                                        maxHeight: '150px',
+                                        borderRadius: '8px',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            </div>
+                        ) : (
+                            <div className="text-center text-muted">
+                                <div style={{
+                                    width: '150px',
+                                    height: '150px',
+                                    borderRadius: '8px',
+                                    backgroundColor: '#f8f9fa',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto'
+                                }}>
+                                    Sin imagen
+                                </div>
+                            </div>
+                        )}
+                    </Col>
+                    <Col xs={12} md={2}></Col>
+                    <Col xs={12} md={6}>
+                        <Form.Group className="mb-3">
+                            <Form.Label><strong>Instrumentos</strong></Form.Label>
+                            {profesorSeleccionado.instrumentos && profesorSeleccionado.instrumentos.length > 0 ? (
+                                <div>
+                                    {profesorSeleccionado.instrumentos.map((instrumento, index) => (
+                                        <Badge 
+                                            key={index} 
+                                            bg="primary" 
+                                            className="me-2 mb-2"
+                                            
+                                        >
+                                            {instrumento.nombre} ({instrumento.familia})
+                                        </Badge>
+                                    ))}
+                                </div>
+                            ) : (
+                                <Form.Text className="text-muted">No tiene instrumentos asignados</Form.Text>
+                            )}
+                        </Form.Group>
+
+                     
+                        
+                           
+                  
+                            <Form.Group className="mb-3">
+                                <Form.Label><strong>Estado</strong></Form.Label>
+                                <div className="mt-2">
+                                    <Badge bg={profesorSeleccionado.activo ? "success" : "danger"}>
+                                        {profesorSeleccionado.activo ? "Activo" : "Inactivo"}
+                                    </Badge>
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        
+                    
+                </Row>
+
+                
+                <Row>
+                    <Col xs={12} md={6}>
+                        <Form.Group className="mb-3">
+                                        <Form.Label><strong>Nombre</strong></Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            value={profesorSeleccionado.nombre}
+                                            disabled
+                                            style={{ fontSize: '1.1rem', fontWeight: 'bold' }}
+                                        />
+                                    </Form.Group>
+                    </Col>
+                    <Col xs={12} md={6}>
+                        <Form.Group className="mb-3">
+                            <Form.Label><strong>Email</strong></Form.Label>
+                            <Form.Control type="email" value={profesorSeleccionado.email} disabled  />
+                        </Form.Group>
+                    </Col>
+                    
+                </Row>
+
+                <Row>
+                    <Col xs={12} md={6}>
+                        <Form.Group className="mb-3">
+                            <Form.Label><strong>Provincia</strong></Form.Label>
+                            <Form.Control type="text" value={profesorSeleccionado.provincia} disabled />
+                        </Form.Group>
+                    </Col>
+                    <Col xs={12} md={6}>
+                        <Form.Group className="mb-3">
+                            <Form.Label><strong>Teléfono</strong></Form.Label>
+                            <Form.Control type="text" value={profesorSeleccionado.telefono} disabled />
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                {/* BIO */}
+                {profesorSeleccionado.bio && (
+                    <Form.Group className="mb-3">
+                        <Form.Label><strong>Biografía</strong></Form.Label>
+                        <Form.Control as="textarea" rows={3} value={profesorSeleccionado.bio} disabled style={{ backgroundColor: '#f8f9fa', border: 'none' }} />
+                    </Form.Group>
+                )}
+                 <Col xs={12} md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label><strong>Precio por Hora</strong></Form.Label>
+                                    <Form.Control 
+                                        type="text" 
+                                        value={`${profesorSeleccionado.precioHora} €`}
+                                      disabled
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                {/* INSTRUMENTOS */}
+                
+
+                {/* CLASES */}
+                <Form.Group className="mb-3">
+                    <Form.Label><strong>Clases Asignadas</strong></Form.Label>
+                    <div>
+                        {profesorSeleccionado.clases && profesorSeleccionado.clases.length > 0 ? (
+                            <Badge bg="info" style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
+                                {profesorSeleccionado.clases.length} clase(s) asignada(s)
+                            </Badge>
+                        ) : (
+                            <Form.Text className="text-muted">No tiene clases asignadas</Form.Text>
+                        )}
+                    </div>
+                </Form.Group>
+            </Form>
+        )}
+    </Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={() => setMostrarModalVerProfesor(false)}>
+            Cerrar
+        </Button>
+    </Modal.Footer>
+</Modal>
+
+
+
+
+
+
                 </>
             )}
         </>

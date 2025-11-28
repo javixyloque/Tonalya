@@ -136,6 +136,31 @@ router.get("/usuarios-completos", async (req, res) => {
   }
 });
 
+router.get("/usuario-completo/:id", async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.params.id).populate({
+        path: "instrumentos",
+        select: "nombre familia",
+    })
+    res.status(200).json(usuario);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener los datos de los usuarios", error: error.message });
+  }
+});
+
+router.get("/profesor-completo/:id", async (req, res) => {
+  try {
+    const profesor = await Profesor.findById(req.params.id).populate({
+        path: "instrumentos",
+        select: "nombre familia",
+    })
+    res.status(200).json(profesor);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener los datos de los usuarios", error: error.message });
+  }
+});
+
+
 // OBTENER DATOS DE TODOS LOS PROFESORES (ORDEN ALFABETICO POR NOMBRE)
 router.get('/profesores', async (req, res) => {
     try {
