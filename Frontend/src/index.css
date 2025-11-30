@@ -207,7 +207,7 @@ ul {
   color: #2A2D3A !important;
 }
 
-/* NAVBAR (por si acaso) */
+/* NAVBAR (POR SI ACASO) */
 .navbar {
   background: linear-gradient(135deg, #6C63FF 0%, #8A84FF 100%) !important;
   box-shadow: 0 2px 15px rgba(108, 99, 255, 0.3) !important;
@@ -226,6 +226,23 @@ ul {
   box-shadow: 0 2px 15px rgba(108, 99, 255, 0.3) !important;
 }
 
+
+/*
+NO FUNCIONA, SE QUEDA COMO ESTÁ
+
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  border-top: solid 1px  #78787884 !important;
+  border-left: solid 1px  #78787884 !important;
+  border-bottom: solid 1px  #78787884 !important;
+  border-right: solid 1px  #78787884 !important;
+  /* background-color: #6C63FF !important; 
+} 
+*/
 
 
 

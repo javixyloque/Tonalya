@@ -245,3 +245,47 @@ export const enviarEmailsAceptada = (profesor, alumno, clase, instrumento) => {
     }
 }
 
+// funcion que manda los emails de las clases marcadas como completadas a los alumnos y alerta de la asistencia
+export const enviarEmailsCompletada = (profesor, alumno, clase, instrumento) => {
+    try {
+        if (clase.asistencia) {
+            transporter.sendMail({
+                from: "TONALYA <tonalyamusica@gmail.com>",
+                subject: "Clase completada con asistencia",
+                to: alumno.email,
+                html: `<h1>Clase completada con éxito</h1>
+                <p>Esperemos que hayas disfrutado de tu clase con ${profesor.nombre}!</p><br/>
+                <p>Ticket: <br/>
+                - Profesor: ${profesor.nombre}<br/> 
+                - Alumno: ${alumno.nombre} <br/> 
+                - Instrumento: ${instrumento.nombre} <br/>
+                - Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
+                - Subtotal: ${(clase.precio*1.07).toFixed(2)}€<br/><br/></p>
+                
+                <p>Gracias por confiar en nosotros!</p>
+                <p>Un saludo, el equipo de TONALYA.</p>`
+            })
+        } else {
+            transporter.sendMail({
+                from: "TONALYA <tonalyamusica@gmail.com>",
+                subject: "Clase completada sin asistencia",
+                to: alumno.email,
+                html: `<h1>Clase completada sin asistencia</h1>
+                <p>¿Que ocurrió? ${profesor.nombre} ha informado de que no te presentaste a la clase de ${instrumento.nombre}. Descripción de la clase: <br/><em>${clase.descripcion}</em></p><br/>
+                <p>Ticket: <br/>
+                - Profesor: ${profesor.nombre}<br/> 
+                - Alumno: ${alumno.nombre} <br/> 
+                - Instrumento: ${instrumento.nombre} <br/>
+                - Horario: ${formatoFecha(clase.fechaInicio)} - ${clase.fechaFin.getHours()}:${clase.fechaFin.getMinutes() >0 ? clase.fechaFin.getMinutes() : '00'}<br/> 
+                - Subtotal: ${(clase.precio*1.07).toFixed(2)}€<br/><br/></p>
+                
+                <p>Gracias por confiar en nosotros!</p>
+                <p>Un saludo, el equipo de TONALYA.</p>`
+            })
+        }
+        console.log ("Email enviado correctamente")
+    } catch (exception) {
+        console.error('Error enviando emails:', exception);
+    }
+}
+

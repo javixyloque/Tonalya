@@ -7,7 +7,7 @@ import Clase from "../models/Clase.js";
 import Instrumento from "../models/Instrumento.js";
 import nodemailer from 'nodemailer';
 import { reject } from "bcrypt/promises.js";
-import { enviarEmailsRechazoProfesor, enviarEmailsAceptada, emailBienvenidaProfesor } from "../biblioteca.js";
+import { enviarEmailsRechazoProfesor, enviarEmailsAceptada, emailBienvenidaProfesor, enviarEmailsCompletada } from "../biblioteca.js";
 // SI NO ABIERTO, ABRIR: 
 // sudo ufw status
 // sudo ufw allow 587
@@ -293,6 +293,8 @@ router.put('/clase/:id', async (req, res) => {
             enviarEmailsRechazoProfesor(profesor, alumno, clase, instrumento, mensaje);
         } else if (tipoAccion =='aceptada') {
             enviarEmailsAceptada(profesor, alumno, clase, instrumento);
+        } else if (tipoAccion == "completada") {
+            enviarEmailsCompletada(profesor, alumno, clase, instrumento);
         }
         res.json({mensaje: 'Clase actualizada exitosamente' ,clase: clase});
     } catch (error) {

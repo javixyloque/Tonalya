@@ -584,7 +584,7 @@ const PerfilAdmin = () => {
 
                     {/* MODAL USUARIO */}
                     <Modal show={mostrarModalUsuario} onHide={cerrarModalUsuario} size="lg">
-                        <Modal.Header closeButton>
+                        <Modal.Header>
                             <Modal.Title>Editar Usuario</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -673,7 +673,7 @@ const PerfilAdmin = () => {
                     {/* MODAL VER USUARIO  */}
 
                     <Modal show={mostrarModalVerUsuario} onHide={() => setMostrarModalVerUsuario(false)} size="lg">
-                        <Modal.Header closeButton>
+                        <Modal.Header>
                             <Modal.Title>Perfil de {usuarioSeleccionado &&usuarioSeleccionado.nombre}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -814,7 +814,7 @@ const PerfilAdmin = () => {
 
                     {/* MODAL PROFESOR */}
                     <Modal show={mostrarModalProfesor} onHide={cerrarModalProfesor} size="lg">
-                        <Modal.Header closeButton>
+                        <Modal.Header>
                             <Modal.Title>{modoEdicion ? 'Editar Profesor' : 'Nuevo Profesor'}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -939,7 +939,7 @@ const PerfilAdmin = () => {
                     {/* MODAL VER PROFESIR
  */}
         <Modal show={mostrarModalVerProfesor} onHide={() => setMostrarModalVerProfesor(false)} size="lg">
-        <Modal.Header closeButton>
+        <Modal.Header>
             <Modal.Title>Perfil de {profesorSeleccionado && profesorSeleccionado.nombre}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -1000,18 +1000,22 @@ const PerfilAdmin = () => {
                             )}
                         </Form.Group>
 
-                     
+                        <Form.Group className="mb-3">
+                            <Form.Label><strong>Clases Asignadas</strong></Form.Label>
+                            <div>
+                                {profesorSeleccionado.clases && profesorSeleccionado.clases.length > 0 ? (
+                                    <Badge bg="info">
+                                        {profesorSeleccionado.clases.length} clase(s) asignada(s)
+                                    </Badge>
+                                ) : (
+                                    <Form.Text className="text-muted">No tiene clases asignadas</Form.Text>
+                                )}
+                            </div>
+                        </Form.Group>
                         
                            
                   
-                            <Form.Group className="mb-3">
-                                <Form.Label><strong>Estado</strong></Form.Label>
-                                <div className="mt-2">
-                                    <Badge bg={profesorSeleccionado.activo ? "success" : "danger"}>
-                                        {profesorSeleccionado.activo ? "Activo" : "Inactivo"}
-                                    </Badge>
-                                </div>
-                            </Form.Group>
+                            
                         </Col>
                         
                     
@@ -1076,18 +1080,15 @@ const PerfilAdmin = () => {
                 
 
                 {/* CLASES */}
+                
                 <Form.Group className="mb-3">
-                    <Form.Label><strong>Clases Asignadas</strong></Form.Label>
-                    <div>
-                        {profesorSeleccionado.clases && profesorSeleccionado.clases.length > 0 ? (
-                            <Badge bg="info" style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
-                                {profesorSeleccionado.clases.length} clase(s) asignada(s)
-                            </Badge>
-                        ) : (
-                            <Form.Text className="text-muted">No tiene clases asignadas</Form.Text>
-                        )}
-                    </div>
-                </Form.Group>
+                                <Form.Label><strong>Estado</strong></Form.Label>
+                                <div className="mt-2">
+                                    <Badge bg={profesorSeleccionado.activo ? "success" : "danger"}>
+                                        {profesorSeleccionado.activo ? "Activo" : "Inactivo"}
+                                    </Badge>
+                                </div>
+                            </Form.Group>
             </Form>
         )}
     </Modal.Body>

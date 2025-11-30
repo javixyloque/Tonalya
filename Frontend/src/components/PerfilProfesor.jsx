@@ -589,7 +589,7 @@ const PerfilProfesor = () => {
                                                             <th>Fecha</th>
                                                             <th>Instrumento</th>
                                                             <th>Horas</th>
-                                                            <th>Completar</th>
+                                                            <th>Rechazar</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -695,7 +695,7 @@ const PerfilProfesor = () => {
                                                             <td>{clase.instrumento.nombre}</td>
                                                             <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                             <td>
-                                                            <Button variant="outline-success" size="sm" onClick={() => aceptarClase(clase._id)}>
+                                                            <Button variant="outline-primary" size="sm" onClick={() => aceptarClase(clase._id)}>
                                                                     Aceptar
                                                                 </Button>
                                                             </td>
@@ -827,7 +827,7 @@ const PerfilProfesor = () => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success" onClick={actualizarAsistencia}>
+                    <Button variant="primary" onClick={actualizarAsistencia}>
                         Confirmar
                     </Button>
                     <Button variant="secondary" onClick={ocultarModal}>

@@ -48,7 +48,7 @@ const PagarClase = () => {
             
         }
         setClasePagada();
-    }, [ id ])
+    }, [])
     return (
         <>
             {loading && (

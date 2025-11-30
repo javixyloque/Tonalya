@@ -60,39 +60,44 @@ const FormPagar = () => {
                             <Col xs={0} md={3}></Col>
                             <Col xs={12} md={6} >
                             <Card>
-                                <Card.Header></Card.Header>
-                            </Card>
+                                <Card.Header>
+                                    <h1>Clase de {instrumento.nombre}</h1>
+                                </Card.Header>
+                                <Card.Body>
                             {/* TÍTULO (INSTRUMENTO)*/}
-                            <h1>Clase de {instrumento.nombre}</h1>
+                            
                             
                             {/* ALUMNO Y PROFESOR */}
-                            <dl>
-                                <dt>Profesor:</dt>
-                                <dd>{profesor.nombre}</dd>
-                                <dt>Alumno:</dt>
-                                <dd>{alumno.nombre}</dd>
-                            </dl>
-                            
-                            {/* FECHA Y HORA */}
-                            <p>
-                                {new Date(clase.fechaInicio).getDate()}/{new Date(clase.fechaInicio).getMonth()}/{new Date(clase.fechaInicio).getFullYear()} - 
-                                <strong> de {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() > 0 ? new Date(clase.fechaInicio).getMinutes() : '00'} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() > 0 ? new Date(clase.fechaFin).getMinutes() : '00'}</strong>
-                            </p>
-                            
-                            {/* DESCRIPCION */}
-                            <p>{clase.descripcion}</p>
-                            
-                            {/* IMPORTE TOTAL DESGLOSADO */}
-                            <dl style={{textAlign: "right"}}>
-                                <dt>Precio:</dt>
-                                <dd>{clase.precio.toFixed(2)}€</dd>
-                                <dt>Comisión de Tonalya:</dt>
-                                <dd>{(clase.precio * 0.07).toFixed(2)}€</dd>
-                            </dl>
-                            <hr />
-                            {/* TOTAL =>    con espacioes en blacno para que no quede feo */}
-                            <h2 style={{textAlign: "right"}} >Total a pagar:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {(clase.precio * 1.07).toFixed(2)}€</h2>
-                            <Link className="btn btn-primary w-100 mt-3"  to={`/pagar-clase/${clase._id}`}>Pagar</Link>
+                                <dl>
+                                    <dt>Profesor:</dt>
+                                    <dd>{profesor.nombre}</dd>
+                                    <dt>Alumno:</dt>
+                                    <dd>{alumno.nombre}</dd>
+                                </dl>
+                                
+                                {/* FECHA Y HORA */}
+                                <p>
+                                    {new Date(clase.fechaInicio).getDate()}/{new Date(clase.fechaInicio).getMonth()}/{new Date(clase.fechaInicio).getFullYear()} - 
+                                    <strong> de {new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() > 0 ? new Date(clase.fechaInicio).getMinutes() : '00'} a {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() > 0 ? new Date(clase.fechaFin).getMinutes() : '00'}</strong>
+                                </p>
+                                
+                                {/* DESCRIPCION */}
+                                <p>{clase.descripcion}</p>
+                                
+                                {/* IMPORTE TOTAL DESGLOSADO */}
+                                <dl style={{textAlign: "right"}}>
+                                    <dt>Precio:</dt>
+                                    <dd>{clase.precio.toFixed(2)}€</dd>
+                                    <dt>Comisión de Tonalya:</dt>
+                                    <dd>{(clase.precio * 0.07).toFixed(2)}€</dd>
+                                </dl>
+                                </Card.Body>
+                                <Card.Footer>
+                                {/* TOTAL =>    con espacioes en blacno para que no quede feo */}
+                                <h2 style={{textAlign: "right"}} >Total a pagar:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {(clase.precio * 1.07).toFixed(2)}€</h2>
+                                <Link className="btn btn-primary w-100 mt-3"  to={`/pagar-clase/${clase._id}`}>Pagar</Link>
+                                </Card.Footer>
+                            </Card>
                             </Col>
                         </Row>
                         <Col xs={0} md={3}></Col>

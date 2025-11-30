@@ -91,12 +91,12 @@ const  Home = () => {
                                     <Carousel.Caption style={{
                                         backgroundColor: "rgba(108, 99, 255, 0.1)",
                                         borderRadius: "10px", 
-                                        backdropFilter: "blur(10px)"
+                                        backdropFilter: "blur(100px)"
                                     }}>
                                         <h3 style={{
                                             fontSize: "1.8rem",
                                             fontWeight: "900",
-                                            textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
+                                            // textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
                                             marginBottom: "0.5rem",
                                             color: "#FF6584",
                                             //  backdropFilter: "blur(5px)"
@@ -106,7 +106,7 @@ const  Home = () => {
                                         {pestanya.text && (
                                             <p style={{
                                                 fontSize: "1.2rem",
-                                                textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
+                                                // textShadow: "2px 2px 4px rgba(0,0,0,0.9)",
                                                 marginBottom: "0",
                                                 fontWeight: "600",
                                                 color: "#FF6584",
