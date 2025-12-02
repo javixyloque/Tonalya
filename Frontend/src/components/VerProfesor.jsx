@@ -222,6 +222,8 @@ const VerProfesor = () => {
                                 )}
                                 <h6>Precio por hora de clase: <strong>{profesor.precioHora}€</strong></h6>
 
+                                {error && <Alert className="m-3" variant="danger">{error}</Alert>}
+                                {exito && <Alert className="m-3" variant="success">{exito}</Alert>}
                                 <Button
                                     variant="primary" className="my-3 w-100 text-center"
                                     onClick={() =>{ 
@@ -241,8 +243,7 @@ const VerProfesor = () => {
                             </Card.Body>
 
                             {/* ALERTAS DE ERROR O ÉXITO */}
-                            {error && <Alert className="m-3" variant="danger">{error}</Alert>}
-                            {exito && <Alert className="m-3" variant="success">{exito}</Alert>}
+                            
                         </Card>
                     </Col>
                 </Row>

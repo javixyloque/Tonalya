@@ -604,7 +604,7 @@ const PerfilAdmin = () => {
                                         </Col>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Email </Form.Label>
+                                                <Form.Label><strong>Email</strong> </Form.Label>
                                                 <Form.Control 
                                                     type="email" 
                                                     value={usuarioSeleccionado.email}
@@ -617,7 +617,7 @@ const PerfilAdmin = () => {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Teléfono </Form.Label>
+                                                <Form.Label><strong>Teléfono</strong> </Form.Label>
                                                 <Form.Control 
                                                     type="text" 
                                                     value={usuarioSeleccionado.telefono}
@@ -628,7 +628,7 @@ const PerfilAdmin = () => {
                                         </Col>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Provincia </Form.Label>
+                                                <Form.Label><strong>Provincia </strong></Form.Label>
                                                 <Form.Select 
                                                     value={usuarioSeleccionado.provincia}
                                                     onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, provincia: e.target.value})}
@@ -646,13 +646,13 @@ const PerfilAdmin = () => {
                                         
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Estado</Form.Label>
+                                                <Form.Label><strong>Estado</strong></Form.Label>
                                                 <Form.Check type="switch" label="Usuario activo" checked={usuarioSeleccionado.activo} onChange={(e) => setUsuarioSeleccionado({...usuarioSeleccionado, activo: e.target.checked})} />
                                             </Form.Group>
                                         </Col>
                                     </Row>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Imagen de perfil</Form.Label>
+                                        <Form.Label><strong>Imagen de perfil</strong></Form.Label>
                                         <Form.Control type="file" accept="image/*" onChange={(e) => setImagenUsuario(e.target.files[0])} />
                                     </Form.Group>
                                 </Form>
@@ -823,7 +823,7 @@ const PerfilAdmin = () => {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Nombr </Form.Label>
+                                                <Form.Label><strong>Nombre</strong> </Form.Label>
                                                 <Form.Control 
                                                     type="text" 
                                                     value={profesorSeleccionado.nombre}
@@ -834,7 +834,7 @@ const PerfilAdmin = () => {
                                         </Col>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Emai </Form.Label>
+                                                <Form.Label><strong>Email</strong> </Form.Label>
                                                 <Form.Control 
                                                     type="email" 
                                                     value={profesorSeleccionado.email}
@@ -847,7 +847,7 @@ const PerfilAdmin = () => {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Teléfono </Form.Label>
+                                                <Form.Label><strong>Teléfono </strong></Form.Label>
                                                 <Form.Control 
                                                     type="text" 
                                                     value={profesorSeleccionado.telefono}
@@ -858,7 +858,7 @@ const PerfilAdmin = () => {
                                         </Col>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Provincia </Form.Label>
+                                                <Form.Label><strong>Provincia</strong> </Form.Label>
                                                 <Form.Select 
                                                     value={profesorSeleccionado.provincia}
                                                     onChange={(e) => setProfesorSeleccionado({...profesorSeleccionado, provincia: e.target.value})}
@@ -875,7 +875,7 @@ const PerfilAdmin = () => {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Precio por Hora (€) </Form.Label>
+                                                <Form.Label><strong>Precio por Hora (€) </strong></Form.Label>
                                                 <Form.Control 
                                                     required type="number" step={1} defaultValue={10}  placeholder="Precio por hora" min={5} max={100}
                                                     value={profesorSeleccionado.precioHora}
@@ -887,7 +887,7 @@ const PerfilAdmin = () => {
                                         
                                     </Row>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Biografía</Form.Label>
+                                        <Form.Label><strong>Biografía</strong></Form.Label>
                                         <Form.Control 
                                             as="textarea" 
                                             rows={3}
@@ -899,7 +899,7 @@ const PerfilAdmin = () => {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Estado</Form.Label>
+                                                <Form.Label><strong>Estado</strong></Form.Label>
                                                 <Form.Check 
                                                     type="switch"
                                                     label="Profesor activo"
@@ -910,7 +910,7 @@ const PerfilAdmin = () => {
                                         </Col>
                                         <Col xs={12} md={6}>
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Imagen de perfil</Form.Label>
+                                                <Form.Label><strong>Imagen de perfil</strong></Form.Label>
                                                 <Form.Control 
                                                     type="file"
                                                     accept="image/*"
