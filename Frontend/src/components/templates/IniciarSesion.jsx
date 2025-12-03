@@ -118,7 +118,12 @@ const IniciarSesion = () => {
                                 <Form.Label>Selecciona tipo de usuario:</Form.Label>
                                 <Form.Select 
                                      value={rol} 
-                                     onChange={(e) => setRol(e.target.value)}>
+                                     onChange={(e) => setRol(e.target.value)}
+                                     onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        comprobarLogin(e);
+                                    }
+                                }}>
                                     <option value="">Selecciona el tipo de usuario</option>
                                     <option value="alumno">Alumno</option>
                                     <option value="profesor">Profesor</option>
@@ -136,6 +141,11 @@ const IniciarSesion = () => {
                             autoFocus
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        comprobarLogin(e);
+                                    }
+                                }}
                         />
 
                         {/* CONTRASEÑA  => INPUTGROUP PARA EL BOTON DE MOSTRAR */}

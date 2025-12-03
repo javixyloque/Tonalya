@@ -5,7 +5,7 @@
 // MONGOOSE-BCRYPT => ENCRIPTAR CONTRASEÑAS
 // CORS => SOLICITUDES DESDE EL CLIENTE
 // MULTER => MIDDLEWARE FORMULARIOS MULTIPART/FORM-DATA (INACTIVO)
-// UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS)
+// UUIDV4 => GENERAR IDENTIFICADORES UNICOS (EVITAR ERROR DUPLICADOS [SOLO ERA PARA MULTER PORQUE GUARDABA LAS IMÁGENES DE LOS USUARIOS EN ALMACENAMIENTO LOCAL])
 // NODEMAILER => ENVIAR CORREOS ELECTRONICOS
 
 /*
@@ -44,7 +44,7 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// FUNCION PARA INSERTAR INSTRUMENTOS
+// FUNCION PARA INSERTAR INSTRUMENTOS DE INICIO
 const instrumentos = async () => {
     try {
         const instrumentoDB = await Instrumento.find({})
@@ -68,13 +68,14 @@ const main  = async () => {
         }
     ));
 
-// ['http://localhost:5173', 'http://localhost:4173']
+// SOLO PRUEBAS DE DESPLIEGUE FALLIDAS
+//  ['http://localhost:5173', 'http://localhost:4173']
     // ['http://localhost:5173', 'https://ewa-translatable-bindingly.ngrok-free.dev'],
 
     // DEBUG CONSULTAS => PRUEBA PSEUDODESPLIEGUE PARA CONEXIÓN BASE DE DATOS (NO FUNCIONÓ)
     // CADA PETICION QUE SE REALICE A LA APLICACIÓN SACARÁ UN MENSAJE EN CONSOLA
     app.use((req, res, next) => {
-        console.log('Solicitud recibida:', req.method, req.url);
+        console.log('Solicitud recibida: ', req.method, req.url);
         next();
     });
 

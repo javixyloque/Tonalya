@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { SyncLoader } from "react-spinners";
 import {useParams} from "react-router-dom";
-import { Alert } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
 
 // PANTALLA DE CARGA PARA PAGAR (SIMULACIÓN) Y ENVIAR EMAILS CON LA PETICIÓN
 const PagarClase = () => {
     const { id } = useParams();
-    console.log(id)
+    // console.log(id)
     const [loading, setLoading] = useState(true);
     const [alerta, setAlerta] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
@@ -58,7 +58,9 @@ const PagarClase = () => {
                 </div>
             )}
             {alerta && (
-                <Alert variant={tipoAlerta}>{mensajeAlerta}</Alert>
+                <Container className="d-flex justify-content-center align-items-center">
+                    <Alert variant={tipoAlerta}>{mensajeAlerta}</Alert>
+                </Container>
             )}
         </>
     )
