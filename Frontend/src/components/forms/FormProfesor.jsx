@@ -29,6 +29,7 @@ const FormProfesor = () => {
     const [mensajeAlerta, setMensajeAlerta] = useState('');
     const [tipoAlerta, setTipoAlerta] = useState('success');
     const [mostrarContrasenya, setMostrarContrasenya] = useState(false);
+    const [enviando, setEnviando] = useState(false);
 
     const manejarMostrarContrasenya = () => {
         setMostrarContrasenya(!mostrarContrasenya);
@@ -65,15 +66,19 @@ const FormProfesor = () => {
     const enviarFormulario = async (event) => {
         event.preventDefault();
         const formulario = event.currentTarget;
+        if (enviando) {
+            return;
+        }
+        setEnviando(true);
         
-        if (!contrasenyaValida) {
+        if (!contrasenyaValida || !provincia || !instrumentoP) {
             setAlerta(true);
             setTipoAlerta('danger');
-            setMensajeAlerta('La contraseña debe tener al menos 8 caracteres, una letra y un número');
+            setMensajeAlerta('Rellene el formulario correctamente');
             setTimeout(() => {
                 setAlerta(false);
+                return;
             }, 2000);
-            return;
         } 
 
         // VALIDAR EL FORMULARIO
@@ -127,6 +132,7 @@ const FormProfesor = () => {
                     setMensajeAlerta(objetoRespuesta.mensaje+ ", ¡Bienvenido a Tonalya!");
                     setAlerta(true);
                     setTipoAlerta('success');
+                    setEnviando(false);
                     setTimeout(() => {
                         setAlerta(false);
                         setLoading(true);

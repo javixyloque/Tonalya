@@ -65,18 +65,18 @@ const FormUsuario = () => {
     }, []);
 
     const enviarFormulario = async (event) => {
-        if (!contrasenyaValida) {
-            setAlerta(true);
-            setTipoAlerta('danger');
-            setMensajeAlerta('La contraseña debe tener al menos 8 caracteres, una letra y un número');
-            setTimeout(() => {
-                setAlerta(false);
-            }, 2000);
-            return;
-        }
         event.preventDefault();
         const formulario = event.currentTarget;
         // setLoading(true)
+        if (!contrasenyaValida || !provincia || !instrumentoP) {
+            setAlerta(true);
+            setTipoAlerta('danger');
+            setMensajeAlerta('Rellene el formulario correctamente');
+            setTimeout(() => {
+                setAlerta(false);
+                return;
+            }, 2000);
+        }
 
         // VALIDAR EL FORMULARIO 
         if (formulario.checkValidity() === false) {
@@ -242,7 +242,9 @@ const FormUsuario = () => {
 
                             <Form.Group as={Col} md={12} className="mb-4">
                                 <Form.Label>¿En qué <strong>provincia</strong> estás ubicado?</Form.Label>
+
                                 <Form.Select value={provincia} onChange={(e) => setProvincia(e.target.value)}>
+                                    <option value="">Selecciona tu provincia</option>
                                     {provincias.map((provincia, index) => (
                                         <option key={index} value={provincia}>{provincia}</option>
                                     ))}
@@ -258,8 +260,10 @@ const FormUsuario = () => {
                                         }
                                     }}
                                     >
+                                        <option value="">Selecciona un instrumento</option>
                                     {instrumentos.map((instrumento, index) => (
-                                        <option key={index} value={instrumento._id}>{instrumento.nombre}</option>
+                                                     <option key={index} value={instrumento._id}>{instrumento.nombre}</option>
+                          
                                     ))}
                                 </Form.Select>
                             </Form.Group>

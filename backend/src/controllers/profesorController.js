@@ -309,10 +309,10 @@ router.post('/login', async (req, res) => {
         const password = req.body.password;
         
         
-        const profesor = await Profesor.findOne({ "email": email });
+        const profesor = await Profesor.findOne({ "email": email, activo: true });
 
         if (!profesor) {
-            return res.status(401).json({ mensaje: 'Correo electrónico incorrecto' });
+            return res.status(401).json({ mensaje: 'Profesor no encontrado' });
         }
 
         const contrasenyaValida = bcrypt.compareSync(password, profesor.password);

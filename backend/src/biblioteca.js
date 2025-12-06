@@ -88,7 +88,7 @@ export const emailBienvenidaProfesor = async (profesor) => {
             to: profesor.email,
             html: `<h1>¡Bienvenido a TONALYA!</h1>
             <p>¡Gracias por unirte a nuestra comunidad de músicos!</p>
-            <p>Es todo un placer contar contigo entre nosotros, ${profesor.nombre}. Si acceder a tu perfil y editar tu biografía, añadir o eliminar instrumentos, y cambiar tu foto de perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>. Recuerda que en tu perfil también estarán los detalles de tus clases.</p>
+            <p>Es todo un placer contar contigo entre nosotros, ${profesor.nombre}. Si deseas acceder a tu perfil y editar tu biografía, añadir o eliminar instrumentos, o cambiar tu foto de perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>. Recuerda que en tu perfil también estarán los detalles de tus clases.</p>
             <p>Mucho ánimo y a por ello!</p>
             <p>Un saludo, el equipo de TONALYA.</p>`
         });
@@ -106,7 +106,9 @@ export const emailBienvenidaAlumno = async (usuario) => {
             from: '"TONALYA" <tonalyamusica@gmail.com>',
             to: usuario.email,
             subject: `Bienvenido a TONALYA, ${usuario.nombre}`,
-            html: `<h1>Gracias por registrarte en TONALYA, ${usuario.nombre}.<h1><br> <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda!</p> <p>Para acceder a tu perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>
+            html: `<h1>Bienvenido a TONALYA, ${usuario.nombre}.<h1>
+             <p>¡Nos alegra tenerte con nosotros!</p><br><p>No olvides buscar profesor en ${usuario.provincia} que te pueda servir de ayuda! Para acceder a tu perfil, inicia sesión en nuestro sitio web: <a href="http://localhost:5173/">TONALYA</a>. Recuerda que en tu perfil también estarán los detalles de tus clases.</p>
+            <p>Mucho ánimo y a por ello!</p>
             <p>Gracias por confiar en nosotros!</p>
             <p>Un saludo, el equipo de TONALYA.</p>
             </p>`

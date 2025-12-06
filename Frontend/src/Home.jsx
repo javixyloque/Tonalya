@@ -51,8 +51,8 @@ const arrayCarrusel = [{
         text: "Gestiona tu horario y tu perfil de forma sencilla"
     }, {
         img: cobroProfesoresCarrusel,
-        title: "Paga y cobra automáticamente",
-        text: "Nosotros nos ocuparemos de ello, simplemente disfruta de la música"
+        title: "Paga y cobra dentro de la aplicación",
+        text: "Simplemente disfruta aprendiendo"
     }
 ]
 
@@ -77,8 +77,10 @@ const  Home = () => {
                         }}>
                         {arrayCarrusel.map((pestanya, index) => (
                             <Carousel.Item key={index} style={{
-                                height: "500px", // Agregar altura fija a cada elemento
-                                overflow: "hidden" // Ocultar contenido que sobrepasa la altura fija
+                                //MAXDIMO ALTURA
+                                height: "500px", 
+                                // AJUSTAR
+                                overflow: "hidden" 
                             }}>
                                 <img src={pestanya.img}  alt={`Pestaña ${index + 1}`} style={{objectFit: "cover", objectPosition: "center"}} />
                                 {/* ESTILOS PARA EL TEXTO*/}

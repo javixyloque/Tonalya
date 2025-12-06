@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SyncLoader } from "react-spinners";
 import {useParams} from "react-router-dom";
 import { Alert, Container } from "react-bootstrap";
@@ -12,15 +12,20 @@ const PagarClase = () => {
     const [alerta, setAlerta] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
     const [tipoAlerta, setTipoAlerta] = useState('success');
+    const [enviando, setEnviando] = useState(false);
 
 
-    useEffect(() => {
         if (!sessionStorage.getItem('id') || sessionStorage.getItem('rol') !== "alumno") {
-            window.location.href = '/';
+            // SI NO HAGO ESTO SE ENVÍA EL FORMULARIO 2 VECES
+            window.location.assign('/');
             return;
         }  
         const setClasePagada = async () => {
             try {
+                if(enviando){
+                    return;
+                }
+                setEnviando(true);
                 const clasePagada = await fetch(`http://localhost:5000/usuario/clase/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -37,7 +42,8 @@ const PagarClase = () => {
                     setAlerta(true);
                     setTimeout(() => {
                         setAlerta(false);
-                        window.location.href ='/perfil-usuario'
+                        setEnviando(false);
+                        window.location.replace('/perfil-usuario');
                     }, 2500);
                 }
 
@@ -48,7 +54,7 @@ const PagarClase = () => {
             
         }
         setClasePagada();
-    }, [])
+   
     return (
         <>
             {loading && (

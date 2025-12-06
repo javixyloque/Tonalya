@@ -352,13 +352,13 @@ const PerfilAdmin = () => {
             
             mostrarAlerta('Profesor activado correctamente');
             
-            // Recargar lista
+            // REFRESCAR
             const profesoresActualizados = await fetch('http://localhost:5000/admin/profesores-completos').then(res => res.json());
             setProfesores(profesoresActualizados);
         } catch (error) {
             console.error('Error activando profesor:', error);
             mostrarAlerta('Error al activar el profesor', 'danger');
-        }
+        }  
     };
 
     // FUNCIÓN PARA CONTAR CLASES COMPLETADAS
@@ -393,7 +393,7 @@ const PerfilAdmin = () => {
                         <Tabs defaultActiveKey="usuarios" className="mb-4 perfil-tabs">
 
 
-                            {/*  USUARIOS */}
+                            {/* PESTAÑA USUARIOS */}
 
                             <Tab eventKey="usuarios" title={`Usuarios (${usuarios.length})`}>
                                 <Card>

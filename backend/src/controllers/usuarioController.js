@@ -323,9 +323,9 @@ router.post('/login', async (req, res) => {
         const email = req.body.email;
         const password = req.body.password;
         
-        const usuario = await Usuario.findOne({ "email": email });
+        const usuario = await Usuario.findOne({ "email": email, activo: true });
         if (!usuario) {
-            return res.status(401).json({ mensaje: 'Correo electrónico incorrecto' });
+            return res.status(401).json({ mensaje: 'Usuario no encontrado' });
         }
         
         const contrasenyaValida = bcrypt.compareSync(password, usuario.password);
@@ -336,9 +336,9 @@ router.post('/login', async (req, res) => {
         // SESIONES HAY QUE HACERLAS EN FRONT
         // sessionStorage.setItem('usuarioId', usuario._id);
         
-        res.json({ mensaje: 'Iniciaste sesión exitosamente' , email: usuario.email, id: usuario._id, nombre: usuario.nombre});
+        res.status(200).json({ mensaje: 'Iniciaste sesión exitosamente' , email: usuario.email, id: usuario._id, nombre: usuario.nombre});
     } catch (error) {
-        res.json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
+        res.status(500).json({ mensaje: 'Error al iniciar sesión como alumno', error: error.message });
     }
 });
 
