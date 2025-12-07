@@ -36,6 +36,7 @@ const arrayCarrusel = [{
         title: "Encuentra tu profesor", 
         text: "Aprende interactivamente un instrumento y conviértete en un virtuoso" 
     }
+    // SE DESCUADRA Y QUEDA MAL
     // ,{ 
     //     img: notificacionesCarrusel, 
     //     title: "Gestión de Clases", 
