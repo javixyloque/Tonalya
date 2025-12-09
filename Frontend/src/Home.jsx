@@ -1,4 +1,5 @@
 import {Button, Card, Container, Row, Col, Carousel} from 'react-bootstrap'
+import { Link } from 'react-router-dom';
 // import './Home.css';
 import Header from './components/templates/Header';
 // import Logo from"./resources/images/tonalya_logo.png";
@@ -147,7 +148,9 @@ const  Home = () => {
                             <h4>Aprende con nosotros</h4>
                             <p>Regístrate, busca un profesor cerca de ti y, lo más importante ¡disfruta dando la nota como nosotros!</p>
                             <div>
-                                <Button className="w-100 text-center" variant="primary" href="/formusuario">COMENZAR A APRENDER</Button>
+                                <Link to="/formusuario">
+                                <Button className="w-100 text-center" variant="primary">COMENZAR A APRENDER </Button>
+                                </Link>
                             </div>
                         </Card.Body>
                     </Card>
@@ -159,7 +162,9 @@ const  Home = () => {
                         <Card.Body>
                             <h4>Date a conocer como profesor</h4>
                             <p>Registrate como profesor y sírvete de Tonalya para organizar tus clases y atraer nuevos alumnos</p>
-                            <Button className="w-100 text-center" style={{display: "inline-block"}} variant="primary" href="/formprofesor" >DAR CLASE</Button>
+                            <Link to="/formprofesor">
+                            <Button className="w-100 text-center" style={{display: "inline-block"}} variant="primary" >DAR CLASE</Button>
+                            </Link>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -170,7 +175,9 @@ const  Home = () => {
                         <Card.Body>
                             <h4>Busca profesores en tu zona</h4>
                             <p>Descubre nuestro buscador de profesores para encontrar el profesor perfecto para ti</p>
-                            <Button className="w-100 text-center" variant="primary" href="/buscador-profesores">BUSCAR PROFESORES</Button>
+                            <Link to="/buscador-profesores">
+                            <Button className="w-100 text-center" variant="primary">BUSCAR PROFESORES</Button>
+                            </Link>
                         </Card.Body>
                     </Card>
                 </Col>
