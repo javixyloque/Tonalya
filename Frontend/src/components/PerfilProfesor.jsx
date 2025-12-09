@@ -601,7 +601,7 @@ const PerfilProfesor = () => {
                                                             <td>{clase.alumno[0].telefono}</td>
                                                             <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
                                                             <td>{clase.instrumento.nombre}</td>
-                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() ?   new Date(clase.fechaInicio).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                             <td>
                                                             <Button variant="outline-primary" size="sm" onClick={() => manejarModalAsistencia(clase._id)}>
                                                                 Completada
@@ -646,7 +646,7 @@ const PerfilProfesor = () => {
                                                             <td>{clase.alumno[0].nombre}</td>
                                                             <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
                                                             <td>{clase.instrumento.nombre}</td>
-                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() ?   new Date(clase.fechaInicio).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                             <td>
                                                             <Button variant="outline-danger" size="sm" onClick={() => rechazarClase(clase._id)}>
                                                                 Rechazar
@@ -693,7 +693,7 @@ const PerfilProfesor = () => {
                                                             <td>{clase.alumno[0].nombre}</td>
                                                             <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
                                                             <td>{clase.instrumento.nombre}</td>
-                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() ?   new Date(clase.fechaInicio).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                             <td>
                                                             <Button variant="outline-primary" size="sm" onClick={() => aceptarClase(clase._id)}>
                                                                     Aceptar
@@ -746,7 +746,7 @@ const PerfilProfesor = () => {
                                                                 <td>{clase.alumno[0].nombre}</td>
                                                                 <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
                                                                 <td>{clase.instrumento.nombre}</td>
-                                                                <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                                <td>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() ?   new Date(clase.fechaInicio).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                                 <td>
                                                                     {clase.asistencia ? (
                                                                         <CheckSquareFill className="text-success"/>
@@ -762,7 +762,7 @@ const PerfilProfesor = () => {
                                                             <td>{clase.alumno[0].nombre}</td>
                                                             <td>{new Date(clase.fechaInicio).toLocaleDateString()}</td>
                                                             <td>{clase.instrumento.nombre}</td>
-                                                            <td>{new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
+                                                            <td>{new Date(clase.fechaInicio).getHours()}:{new Date(clase.fechaInicio).getMinutes() ?   new Date(clase.fechaInicio).getMinutes() :'00' } - {new Date(clase.fechaFin).getHours()}:{new Date(clase.fechaFin).getMinutes() ?   new Date(clase.fechaFin).getMinutes() :'00' }</td>
                                                             <td>Rechazada</td>
                                                             
                                                         </tr>
